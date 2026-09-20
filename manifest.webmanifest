@@ -1,0 +1,13 @@
+{
+  "name": "Plush Color Matcher",
+  "short_name": "Plush Color",
+  "description": "毛绒娃娃配色、区域编辑、多色卡比较与项目管理工具",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f7fb",
+  "theme_color": "#7c3aed",
+  "icons": [
+    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
