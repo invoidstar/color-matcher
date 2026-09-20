@@ -24,7 +24,8 @@ color-matcher/
 │       └── color.js
 ├── data/
 │   ├── qqtq-480.js
-│   └── natural-720.js
+│   ├── natural-720.js
+│   └── alice-1680.js
 ├── docs/
 │   ├── ARCHITECTURE.md
 │   └── PALETTES.md
