@@ -4,8 +4,9 @@
   if(!PCMColor) throw new Error('PCMColor core module is missing');
   const { clamp, hex, rgbToLab, deltaE00, rgbToHsv } = PCMColor;
   const PALETTES = {
-    'qqtq-480': { id:'qqtq-480', name:'果黑', source:'参考色卡图像', note:'果黑色卡，共 480 色；保留 QQ/TQ 色号体系。', entries:(window.PALETTE_RAW||[]).map(([code,rgb])=>({code,rgb,alias:'',hex:hex(rgb),lab:null})) },
-    'natural-720': { id:'natural-720', name:'昭', source:'20 页自然光照片', note:'昭色卡，共 720 色；由 20 张自然光色卡页提取。001–004 分别对应黑色、大红、雪白、本白。照片/屏幕存在色差，仅作视觉匹配参考。', entries:(window.PALETTE_720_RAW||[]).map(([code,rgb,alias,page,row,col])=>({code,rgb,alias,page,row,col,hex:hex(rgb),lab:null})) }
+    'qqtq-480': { id:'qqtq-480', name:'樱花', source:'参考色卡图像', note:'樱花色卡，共 480 色；保留 QQ/TQ 色号体系。', entries:(window.PALETTE_RAW||[]).map(([code,rgb])=>({code,rgb,alias:'',hex:hex(rgb),lab:null})) },
+    'natural-720': { id:'natural-720', name:'昭', source:'20 页自然光照片', note:'昭色卡，共 720 色；由 20 张自然光色卡页提取。001–004 分别对应黑色、大红、雪白、本白。照片/屏幕存在色差，仅作视觉匹配参考。', entries:(window.PALETTE_720_RAW||[]).map(([code,rgb,alias,page,row,col])=>({code,rgb,alias,page,row,col,hex:hex(rgb),lab:null})) },
+    'alice-1680': { id:'alice-1680', name:'亚丽丝', source:'12 张 75D 涤纶绣花线色卡照片', note:'亚丽丝色卡，共 1680 色；由 12 张实拍色卡、60 行 × 28 色提取。印刷色号采用图像识别：高置信色号直接显示，低置信或冲突位置保留唯一 AL 编号，避免误标。照片/屏幕存在色差，仅作视觉匹配参考。', entries:(window.PALETTE_ALICE_RAW||[]).map(([code,rgb,alias,page,row,col,quality])=>({code,rgb,alias,page,row,col,quality,paletteId:'alice-1680',hex:hex(rgb),lab:null})) }
   };
   let PALETTE = PALETTES['qqtq-480'];
   const $ = s => document.querySelector(s);
@@ -55,13 +56,13 @@
     return arr.slice(0,k);
   }
 
-  function paletteLabel(p){ return !p ? '—' : (p.alias ? `${p.code} · ${p.alias}` : p.code); }
+  function paletteLabel(p){ if(!p)return '—'; if(p.paletteId==='alice-1680')return p.alias||p.code; return p.alias?`${p.code} · ${p.alias}`:p.code; }
 
   function updatePaletteUI(){
     if(els.paletteSelect) els.paletteSelect.value=PALETTE.id;
     if(els.paletteCount) els.paletteCount.textContent=`${PALETTE.entries.length} 色`;
     if(els.paletteInfo) els.paletteInfo.innerHTML=`<strong>${PALETTE.name}</strong> · ${PALETTE.entries.length} 色<br>${PALETTE.note}`;
-    if(els.paletteSearch) els.paletteSearch.placeholder=PALETTE.id==='natural-720'?'搜索 001 / 黑色 / 720 ...':'搜索 QQ155 / TQ433 ...';
+    if(els.paletteSearch) els.paletteSearch.placeholder=PALETTE.id==='natural-720'?'搜索 001 / 黑色 / 720 ...':PALETTE.id==='alice-1680'?'搜索 101 / 1786 / AL0001 ...':'搜索 QQ155 / TQ433 ...';
   }
 
   function rememberSelection(r){ r.paletteSelections=r.paletteSelections||{}; r.paletteSelections[PALETTE.id]=r.selected; }
@@ -135,7 +136,7 @@
     if(!r){ els.inspector.className='selection-inspector empty'; els.inspector.innerHTML='选择左侧画面或下方列表中的区域后，这里会显示摘要与操作建议。'; return; }
     const p=getPalette(r.selected); const typeName=r.type==='detail'?'细节区域':'主区域';
     els.inspector.className='selection-inspector';
-    els.inspector.innerHTML=`<div><strong>${r.label} · ${escapeHtml(r.name)}</strong><div class="muted" style="margin-top:6px;font-size:12px;color:#6b7280;line-height:1.6">${typeName} · ${r.manual?'手动补充':'自动识别'}${r.ignore?` · 当前忽略：${escapeHtml(r.ignoreReason||'手动设置')}`:''}</div></div><div class="inspector-grid"><div class="metric-box"><small>原图颜色</small><strong><span class="swatch-inline" style="background:${hex(r.rgb)}"></span>${hex(r.rgb)}</strong></div><div class="metric-box"><small>推荐色号</small><strong>${p?p.code:'—'}</strong></div><div class="metric-box"><small>色差 ΔE00</small><strong>${p?deltaFor(r,p).toFixed(2):'—'}</strong></div><div class="metric-box"><small>区域面积</small><strong>${Math.round(r.area||0)} px</strong></div></div>`;
+    els.inspector.innerHTML=`<div><strong>${r.label} · ${escapeHtml(r.name)}</strong><div class="muted" style="margin-top:6px;font-size:12px;color:#6b7280;line-height:1.6">${typeName} · ${r.manual?'手动补充':'自动识别'}${r.ignore?` · 当前忽略：${escapeHtml(r.ignoreReason||'手动设置')}`:''}</div></div><div class="inspector-grid"><div class="metric-box"><small>原图颜色</small><strong><span class="swatch-inline" style="background:${hex(r.rgb)}"></span>${hex(r.rgb)}</strong></div><div class="metric-box"><small>推荐色号</small><strong>${p?paletteLabel(p):'—'}</strong></div><div class="metric-box"><small>色差 ΔE00</small><strong>${p?deltaFor(r,p).toFixed(2):'—'}</strong></div><div class="metric-box"><small>区域面积</small><strong>${Math.round(r.area||0)} px</strong></div></div>`;
   }
 
   function nextId(){ return regions.reduce((m,r)=>Math.max(m,r.id),0)+1; }
@@ -321,8 +322,8 @@
     for(const r of regions){
       const p=getPalette(r.selected), best=r.candidates[0]; const card=document.createElement('div'); card.className='region-card '+r.type+(r.ignore?' ignored':'')+(r.id===selectedRegion?' selected':''); card.dataset.id=r.id;
       card.innerHTML=`<div class="region-top"><div class="region-num">${r.label}</div><input class="region-name" value="${escapeHtml(r.name)}" aria-label="区域名称"><span class="type-badge ${r.type==='detail'?'detail':''}">${r.type==='detail'?'细节':'主区域'}</span>${r.manual?'<span class=\"type-badge\" style=\"background:#f3e8ff;color:#7c3aed\">补充</span>':''}<button class="toggle">${r.ignore?'加入匹配':'忽略'}</button></div>
-      <div class="match-line"><div class="color-box"><span class="swatch" style="background:${hex(r.rgb)}"></span><div class="color-meta"><strong>原图颜色</strong><span>${hex(r.rgb)}</span></div></div><div class="arrow">→</div><div class="color-box"><span class="swatch" style="background:${p?p.hex:'#eee'}"></span><div class="color-meta"><strong>${r.ignore?'默认忽略':(p?p.code:'—')}</strong><span>${r.ignore?(r.ignoreReason||'手动忽略'):(p?`ΔE ${deltaFor(r,p).toFixed(2)}`:'')}</span></div></div></div>
-      ${r.ignore?`<div class="ignore-note">当前按“${r.ignoreReason||'手动设置'}”忽略。点击“加入匹配”可恢复；补充区域也支持正常匹配。</div>`:`<div class="candidate-row">${r.candidates.slice(0,4).map(c=>`<button class="candidate ${c.p.code===r.selected?'active':''}" data-code="${c.p.code}"><span class="mini" style="background:${c.p.hex}"></span>${c.p.code} · ${c.de.toFixed(1)}</button>`).join('')}<button class="candidate more">全部 ${PALETTE.entries.length} 色</button></div>`}`;
+      <div class="match-line"><div class="color-box"><span class="swatch" style="background:${hex(r.rgb)}"></span><div class="color-meta"><strong>原图颜色</strong><span>${hex(r.rgb)}</span></div></div><div class="arrow">→</div><div class="color-box"><span class="swatch" style="background:${p?p.hex:'#eee'}"></span><div class="color-meta"><strong>${r.ignore?'默认忽略':(p?paletteLabel(p):'—')}</strong><span>${r.ignore?(r.ignoreReason||'手动忽略'):(p?`ΔE ${deltaFor(r,p).toFixed(2)}`:'')}</span></div></div></div>
+      ${r.ignore?`<div class="ignore-note">当前按“${r.ignoreReason||'手动设置'}”忽略。点击“加入匹配”可恢复；补充区域也支持正常匹配。</div>`:`<div class="candidate-row">${r.candidates.slice(0,4).map(c=>`<button class="candidate ${c.p.code===r.selected?'active':''}" data-code="${c.p.code}"><span class="mini" style="background:${c.p.hex}"></span>${paletteLabel(c.p)} · ${c.de.toFixed(1)}</button>`).join('')}<button class="candidate more">全部 ${PALETTE.entries.length} 色</button></div>`}`;
       card.addEventListener('click',()=>{selectedRegion=r.id;renderDisplay(); $$('.region-card').forEach(x=>x.classList.toggle('selected',+x.dataset.id===r.id));});
       card.querySelector('.region-name').addEventListener('input',e=>{r.name=e.target.value;renderTable();renderAnnotated();renderLinked();});
       card.querySelector('.toggle').addEventListener('click',e=>{e.stopPropagation();r.ignore=!r.ignore;if(!r.ignore)r.ignoreReason='';else r.ignoreReason='手动设置';renderAll();});
@@ -337,7 +338,7 @@
 
   function renderTable(){
     const rows=activeRegions(); if(!rows.length){els.tableBody.innerHTML='<tr><td colspan="7" class="muted">暂无参与匹配的区域</td></tr>';return;}
-    els.tableBody.innerHTML=rows.map(r=>{const p=getPalette(r.selected);return `<tr><td>${r.label}</td><td>${escapeHtml(r.name)}</td><td><span class="table-swatch" style="background:${hex(r.rgb)}"></span>${hex(r.rgb)}</td><td><strong>${p.code}</strong></td><td><span class="table-swatch" style="background:${p.hex}"></span>${p.hex}</td><td>${deltaFor(r,p).toFixed(2)}</td></tr>`;}).join('');
+    els.tableBody.innerHTML=rows.map(r=>{const p=getPalette(r.selected);return `<tr><td>${r.label}</td><td>${escapeHtml(r.name)}</td><td><span class="table-swatch" style="background:${hex(r.rgb)}"></span>${hex(r.rgb)}</td><td><strong>${paletteLabel(p)}</strong></td><td><span class="table-swatch" style="background:${p.hex}"></span>${p.hex}</td><td>${deltaFor(r,p).toFixed(2)}</td></tr>`;}).join('');
   }
 
   function renderPreview(){
@@ -441,7 +442,7 @@
 
     PALETTE.entries.forEach((p,i)=>{
       const col=i%cols,row=Math.floor(i/cols),x=chartX+col*cellW,y=chartY+row*cellH;
-      ctx.fillStyle='#6b7280';ctx.font='10px system-ui';ctx.textAlign='left';ctx.fillText(p.code,x,y+18);
+      ctx.fillStyle='#6b7280';ctx.font='10px system-ui';ctx.textAlign='left';ctx.fillText(paletteLabel(p),x,y+18);
       const swx=x+(PALETTE.entries.length>600?28:42), sww=PALETTE.entries.length>600?48:58;ctx.fillStyle=p.hex;ctx.fillRect(swx,y+4,sww,20);ctx.strokeStyle='rgba(0,0,0,.12)';ctx.lineWidth=1;ctx.strokeRect(swx+.5,y+4+.5,sww-1,19);
     });
 

@@ -15,12 +15,12 @@
 <body>
   <header class="topbar">
     <div>
-      <div class="eyebrow">Plush Color Studio · v3.2</div>
+      <div class="eyebrow">Plush Color Studio · v3.3</div>
       <h1>Plush Color Matcher</h1>
       <p>面向毛绒娃娃设计与制作的本地工作台：多图项目、区域编辑、多色卡比较、配色方案、BOM、用量与采购优化一体化。</p>
     </div>
     <div class="header-right">
-      <div class="palette-badge palette-switch"><span class="dot"></span><select id="paletteSelect" aria-label="选择色卡"><option value="qqtq-480">果黑</option><option value="natural-720">昭</option></select><span id="paletteCount">480 色</span></div>
+      <div class="palette-badge palette-switch"><span class="dot"></span><select id="paletteSelect" aria-label="选择色卡"><option value="qqtq-480">樱花</option><option value="natural-720">昭</option><option value="alice-1680">亚丽丝</option></select><span id="paletteCount">480 色</span></div>
       <button id="paletteManagerBtn" class="button">色卡管理</button><a class="button" href="./guide.html" target="_blank" rel="noopener">使用说明</a>
     </div>
   </header>
@@ -113,7 +113,7 @@
 
         <details class="settings" open>
           <summary>识别设置</summary>
-          <div id="paletteInfo" class="palette-info">当前使用 果黑 色卡。</div>
+          <div id="paletteInfo" class="palette-info">当前使用 樱花 色卡。</div>
           <div class="settings-grid">
             <label>主区域最小面积
               <div class="range-row"><input id="minArea" type="range" min="0.03" max="0.30" step="0.01" value="0.08" /><span id="minAreaValue">0.08%</span></div>
@@ -249,10 +249,11 @@
 
   <section id="printSheet" class="print-sheet"></section>
 
-  <footer>v3.2 · 项目管理 · 区域编辑 · 果黑 / 昭色卡 · A/B 配色 · BOM / 用量 / 成本 · PWA 离线。</footer>
+  <footer>v3.3 · 项目管理 · 区域编辑 · 樱花 / 昭 / 亚丽丝色卡 · A/B 配色 · BOM / 用量 / 成本 · PWA 离线。</footer>
   <script src="./js/core/color.js"></script>
   <script src="./data/qqtq-480.js"></script>
   <script src="./data/natural-720.js"></script>
+  <script src="./data/alice-1680.js"></script>
   <script src="./js/app.js"></script>
 
 </body>

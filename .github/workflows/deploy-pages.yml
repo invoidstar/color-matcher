@@ -35,6 +35,7 @@ jobs:
           test -f js/app.js
           test -f data/qqtq-480.js
           test -f data/natural-720.js
+          test -f data/alice-1680.js
           test -f guide.html
           test -f css/guide.css
           grep -q 'js/app.js' index.html
@@ -42,6 +43,7 @@ jobs:
           node --check js/core/color.js
           node --check data/qqtq-480.js
           node --check data/natural-720.js
+          node --check data/alice-1680.js
           node --check js/app.js
           python - <<'PY'
           from pathlib import Path
