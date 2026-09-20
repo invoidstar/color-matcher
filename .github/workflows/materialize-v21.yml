@@ -1,0 +1,60 @@
+name: Materialize v2.1 release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/materialize-v21.yml
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Reconstruct v2.1 index
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .release/v21-payload-0.b64 .release/v21-payload-1.b64 .release/v21-payload-2.b64 .release/v21-payload-3.b64             | base64 -d             | xz -d > /tmp/index.html
+
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s = Path("/tmp/index.html").read_text(encoding="utf-8")
+          required = [
+              "Plush Color Matcher",
+              "PALETTE_720_RAW",
+              "natural-720",
+              "renderPreview",
+              "generateLimitProposal",
+              "BOM",
+              "限色优化",
+          ]
+          missing = [x for x in required if x not in s]
+          if missing:
+              raise SystemExit(f"Missing v2.1 markers: {missing}")
+          scripts = re.findall(r"<script>(.*?)</script>", s, re.S)
+          Path("/tmp/color-matcher-v21.js").write_text("\n".join(scripts), encoding="utf-8")
+          print("v2.1 index bytes:", len(s.encode("utf-8")))
+          print("inline scripts:", len(scripts))
+          PY
+
+          node --check /tmp/color-matcher-v21.js
+          mv /tmp/index.html index.html
+
+      - name: Commit v2.1 and remove staging payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -r .release
+          git rm .github/workflows/materialize-v21.yml
+          git add index.html
+          git commit -m "Release v2.1 dual palettes and plush planning tools"
+          git push origin HEAD:main
