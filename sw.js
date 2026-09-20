@@ -1,9 +1,9 @@
-const CACHE='plush-color-matcher-v3.1';
+const CACHE='plush-color-matcher-v3.2';
 const ASSETS=[
   './','./index.html','./manifest.webmanifest','./icon.svg',
   './css/base.css','./css/theme.css','./css/features.css',
   './js/core/color.js','./js/app.js',
-  './data/qqtq-480.js','./data/natural-720.js'
+  './data/qqtq-480.js','./data/natural-720.js','./guide.html','./css/guide.css'
 ];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));self.skipWaiting();});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim();});

@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#7c3aed">
+<title>Plush Color Matcher · 使用说明</title>
+<link rel="stylesheet" href="./css/guide.css">
+</head>
+<body>
+<div class="shell">
+  <header class="hero">
+    <div><div class="eyebrow">PLUSH COLOR MATCHER · USER GUIDE</div><h1>毛绒娃娃配色工作台说明书</h1><p>这份说明书按“这个功能有什么用 → 什么时候用 → 怎么用”的方式介绍当前网站的全部主要功能。建议第一次使用时先阅读“快速开始”和“区域编辑”。</p></div>
+    <a class="back" href="./">返回工作台</a>
+  </header>
+  <div class="layout">
+    <nav class="toc">
+      <strong>目录</strong>
+      <a href="#quick">1. 快速开始</a><a href="#palettes">2. 果黑 / 昭色卡</a><a href="#project">3. 项目保存与多图</a>
+      <a href="#detect">4. 自动识别设置</a><a href="#edit">5. 区域编辑工具</a><a href="#regions">6. 区域与色号</a>
+      <a href="#confidence">7. 匹配可信度</a><a href="#palette-manager">8. 色卡管理器</a><a href="#preview">9. 配色预览</a>
+      <a href="#bom">10. BOM / 采购</a><a href="#limit">11. 限色优化</a><a href="#compare">12. 跨色卡比较</a>
+      <a href="#schemes">13. A/B 配色方案</a><a href="#exports">14. 标注与导出</a><a href="#pwa">15. 离线 / PWA</a>
+      <a href="#tips">16. 推荐工作流</a><a href="#trouble">17. 常见问题</a>
+    </nav>
+    <main class="content">
+      <section class="card" id="quick"><h2>1. 快速开始</h2>
+        <div class="step-row"><div><strong>上传设计图</strong><p>点击“上传图片”或把平涂拆件图拖入工作台。背景尽量统一、色块边界清晰时识别效果最好。</p></div></div>
+        <div class="step-row"><div><strong>检查自动识别</strong><p>系统会把较大的部分识别为“主区域”，把嘴巴、眼睛、小装饰等识别为“细节区域”。右侧列表显示每个区域的推荐色号。</p></div></div>
+        <div class="step-row"><div><strong>修正漏检或误分</strong><p>使用“补区域 / 画笔＋ / 橡皮 / 画线拆分 / 合并所选”修正。无需为了一个漏掉的嘴巴反复调全局参数。</p></div></div>
+        <div class="step-row"><div><strong>确认配色</strong><p>查看候选色、可信度、跨色卡比较和配色预览，需要时保存 A/B 两套方案。</p></div></div>
+        <div class="step-row"><div><strong>导出制作信息</strong><p>最终可导出色号 CSV、BOM 采购表、配色预览、标注图和色卡连线图。</p></div></div>
+      </section>
+
+      <section class="card" id="palettes"><h2>2. 内置色卡：果黑 与 昭</h2>
+        <div class="grid">
+          <div class="item"><strong>果黑</strong><p>第一次提供的 480 色色卡。保留原有 QQ001–QQ360 / TQ361–TQ480 色号体系。适合按这些色号直接找线。</p></div>
+          <div class="item"><strong>昭</strong><p>第二套更大色卡，共 720 色，由 20 张自然光色卡页提取。编号为 001–720。</p></div>
+        </div>
+        <h3>怎么切换</h3><p>页面右上角色卡下拉框选择“果黑”或“昭”。切换后，系统会针对同一批区域重新计算最佳色号、候选色和 ΔE00；各色卡的人工选择会分别记忆。</p>
+        <div class="callout warn">色卡来自图片采样，受到拍摄光线、白平衡、屏幕和毛线材质影响。网站给出的是“视觉最近匹配”，不是实验室测色结果。</div>
+      </section>
+
+      <section class="card" id="project"><h2>3. 项目保存 / 恢复与多张拆件图</h2>
+        <div class="grid">
+          <div class="item"><strong>项目名称</strong><p>顶部 PROJECT 输入框用于给当前娃娃命名，名称会进入保存文件。</p></div>
+          <div class="item"><strong>保存项目</strong><p>点击“保存项目”下载 <span class="kbd">.plushcolor.json</span>，包含多图、区域编辑、联动、色卡选择、A/B 方案及自定义色卡。</p></div>
+          <div class="item"><strong>打开项目</strong><p>选择之前保存的项目文件即可继续工作，而不是重新识别。</p></div>
+          <div class="item"><strong>恢复最近项目</strong><p>浏览器会在本地 IndexedDB 自动保存最近状态；出现“恢复最近项目”时可继续上一次工作。</p></div>
+          <div class="item"><strong>添加设计图</strong><p>“＋ 添加设计图”可把头部、身体、服装、配件等多张拆件图放进同一个项目。顶部页签用于切换。</p></div>
+          <div class="item"><strong>打印制作单</strong><p>把当前项目关键配色和 BOM 转成适合打印的页面，方便制作时放在手边。</p></div>
+        </div>
+      </section>
+
+      <section class="card" id="detect"><h2>4. 自动识别与四个参数</h2>
+        <div class="table-wrap"><table><thead><tr><th>参数</th><th>作用</th><th>什么时候调整</th></tr></thead><tbody>
+          <tr><td>主区域最小面积</td><td>决定多大的块才作为主要部件保留。</td><td>区域太多时略调高；重要大部件被过滤时调低。</td></tr>
+          <tr><td>背景容差</td><td>决定与背景有多接近的颜色会被当作背景。</td><td>背景边缘杂色多时调高；主体浅色边缘被吃掉时调低。</td></tr>
+          <tr><td>相邻区域合并强度</td><td>控制相邻、颜色接近的碎块是否合并。</td><td>一个部件被分太细时优先调高；不同色块误合并时调低。</td></tr>
+          <tr><td>细节识别灵敏度</td><td>控制嘴巴、眼睛、小装饰等小区域的保留力度。</td><td>小细节漏检时调高；小噪点太多时调低。</td></tr>
+        </tbody></table></div>
+        <p>修改参数后点击“按当前设置重新识别”。重新识别会重新生成自动区域，因此正式精修前建议先确定大致参数。</p>
+      </section>
+
+      <section class="card" id="edit"><h2>5. 区域编辑工具</h2>
+        <div class="grid">
+          <div class="item"><strong>选择</strong><p>默认模式。点击画面编号或右侧区域卡片，选择要编辑的区域。</p></div>
+          <div class="item"><strong>＋ 补区域</strong><p>适合“整个嘴巴/小装饰完全没识别出来”。开启后点击目标色块，系统从点击点进行局部区域生长并加入新区域。</p></div>
+          <div class="item"><strong>画笔＋</strong><p>适合“区域有了，但边缘少了一块”。先选中区域，再在画面上涂抹，把像素加回当前区域。笔刷滑块控制大小。</p></div>
+          <div class="item"><strong>橡皮</strong><p>适合“区域长多了或包含错误部分”。选中区域后涂抹，删除多余像素。</p></div>
+          <div class="item"><strong>画线拆分</strong><p>适合两个本应分开的部件被连成一个区域。选中区域后，在需要切断的位置拖/画一条分割线。</p></div>
+          <div class="item"><strong>合并所选</strong><p>勾选多个实际上属于同一个部件的区域，再点击合并。适合自动识别过碎的情况。</p></div>
+          <div class="item"><strong>联动所选</strong><p>把左/右耳、左右眼、重复衣片等设成同一联动组。之后改一个区域的色号，同组会同步。</p></div>
+          <div class="item"><strong>解除联动</strong><p>取消所选区域的联动关系，之后可以独立选色。</p></div>
+          <div class="item"><strong>重复部件建议</strong><p>根据面积、比例、颜色等提示可能成对或重复的部件，确认后再联动。</p></div>
+          <div class="item"><strong>撤销编辑 / 撤销补充 / 清空补充</strong><p>用于快速回退最近的区域编辑或手动补区域；“清空补充”只清除手工补回的区域。</p></div>
+        </div>
+      </section>
+
+      <section class="card" id="regions"><h2>6. 区域与色号面板</h2>
+        <p>每张区域卡片显示原图颜色、推荐色号、ΔE00 和候选色。可以直接修改区域名称，例如“前发”“左眼”“领带”。</p>
+        <div class="grid">
+          <div class="item"><strong>主区域 / 细节</strong><p>主区域表示较大的物理部分；细节通常挂在某个主区域下，如脸部中的嘴巴、眼睛。</p></div>
+          <div class="item"><strong>忽略 / 加入匹配</strong><p>黑、白、肤色默认可忽略；如果某个被自动忽略的颜色实际需要买线，点击“加入匹配”。</p></div>
+          <div class="item"><strong>候选色</strong><p>系统默认展示前几名近似色。视觉上更喜欢第二名时可以直接点击替换。</p></div>
+          <div class="item"><strong>全部色号</strong><p>打开完整色卡选择器，可通过色号或名称搜索并人工指定。</p></div>
+        </div>
+      </section>
+
+      <section class="card" id="confidence"><h2>7. 匹配可信度 / 风险提示</h2>
+        <p>可信度不只看第一名 ΔE00，还参考第一名与第二名的距离差。如果两个候选几乎一样接近，系统会提示“候选接近”。</p>
+        <div class="table-wrap"><table><thead><tr><th>提示</th><th>怎么理解</th><th>建议</th></tr></thead><tbody>
+          <tr><td>很高 / 较高</td><td>最佳匹配色差较小，并且明显优于第二名。</td><td>通常可以直接采用。</td></tr>
+          <tr><td>一般</td><td>存在肉眼可见差异，或者候选之间差距不大。</td><td>打开配色预览，并比较前 2–3 个候选。</td></tr>
+          <tr><td>低 / 候选接近</td><td>色卡中没有特别接近的颜色，或多个候选难分高下。</td><td>人工选择，并优先结合实物线卡判断。</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section class="card" id="palette-manager"><h2>8. 色卡管理器</h2>
+        <p>点击页面右上的“色卡管理”。这里管理内置色卡和以后自己增加的品牌/批次色卡。</p>
+        <h3>从规则网格图片建立色卡</h3>
+        <ol><li>填写色卡名称、编号前缀、起始编号和编号位数。</li><li>填写每页固定的行数和列数。</li><li>一次选择多张色卡图片；文件名会用于排序。</li><li>点击“生成并保存色卡”，系统采样每格中央区域建立颜色库。</li></ol>
+        <p>也可以导入/导出色卡 JSON，方便备份和迁移。对实拍色卡，建议所有页面尽量在一致光线、白平衡和曝光条件下拍摄。</p>
+      </section>
+
+      <section class="card" id="preview"><h2>9. 配色预览</h2>
+        <p><strong>用途：</strong>在买线之前查看“设计图换成实际色卡颜色”后的整体感觉。</p><p><strong>使用：</strong>完成区域和色号选择后，进入“配色预览”标签。系统会把参与匹配的区域替换成当前色卡颜色；满意后可导出 PNG。</p>
+      </section>
+
+      <section class="card" id="bom"><h2>10. BOM / 用色与采购</h2>
+        <p>BOM 按整个项目聚合同一色号，告诉你这个颜色用了哪些部件、二维面积占比，并根据经验参数估算克重与团数。</p>
+        <div class="grid">
+          <div class="item"><strong>项目总用量估算</strong><p>输入整个娃娃大致会使用多少克线，用于把二维面积占比换成粗略克重。</p></div>
+          <div class="item"><strong>每团重量</strong><p>例如一团 50g，用于估算需要买几团。</p></div>
+          <div class="item"><strong>库存 / 需购 / 单价 / 已购 / 备注</strong><p>把 BOM 当作真实采购清单维护。库存会影响需要购买的数量。</p></div>
+          <div class="item"><strong>成本替代容差</strong><p>允许在指定 ΔE 范围内寻找库存更多或更便宜的近似色，并生成成本优化方案。</p></div>
+        </div>
+        <div class="callout warn">二维面积只能用于相对用色参考，不等于真实毛线消耗。实际用量会受绣线密度、针法、部件厚度和返工余量影响。</div>
+      </section>
+
+      <section class="card" id="limit"><h2>11. 限色优化</h2>
+        <p><strong>用途：</strong>当设计用了很多接近色，但你希望少买几种线时使用。</p>
+        <p><strong>使用：</strong>输入“最多颜色”，点击“生成方案”。系统基于区域面积与感知色差寻找合并方案，并列出“原色号 → 目标色号”。满意后“应用方案”，也可以“恢复优化前”。</p>
+      </section>
+
+      <section class="card" id="compare"><h2>12. 跨色卡比较</h2>
+        <p>同一个设计颜色会同时在所有已安装色卡中查找最佳色。比如一个蓝色可能在“果黑”中 ΔE 3.1，在“昭”中 ΔE 1.8。这个页面用于判断哪套线卡更接近原设计。</p>
+      </section>
+
+      <section class="card" id="schemes"><h2>13. 配色方案 A / B</h2>
+        <p><strong>用途：</strong>比较两套你都犹豫的配色，例如“更浅的头发方案”和“更还原原图的方案”。</p>
+        <ol><li>先选好一套颜色，点击“保存当前为 A”。</li><li>修改部分区域色号，再“保存当前为 B”。</li><li>页面会并排预览 A/B。</li><li>点击“应用 A”或“应用 B”可把对应方案恢复到当前编辑状态。</li></ol>
+      </section>
+
+      <section class="card" id="exports"><h2>14. 结果、标注与导出</h2>
+        <div class="grid">
+          <div class="item"><strong>色号列表 / CSV</strong><p>逐区域导出原色、最终色号、色卡色和 ΔE00，适合存档或进一步整理。</p></div>
+          <div class="item"><strong>标注图</strong><p>在原设计图上显示区域编号，编号与列表对应，适合给制作者查看。</p></div>
+          <div class="item"><strong>色卡连线图</strong><p>把设计区域与完整色卡中的目标色号连接起来，类似传统手工“圈色号 + 连线”的参考图。</p></div>
+          <div class="item"><strong>打印制作单</strong><p>把项目关键信息整理成打印友好的格式。</p></div>
+        </div>
+      </section>
+
+      <section class="card" id="pwa"><h2>15. 安装应用 / 离线使用</h2>
+        <p>支持的浏览器会出现“安装应用”按钮。安装后可像桌面小工具一样打开。Service Worker 会缓存页面、脚本和内置色卡；首次加载完成后，很多操作可以离线进行。</p>
+        <div class="callout good">设计图、项目编辑和自定义色卡默认在浏览器本地处理，不需要上传到服务器。</div>
+      </section>
+
+      <section class="card" id="tips"><h2>16. 推荐工作流</h2>
+        <ol>
+          <li>新建项目并一次加入所有拆件图。</li>
+          <li>用默认识别参数跑一遍，不要一开始就追求参数完美。</li>
+          <li>先用“合并所选”解决大部件碎裂，再用“补区域 / 画笔 / 橡皮 / 拆分”处理少数异常。</li>
+          <li>给关键部件改名，并给左右/重复部件建立联动。</li>
+          <li>在果黑 / 昭之间做跨色卡比较，重点人工检查低可信度颜色。</li>
+          <li>保存 A/B 方案，再通过配色预览做最终选择。</li>
+          <li>最后生成 BOM / 限色方案 / 标注图，并保存项目文件。</li>
+        </ol>
+      </section>
+
+      <section class="card" id="trouble"><h2>17. 常见问题</h2>
+        <h3>区域还是分得太细</h3><p>优先提高“相邻区域合并强度”；其次略提高“主区域最小面积”。如果只是少数碎块，直接多选后“合并所选”更快。</p>
+        <h3>嘴巴或很小的细节识别不到</h3><p>先提高“细节识别灵敏度”。如果只是个别漏检，推荐直接使用“＋ 补区域”，再用画笔/橡皮修边。</p>
+        <h3>点“补区域”后长得太大</h3><p>使用橡皮擦除多余部分；如果颜色与周围太相近，可以先使用较保守的细节灵敏度再补。</p>
+        <h3>两套色卡推荐差别很大</h3><p>这是正常现象，两套色卡的可用颜色集合不同。看“跨色卡比较”的 ΔE 与可信度，再结合实物线卡确认。</p>
+        <h3>为什么黑、白、肤色没出现在最终色号列表</h3><p>默认开启“忽略黑 / 白 / 肤色”。如果这些颜色也需要采购，在对应区域点击“加入匹配”。</p>
+        <h3>刷新页面后项目会不会丢</h3><p>网站有本地自动保存，但浏览器清理站点数据后可能丢失。重要项目仍建议下载 <span class="kbd">.plushcolor.json</span> 备份。</p>
+      </section>
+    </main>
+  </div>
+  <div class="footer">Plush Color Matcher v3.2 · 说明书</div>
+</div>
+</body>
+</html>

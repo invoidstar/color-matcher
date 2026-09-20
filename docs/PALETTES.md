@@ -2,7 +2,7 @@
 
 内置色卡放在 `data/`。使用 JavaScript 数据文件而不是内联 HTML，可保持 GitHub Pages/no-build 部署，同时让色卡版本独立维护。
 
-## QQ/TQ 480
+## 果黑（480 色）
 
 `data/qqtq-480.js` 定义 `window.PALETTE_RAW`：
 
@@ -10,7 +10,7 @@
 [code, [r, g, b]]
 ```
 
-## Natural-light 720
+## 昭（720 色，自然光）
 
 `data/natural-720.js` 定义 `window.PALETTE_720_RAW`：
 

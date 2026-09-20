@@ -4,8 +4,8 @@
   if(!PCMColor) throw new Error('PCMColor core module is missing');
   const { clamp, hex, rgbToLab, deltaE00, rgbToHsv } = PCMColor;
   const PALETTES = {
-    'qqtq-480': { id:'qqtq-480', name:'QQ/TQ 480 色', source:'参考色卡图像', note:'原 QQ/TQ 480 色参考色卡。', entries:(window.PALETTE_RAW||[]).map(([code,rgb])=>({code,rgb,alias:'',hex:hex(rgb),lab:null})) },
-    'natural-720': { id:'natural-720', name:'新 720 色（自然光）', source:'20 页自然光照片', note:'已从 20 张唯一色卡页的自然光区域自动提取 720 个参考色；001–004 分别对应黑色、大红、雪白、本白。照片/屏幕存在色差，仅作视觉匹配参考。', entries:(window.PALETTE_720_RAW||[]).map(([code,rgb,alias,page,row,col])=>({code,rgb,alias,page,row,col,hex:hex(rgb),lab:null})) }
+    'qqtq-480': { id:'qqtq-480', name:'果黑', source:'参考色卡图像', note:'果黑色卡，共 480 色；保留 QQ/TQ 色号体系。', entries:(window.PALETTE_RAW||[]).map(([code,rgb])=>({code,rgb,alias:'',hex:hex(rgb),lab:null})) },
+    'natural-720': { id:'natural-720', name:'昭', source:'20 页自然光照片', note:'昭色卡，共 720 色；由 20 张自然光色卡页提取。001–004 分别对应黑色、大红、雪白、本白。照片/屏幕存在色差，仅作视觉匹配参考。', entries:(window.PALETTE_720_RAW||[]).map(([code,rgb,alias,page,row,col])=>({code,rgb,alias,page,row,col,hex:hex(rgb),lab:null})) }
   };
   let PALETTE = PALETTES['qqtq-480'];
   const $ = s => document.querySelector(s);
