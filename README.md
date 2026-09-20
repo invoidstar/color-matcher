@@ -1,60 +1,68 @@
 # Plush Color Matcher
 
-面向毛绒娃娃设计与制作的纯前端配色工作台。项目可直接部署在 GitHub Pages；图片、项目与色卡处理默认在浏览器本地完成。
+面向毛绒娃娃设计与制作的纯前端配色工作台。项目部署在 GitHub Pages，图片、项目与色卡处理默认在浏览器本地完成。
 
-## 当前版本：v3.0
+## 当前版本：v3.1（Repository Refactor）
 
-本版在 v2.1 的自动分区、手动补区域、两套内置色卡、配色预览、BOM 与限色优化基础上，重点加入：
+本次版本不改变 V3.0 的核心工作流，重点是把原先集中在一个 `index.html` 中的代码和色卡数据拆成可维护的静态工程结构。
 
-- **项目保存 / 恢复**
-  - 下载为 `.plushcolor.json`
-  - 浏览器 IndexedDB 自动保存最近项目
-  - 项目文件保存多图、区域编辑、联动、色卡、A/B 方案和自定义色卡
-- **完整区域编辑**
-  - 画笔补边
-  - 橡皮擦除
-  - 多选合并
-  - 画线拆分
-  - 编辑撤销
-- **重复 / 对称部件联动**
-  - 多选区域建立联动
-  - 修改一个区域色号时同步到同组部件
-  - 可自动给出疑似重复 / 对称部件建议
-- **多张拆件图项目**
-  - 同一毛绒项目中添加多张设计图
-  - 每页独立保存识别和编辑结果
-  - 项目级 BOM 汇总
-- **色卡管理器**
-  - 内置 QQ/TQ 480 色与新 720 色（自然光）
-  - 可由规则网格图片批量建立自定义色卡
-  - 支持色卡 JSON 导入 / 导出、校准与删除
-- **匹配可信度 / 风险提示**
-  - 基于最佳 ΔE00 与 Top-2 候选间距
-  - 提示“很高 / 较高 / 一般 / 低”以及“候选接近”
-- **跨色卡比较**
-  - 同一区域同时比较全部已安装色卡的最佳色号、ΔE00 与可信度
-- **配色方案 A/B**
-  - 保存两套完整配色
-  - 并排预览差异
-  - 一键切换 / 应用
+### 目录
 
-## 原有能力
+```text
+color-matcher/
+├── index.html
+├── manifest.webmanifest
+├── sw.js
+├── icon.svg
+├── css/
+│   ├── base.css
+│   ├── theme.css
+│   └── features.css
+├── js/
+│   ├── app.js
+│   └── core/
+│       └── color.js
+├── data/
+│   ├── qqtq-480.js
+│   └── natural-720.js
+├── docs/
+│   ├── ARCHITECTURE.md
+│   └── PALETTES.md
+└── .github/workflows/
+    └── deploy-pages.yml
+```
+
+## 现有功能
 
 - Main Region + Detail Region 层级区域识别
-- 点击补充漏检区域
+- 点击补区域、画笔、橡皮、多选合并、画线拆分
+- 重复 / 对称部件联动
+- 多张拆件图项目
+- `.plushcolor.json` 项目保存 / 恢复与 IndexedDB 自动保存
+- QQ/TQ 480 色 + 新 720 色（自然光）
+- 自定义色卡导入 / 导出 / 校准
 - CIELAB + CIEDE2000 色差匹配
-- Top 候选与手动指定
-- 配色预览
-- 色号列表 / CSV
-- BOM / 用色统计
-- 限色优化
-- 标注图 / 色卡连线图
-- GitHub Pages 自动部署
+- 匹配可信度 / 风险提示
+- 跨色卡比较
+- 配色预览、A/B 方案
+- BOM、用色统计、限色优化
+- 标注图 / 色卡连线图 / 打印制作单
+- PWA / 离线缓存
+
+## 本地运行
+
+不需要安装依赖。在仓库目录运行任意静态服务器，例如：
+
+```bash
+python -m http.server 8000
+```
+
+然后打开 `http://localhost:8000/`。
 
 ## 部署
 
-仓库已配置 GitHub Pages Workflow。推送到 `main` 后会自动校验并部署静态网站。
+推送到 `main` 后，GitHub Actions 会校验 HTML/JavaScript 和关键静态资源，并自动部署 GitHub Pages。
 
-在线地址：
+在线地址：https://invoidstar.github.io/color-matcher/
 
-https://invoidstar.github.io/color-matcher/
+更多结构说明见 `docs/ARCHITECTURE.md`。
