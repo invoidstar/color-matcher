@@ -24,6 +24,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Validate site
+        run: |
+          test -f index.html
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s = Path("index.html").read_text(encoding="utf-8")
+          scripts = re.findall(r"<script>(.*?)</script>", s, re.S)
+          if not scripts:
+              raise SystemExit("No inline script found")
+          Path("/tmp/color-matcher.js").write_text("\n".join(scripts), encoding="utf-8")
+          print("index.html bytes:", len(s.encode("utf-8")))
+          print("inline scripts:", len(scripts))
+          PY
+          node --check /tmp/color-matcher.js
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
