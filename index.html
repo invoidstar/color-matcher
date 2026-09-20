@@ -8,23 +8,45 @@
 :root{--bg:#f5f6f8;--panel:#fff;--ink:#17191d;--muted:#6b7280;--line:#e5e7eb;--accent:#1f2937;--soft:#f8fafc;--radius:18px;--shadow:0 8px 30px rgba(15,23,42,.06)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}.topbar{max-width:1500px;margin:0 auto;padding:42px 28px 24px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px}.eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#8a9099;font-weight:700}.topbar h1{margin:7px 0 8px;font-size:34px;line-height:1.1}.topbar p{margin:0;color:var(--muted);max-width:850px;line-height:1.7}.palette-badge{white-space:nowrap;background:#fff;border:1px solid var(--line);padding:10px 14px;border-radius:999px;font-size:13px;box-shadow:var(--shadow)}.dot{width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:8px}main{max-width:1500px;margin:0 auto;padding:0 28px 50px}.hero-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(380px,.85fr);gap:18px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}.panel-head>div:first-child{display:flex;align-items:center;gap:10px}.panel h2{font-size:18px;margin:0}.step{font-size:11px;font-weight:800;letter-spacing:.08em;color:#9ca3af;border:1px solid var(--line);padding:5px 7px;border-radius:8px}.head-actions{display:flex;gap:8px}.button{appearance:none;border:1px solid #d8dce2;background:#fff;color:#20242a;border-radius:10px;padding:9px 13px;font-weight:650;font-size:13px;cursor:pointer;transition:.18s;display:inline-flex;align-items:center;justify-content:center}.button:hover{border-color:#aeb4bd;transform:translateY(-1px)}.button.primary{background:#17191d;color:white;border-color:#17191d}.button.small{padding:7px 10px;font-size:12px}.button:disabled{opacity:.45;cursor:not-allowed;transform:none}.dropzone{min-height:530px;border:1.5px dashed #d5d9df;border-radius:15px;background:#fafbfc;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}.dropzone.drag{border-color:#64748b;background:#f2f5f8}.empty-state{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--muted);text-align:center;padding:30px}.empty-state strong{color:#373b42}.upload-icon{font-size:30px;width:54px;height:54px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:#777}.image-stage{width:100%;height:100%;min-height:530px;display:flex;align-items:center;justify-content:center;position:relative;padding:12px}.image-stage canvas{max-width:100%;max-height:650px;border-radius:9px;box-shadow:0 2px 16px rgba(0,0,0,.08);cursor:crosshair}.canvas-tip{position:absolute;left:20px;bottom:18px;background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:9px;padding:7px 10px;font-size:12px;color:var(--muted);backdrop-filter:blur(6px)}.hidden{display:none!important}.settings{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}.settings summary{font-weight:700;font-size:13px;cursor:pointer;color:#4b5563}.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;margin:14px 0}.settings label{font-size:12px;color:#626975}.settings select{width:100%;margin-top:7px;border:1px solid var(--line);border-radius:8px;padding:8px;background:#fff}.range-row{display:flex;align-items:center;gap:8px;margin-top:8px}.range-row input{width:100%}.range-row span{width:45px;text-align:right;color:#374151;font-variant-numeric:tabular-nums}.check{display:flex;align-items:center;gap:8px;padding-top:23px}.regions-panel{min-height:720px}.summary-pill{background:#f3f4f6;color:#6b7280;font-size:12px;border-radius:999px;padding:7px 10px}.region-list{display:flex;flex-direction:column;gap:10px;max-height:790px;overflow:auto;padding-right:3px}.placeholder-card{border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:13px;line-height:1.7;padding:20px;background:#fbfcfd}.region-card{border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff;transition:.15s}.region-card.detail{margin-left:22px;border-left:3px solid #cbd5e1;background:#fcfdff}.region-card.detail .region-num{background:#475569}.type-badge{display:inline-flex;align-items:center;margin-left:7px;padding:2px 6px;border-radius:999px;font-size:9px;font-weight:800;letter-spacing:.04em;color:#64748b;background:#f1f5f9;vertical-align:middle}.type-badge.detail{color:#475569;background:#e2e8f0}.region-card.selected{border-color:#747c87;box-shadow:0 0 0 2px rgba(100,116,139,.12)}.region-card.ignored{background:#fafafa;opacity:.78}.region-top{display:grid;grid-template-columns:42px minmax(0,1fr) auto auto;gap:8px;align-items:center}.region-num{width:36px;height:36px;border-radius:11px;background:#111827;color:white;display:grid;place-items:center;font-size:12px;font-weight:800}.region-name{border:0;border-bottom:1px solid transparent;font:inherit;font-weight:700;padding:3px 2px;min-width:0;width:100%;background:transparent}.region-name:focus{outline:none;border-bottom-color:#9ca3af}.toggle{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:6px 8px;background:#fff;cursor:pointer;color:#4b5563}.match-line{display:grid;grid-template-columns:1fr 24px 1fr;gap:8px;align-items:center;margin-top:10px}.color-box{display:flex;align-items:center;gap:8px;min-width:0}.swatch{width:28px;height:28px;border-radius:8px;border:1px solid rgba(0,0,0,.09);flex:0 0 auto}.color-meta{min-width:0}.color-meta strong{font-size:12px;display:block}.color-meta span{font-size:11px;color:#8a9099;white-space:nowrap}.arrow{color:#a1a6ae;text-align:center}.candidate-row{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}.candidate{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 7px;font-size:11px;cursor:pointer;display:flex;gap:5px;align-items:center}.candidate .mini{width:10px;height:10px;border-radius:3px}.candidate.active{border-color:#64748b;background:#f8fafc}.candidate.more{margin-left:auto}.ignore-note{margin-top:9px;font-size:11px;color:#8b919a}.results-panel{margin-top:18px}.tabs{display:flex;gap:5px;background:#f3f4f6;padding:4px;border-radius:11px}.tab{border:0;background:transparent;padding:7px 10px;border-radius:8px;font-size:12px;cursor:pointer;color:#6b7280}.tab.active{background:#fff;color:#111827;box-shadow:0 1px 4px rgba(0,0,0,.08);font-weight:700}.tabpane{display:none}.tabpane.active{display:block}.result-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:12px;color:var(--muted);margin-bottom:12px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid #edf0f2;vertical-align:middle}th{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#858b94;background:#fafbfc}tr:last-child td{border-bottom:0}.table-swatch{display:inline-block;width:22px;height:22px;border-radius:6px;border:1px solid rgba(0,0,0,.08);vertical-align:middle;margin-right:7px}.muted{color:#9aa0a8;text-align:center}.result-canvas{width:100%;height:auto;max-height:1100px;object-fit:contain;border:1px solid var(--line);border-radius:12px;background:#f8fafc}.modal{position:fixed;inset:0;background:rgba(17,24,39,.42);z-index:50;display:grid;place-items:center;padding:28px}.modal-card{width:min(900px,95vw);max-height:86vh;background:#fff;border-radius:18px;padding:18px;box-shadow:0 22px 70px rgba(0,0,0,.22);display:flex;flex-direction:column}.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.modal-head>div{display:flex;gap:10px;align-items:baseline}.modal-head span{font-size:12px;color:var(--muted)}.icon-button{width:32px;height:32px;border:0;background:#f3f4f6;border-radius:9px;font-size:22px;cursor:pointer}.search{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:12px}.palette-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;overflow:auto}.palette-item{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px;cursor:pointer;text-align:left}.palette-item:hover{border-color:#98a0aa}.palette-item .wide-swatch{height:30px;border-radius:6px;border:1px solid rgba(0,0,0,.08);margin-bottom:6px}.palette-item strong{font-size:11px}.palette-item span{display:block;font-size:10px;color:#8b919a;margin-top:2px}footer{max-width:1500px;margin:0 auto;padding:0 28px 38px;color:#969ca5;font-size:11px;text-align:center}@media(max-width:980px){.hero-grid{grid-template-columns:1fr}.regions-panel{min-height:auto}.region-list{max-height:none}.topbar{align-items:flex-start;flex-direction:column}.dropzone,.image-stage{min-height:420px}.settings-grid{grid-template-columns:1fr}.check{padding-top:0}}@media(max-width:620px){main,.topbar{padding-left:14px;padding-right:14px}.panel{padding:14px}.panel-head{align-items:flex-start;flex-direction:column}.head-actions{width:100%}.head-actions .button,.head-actions label{flex:1}.tabs{width:100%;overflow:auto}.result-toolbar{align-items:flex-start;flex-direction:column}.region-top{grid-template-columns:36px 1fr auto}.region-top .type-badge{grid-column:2}.region-top .toggle{grid-column:3;grid-row:1}.match-line{grid-template-columns:1fr}.arrow{display:none}.region-card.detail{margin-left:12px}}
 
+
+body{background:radial-gradient(circle at top left,#f7f2ff 0,#f6f7fb 32%,#f5f6f8 100%)}
+.topbar{padding-bottom:16px}.topbar h1{font-size:36px;letter-spacing:-.02em}.palette-badge{background:rgba(255,255,255,.86);backdrop-filter:blur(12px)}
+.workflow-wrap{max-width:1500px;margin:0 auto;padding:0 28px 18px}.workflow{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.72);backdrop-filter:blur(10px);border:1px solid rgba(229,231,235,.9);box-shadow:var(--shadow);border-radius:20px;padding:14px 18px}.wf-step{display:flex;align-items:center;gap:12px;min-width:0}.wf-step span{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#ede9fe;color:#6d28d9;font-weight:800;box-shadow:inset 0 0 0 1px rgba(124,58,237,.12)}.wf-step strong{display:block;font-size:13px}.wf-step small{display:block;color:#7b8190;font-size:11px;margin-top:2px}.wf-step.active span{background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff}.wf-line{height:1px;flex:1;background:linear-gradient(90deg,#ddd6fe,#e5e7eb)}
+.panel{background:rgba(255,255,255,.88);backdrop-filter:blur(10px);border-color:rgba(229,231,235,.9)}.panel h2{font-size:19px}.step{background:#faf5ff;color:#7c3aed;border-color:#e9d5ff}.button.primary{background:linear-gradient(135deg,#7c3aed,#6d28d9);border-color:#7c3aed}.button.soft{background:#faf5ff;color:#6d28d9;border-color:#ddd6fe}.button.soft.active{background:#7c3aed;color:#fff;border-color:#7c3aed}.dropzone{background:linear-gradient(180deg,#fcfcff,#f9fbff)}.upload-icon{background:#fff;box-shadow:0 8px 18px rgba(124,58,237,.08)}.canvas-tip{background:rgba(15,23,42,.78)}
+.workspace-toolbar{margin:14px 0 10px;display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:14px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,#ffffff,#fbfbff)}.tool-cluster{display:flex;gap:8px;flex-wrap:wrap}.tool-status-wrap{display:flex;flex-direction:column;gap:5px;align-items:flex-end}.tool-status{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;padding:8px 12px;border-radius:999px;background:#f5f3ff;color:#6d28d9;border:1px solid #e9d5ff}.tool-status.add{background:#ede9fe;color:#5b21b6}.tool-hint{font-size:12px;color:#7b8190;max-width:440px;text-align:right;line-height:1.5}.mini-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}.mini-card{padding:14px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(180deg,#fff,#fcfcff)}.mini-card strong{display:block;font-size:13px;margin-bottom:6px}.mini-card span{display:block;color:#6b7280;font-size:12px;line-height:1.55}
+.selection-inspector{margin-bottom:14px;padding:14px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,#fff,#fbfbff)}.selection-inspector.empty{color:#7b8190}.inspector-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}.metric-box{padding:10px 12px;border-radius:12px;background:#f8fafc;border:1px solid #edf0f2}.metric-box small{display:block;color:#7b8190;font-size:11px;margin-bottom:5px}.metric-box strong{font-size:13px}.metric-box .swatch-inline{width:14px;height:14px;border-radius:50%;display:inline-block;vertical-align:-2px;margin-right:6px;border:1px solid rgba(0,0,0,.08)}
+.summary-pill{background:#faf5ff;border:1px solid #e9d5ff;color:#6d28d9}.region-list{padding-right:2px}.region-card{background:linear-gradient(180deg,#ffffff,#fcfcff)}.region-card.selected{box-shadow:0 0 0 2px rgba(124,58,237,.12)}.region-card.detail{background:#fcfcff}.region-num{background:linear-gradient(135deg,#111827,#374151)}.type-badge{background:#f5f3ff;color:#7c3aed}.type-badge.detail{background:#eef2ff;color:#4f46e5}.candidate.active{background:#f5f3ff;border-color:#c4b5fd;color:#5b21b6}.results-panel .tabs{background:#f8fafc;border:1px solid var(--line);padding:4px;border-radius:12px}.tab.active{background:#fff;color:#5b21b6;box-shadow:0 6px 18px rgba(17,24,39,.08)}
+@media(max-width:960px){.workflow{flex-wrap:wrap}.wf-line{display:none;width:100%}.workspace-toolbar{flex-direction:column}.tool-status-wrap{align-items:flex-start}.tool-hint{text-align:left;max-width:none}.mini-cards{grid-template-columns:1fr}.inspector-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.workflow-wrap{padding-left:14px;padding-right:14px}.wf-step{width:100%}.selection-inspector{padding:12px}.inspector-grid{grid-template-columns:1fr}.workspace-toolbar{padding:12px}}
 </style>
 </head>
 <body>
   <header class="topbar">
     <div>
-      <div class="eyebrow">Thread Color Matcher · v1</div>
-      <h1>毛线色卡自动匹配</h1>
-      <p>上传平涂拆件图，自动识别独立区域并匹配 QQ/TQ 480 色色卡。所有处理均在浏览器本地完成。</p>
+      <div class="eyebrow">Thread Color Matcher · v2</div>
+      <h1>Plush Color Matcher</h1>
+      <p>面向毛绒娃娃配色的工作台：上传拆件图，自动识别主区域与细节区域；若有漏检，可直接点击画面补充区域。所有处理均在浏览器本地完成。</p>
     </div>
     <div class="palette-badge"><span class="dot"></span><span id="paletteName">QQ/TQ 480 色</span></div>
   </header>
+
+  <section class="workflow-wrap">
+    <div class="workflow">
+      <div class="wf-step active"><span>1</span><div><strong>上传</strong><small>导入拆件图</small></div></div>
+      <div class="wf-line"></div>
+      <div class="wf-step active"><span>2</span><div><strong>识别</strong><small>Main + Detail</small></div></div>
+      <div class="wf-line"></div>
+      <div class="wf-step"><span>3</span><div><strong>校正</strong><small>漏检区域补全</small></div></div>
+      <div class="wf-line"></div>
+      <div class="wf-step"><span>4</span><div><strong>导出</strong><small>色号清单 / 标注图</small></div></div>
+    </div>
+  </section>
 
   <main>
     <section class="hero-grid">
       <div class="panel upload-panel">
         <div class="panel-head">
-          <div><span class="step">01</span><h2>上传与识别</h2></div>
+          <div><span class="step">01</span><h2>工作台</h2></div>
           <div class="head-actions">
             <label class="button primary" for="fileInput">上传图片</label>
             <input id="fileInput" type="file" accept="image/*" hidden />
@@ -40,8 +62,25 @@
           </div>
           <div id="imageStage" class="image-stage hidden">
             <canvas id="displayCanvas"></canvas>
-            <div class="canvas-tip">点击编号可定位右侧区域</div>
+            <div class="canvas-tip">点击编号可定位右侧区域；开启“补充区域”后，直接点图补回漏检区域。</div>
           </div>
+        </div>
+
+        <div class="workspace-toolbar">
+          <div class="tool-cluster">
+            <button id="addRegionBtn" class="button soft">＋ 补充区域</button>
+            <button id="undoAddBtn" class="button" disabled>撤销补充</button>
+            <button id="clearAddedBtn" class="button" disabled>清空补充</button>
+          </div>
+          <div class="tool-status-wrap">
+            <span id="toolStatus" class="tool-status">当前模式：选择区域</span>
+            <span class="tool-hint">识别不到嘴巴 / 小装饰时，点击“补充区域”后再点图片对应位置。</span>
+          </div>
+        </div>
+
+        <div class="mini-cards">
+          <div class="mini-card"><strong>更少碎块</strong><span>通过相邻区域合并，把视觉上接近的碎片重新并到主区域。</span></div>
+          <div class="mini-card"><strong>漏检可补</strong><span>对嘴巴、腮红、小挂件等细节，允许手动一点补回，不必反复调参数。</span></div>
         </div>
 
         <details class="settings" open>
@@ -70,6 +109,7 @@
           <div><span class="step">02</span><h2>区域与色号</h2></div>
           <div id="summaryPill" class="summary-pill">尚未识别</div>
         </div>
+        <div id="selectionInspector" class="selection-inspector empty">选择左侧画面或下方列表中的区域后，这里会显示摘要与操作建议。</div>
         <div id="regionList" class="region-list">
           <div class="placeholder-card">上传后会先识别较大的“主区域”，再保留稳定的小型“细节区域”。相同颜色但彼此不接触的部件仍会分别显示。</div>
         </div>
@@ -114,7 +154,7 @@
     </div>
   </div>
 
-  <footer>v1.1 · 层级区域识别（Main + Detail）· 适用于平涂拆件图 · 颜色匹配采用 CIELAB + CIEDE2000。</footer>
+  <footer>v2 · Workflow UI + 手动补区域 · 层级区域识别（Main + Detail）· 颜色匹配采用 CIELAB + CIEDE2000。</footer>
 
   <script>
 window.PALETTE_RAW=[["QQ001",[203,200,220]],["QQ002",[193,185,183]],["QQ003",[214,200,189]],["QQ004",[220,189,195]],["QQ005",[225,178,181]],["QQ006",[233,161,183]],["QQ007",[225,136,174]],["QQ008",[239,141,174]],["QQ009",[239,106,137]],["QQ010",[241,98,118]],["QQ011",[226,85,107]],["QQ012",[229,176,196]],["QQ013",[246,162,189]],["QQ014",[253,140,169]],["QQ015",[244,130,174]],["QQ016",[251,120,160]],["QQ017",[246,48,118]],["QQ018",[246,69,133]],["QQ019",[239,8,81]],["QQ020",[206,2,67]],["QQ021",[166,2,39]],["QQ022",[176,3,49]],["QQ023",[162,4,31]],["QQ024",[176,2,28]],["QQ025",[207,103,133]],["QQ026",[197,61,112]],["QQ027",[172,11,76]],["QQ028",[204,8,87]],["QQ029",[173,4,59]],["QQ030",[184,4,66]],["QQ031",[151,3,49]],["QQ032",[243,64,153]],["QQ033",[237,59,146]],["QQ034",[207,3,73]],["QQ035",[197,3,101]],["QQ036",[187,4,74]],["QQ037",[153,3,68]],["QQ038",[170,3,80]],["QQ039",[188,4,78]],["QQ040",[234,3,82]],["QQ041",[241,3,99]],["QQ042",[230,3,82]],["QQ043",[244,3,83]],["QQ044",[245,3,77]],["QQ045",[224,3,70]],["QQ046",[209,3,68]],["QQ047",[204,2,77]],["QQ048",[146,2,41]],["QQ049",[230,196,194]],["QQ050",[240,180,181]],["QQ051",[243,148,160]],["QQ052",[243,158,160]],["QQ053",[247,143,162]],["QQ054",[235,110,124]],["QQ055",[249,98,110]],["QQ056",[248,81,104]],["QQ057",[246,73,109]],["QQ058",[236,23,72]],["QQ059",[247,50,81]],["QQ060",[240,5,54]],["QQ061",[247,14,81]],["QQ062",[234,3,55]],["QQ063",[244,2,53]],["QQ064",[223,2,44]],["QQ065",[252,165,155]],["QQ066",[252,108,98]],["QQ067",[251,78,74]],["QQ068",[251,65,82]],["QQ069",[248,13,52]],["QQ070",[238,3,42]],["QQ071",[198,2,20]],["QQ072",[199,2,27]],["QQ073",[167,2,13]],["QQ074",[177,2,10]],["QQ075",[170,2,6]],["QQ076",[147,1,2]],["QQ077",[155,1,2]],["QQ078",[147,1,4]],["QQ079",[146,2,3]],["QQ080",[138,1,1]],["QQ081",[142,2,3]],["QQ082",[147,2,2]],["QQ083",[135,2,3]],["QQ084",[147,1,4]],["QQ085",[214,6,55]],["QQ086",[193,3,28]],["QQ087",[146,1,16]],["QQ088",[154,3,12]],["QQ089",[133,2,7]],["QQ090",[107,2,1]],["QQ091",[129,3,6]],["QQ092",[132,3,5]],["QQ093",[126,1,3]],["QQ094",[108,2,2]],["QQ095",[128,2,14]],["QQ096",[117,1,13]],["QQ097",[238,195,191]],["QQ098",[249,196,174]],["QQ099",[249,192,173]],["QQ100",[251,169,147]],["QQ101",[251,175,145]],["QQ102",[251,145,113]],["QQ103",[222,50,16]],["QQ104",[188,11,5]],["QQ105",[164,4,6]],["QQ106",[155,2,7]],["QQ107",[140,3,10]],["QQ108",[159,6,5]],["QQ109",[173,7,11]],["QQ110",[149,17,13]],["QQ111",[134,8,4]],["QQ112",[144,3,6]],["QQ113",[163,4,9]],["QQ114",[174,6,11]],["QQ115",[175,6,33]],["QQ116",[166,30,42]],["QQ117",[126,4,22]],["QQ118",[116,3,6]],["QQ119",[88,2,6]],["QQ120",[69,14,17]],["QQ121",[205,189,181]],["QQ122",[208,192,177]],["QQ123",[218,193,163]],["QQ124",[233,207,168]],["QQ125",[226,202,166]],["QQ126",[232,200,141]],["QQ127",[237,210,142]],["QQ128",[239,211,163]],["QQ129",[228,194,133]],["QQ130",[243,203,140]],["QQ131",[242,190,80]],["QQ132",[245,207,97]],["QQ133",[245,200,94]],["QQ134",[253,199,65]],["QQ135",[249,199,94]],["QQ136",[251,197,65]],["QQ137",[252,195,80]],["QQ138",[251,202,98]],["QQ139",[248,194,87]],["QQ140",[246,177,26]],["QQ141",[252,204,6]],["QQ142",[251,187,14]],["QQ143",[252,175,6]],["QQ144",[246,146,2]],["QQ145",[218,195,125]],["QQ146",[218,195,87]],["QQ147",[230,198,22]],["QQ148",[231,199,38]],["QQ149",[237,194,2]],["QQ150",[242,195,1]],["QQ151",[226,170,1]],["QQ152",[244,180,2]],["QQ153",[240,203,50]],["QQ154",[240,199,56]],["QQ155",[214,155,9]],["QQ156",[229,171,2]],["QQ157",[248,186,3]],["QQ158",[249,183,1]],["QQ159",[238,160,1]],["QQ160",[252,177,2]],["QQ161",[251,173,2]],["QQ162",[252,158,2]],["QQ163",[253,160,22]],["QQ164",[252,151,21]],["QQ165",[247,133,1]],["QQ166",[252,128,30]],["QQ167",[250,127,19]],["QQ168",[253,135,31]],["QQ169",[225,102,30]],["QQ170",[232,97,41]],["QQ171",[231,92,29]],["QQ172",[222,76,29]],["QQ173",[206,74,8]],["QQ174",[221,79,10]],["QQ175",[229,69,24]],["QQ176",[226,62,26]],["QQ177",[197,52,10]],["QQ178",[143,31,4]],["QQ179",[252,123,34]],["QQ180",[250,97,26]],["QQ181",[233,65,27]],["QQ182",[241,68,31]],["QQ183",[253,99,35]],["QQ184",[247,79,40]],["QQ185",[239,62,39]],["QQ186",[243,61,32]],["QQ187",[249,67,45]],["QQ188",[246,55,33]],["QQ189",[240,31,37]],["QQ190",[239,24,37]],["QQ191",[239,25,33]],["QQ192",[238,21,34]],["QQ193",[168,106,7]],["QQ194",[154,88,2]],["QQ195",[148,84,3]],["QQ196",[140,83,3]],["QQ197",[148,80,4]],["QQ198",[144,74,3]],["QQ199",[137,66,3]],["QQ200",[156,78,7]],["QQ201",[172,81,3]],["QQ202",[127,54,1]],["QQ203",[99,44,2]],["QQ204",[182,84,17]],["QQ205",[158,72,8]],["QQ206",[170,69,4]],["QQ207",[149,56,2]],["QQ208",[124,51,4]],["QQ209",[234,172,102]],["QQ210",[214,150,78]],["QQ211",[215,155,111]],["QQ212",[210,138,81]],["QQ213",[189,121,44]],["QQ214",[186,111,41]],["QQ215",[127,60,3]],["QQ216",[111,58,8]],["QQ217",[141,90,73]],["QQ218",[136,70,43]],["QQ219",[89,39,10]],["QQ220",[91,37,11]],["QQ221",[99,43,22]],["QQ222",[116,46,15]],["QQ223",[95,32,12]],["QQ224",[109,48,21]],["QQ225",[74,17,3]],["QQ226",[78,22,6]],["QQ227",[75,31,13]],["QQ228",[80,35,12]],["QQ229",[79,43,24]],["QQ230",[107,56,35]],["QQ231",[84,35,15]],["QQ232",[136,90,57]],["QQ233",[111,63,33]],["QQ234",[92,49,17]],["QQ235",[94,52,22]],["QQ236",[104,52,14]],["QQ237",[79,41,6]],["QQ238",[49,23,4]],["QQ239",[44,15,4]],["QQ240",[41,16,5]],["QQ241",[188,140,114]],["QQ242",[207,152,120]],["QQ243",[169,114,79]],["QQ244",[162,108,73]],["QQ245",[169,117,84]],["QQ246",[172,110,66]],["QQ247",[182,118,78]],["QQ248",[156,79,32]],["QQ249",[120,47,8]],["QQ250",[228,176,133]],["QQ251",[227,177,138]],["QQ252",[244,201,160]],["QQ253",[233,174,126]],["QQ254",[246,180,97]],["QQ255",[232,152,66]],["QQ256",[191,116,54]],["QQ257",[191,122,69]],["QQ258",[196,131,77]],["QQ259",[157,92,45]],["QQ260",[182,107,57]],["QQ261",[196,118,48]],["QQ262",[189,120,51]],["QQ263",[172,99,37]],["QQ264",[121,67,22]],["QQ265",[87,51,35]],["QQ266",[90,61,47]],["QQ267",[60,36,23]],["QQ268",[31,18,10]],["QQ269",[44,24,15]],["QQ270",[16,5,1]],["QQ271",[11,2,0]],["QQ272",[22,11,5]],["QQ273",[53,27,15]],["QQ274",[71,36,14]],["QQ275",[44,15,6]],["QQ276",[51,18,9]],["QQ277",[34,11,3]],["QQ278",[26,9,2]],["QQ279",[35,10,8]],["QQ280",[37,15,12]],["QQ281",[29,11,7]],["QQ282",[30,12,8]],["QQ283",[24,6,2]],["QQ284",[31,9,6]],["QQ285",[26,8,6]],["QQ286",[39,19,17]],["QQ287",[42,12,14]],["QQ288",[35,10,10]],["QQ289",[206,181,170]],["QQ290",[203,175,159]],["QQ291",[194,161,136]],["QQ292",[202,164,145]],["QQ293",[147,111,85]],["QQ294",[134,100,76]],["QQ295",[153,116,89]],["QQ296",[183,140,111]],["QQ297",[153,113,79]],["QQ298",[140,104,73]],["QQ299",[117,78,53]],["QQ300",[243,208,178]],["QQ301",[183,143,97]],["QQ302",[161,116,76]],["QQ303",[102,75,55]],["QQ304",[101,77,54]],["QQ305",[93,67,44]],["QQ306",[99,67,49]],["QQ307",[110,77,50]],["QQ308",[51,31,7]],["QQ309",[39,26,6]],["QQ310",[38,25,7]],["QQ311",[26,19,7]],["QQ312",[37,23,20]],["QQ313",[176,157,154]],["QQ314",[131,113,110]],["QQ315",[130,115,108]],["QQ316",[108,99,94]],["QQ317",[79,66,60]],["QQ318",[97,83,83]],["QQ319",[116,97,93]],["QQ320",[112,99,99]],["QQ321",[90,75,79]],["QQ322",[61,50,52]],["QQ323",[57,47,48]],["QQ324",[46,34,34]],["QQ325",[207,180,172]],["QQ326",[215,188,178]],["QQ327",[182,151,143]],["QQ328",[167,137,127]],["QQ329",[165,138,131]],["QQ330",[117,89,83]],["QQ331",[73,49,45]],["QQ332",[85,64,62]],["QQ333",[55,38,29]],["QQ334",[88,59,48]],["QQ335",[29,15,15]],["QQ336",[26,14,14]],["QQ337",[209,201,205]],["QQ338",[175,174,180]],["QQ339",[176,169,179]],["QQ340",[134,133,144]],["QQ341",[114,113,126]],["QQ342",[95,92,102]],["QQ343",[72,70,71]],["QQ344",[39,37,42]],["QQ345",[34,33,34]],["QQ346",[79,96,115]],["QQ347",[57,64,79]],["QQ348",[55,57,69]],["QQ349",[25,34,43]],["QQ350",[32,34,45]],["QQ351",[22,25,36]],["QQ352",[109,103,105]],["QQ353",[116,99,102]],["QQ354",[76,64,68]],["QQ355",[63,58,63]],["QQ356",[52,45,51]],["QQ357",[42,34,32]],["QQ358",[26,24,26]],["QQ359",[17,14,23]],["QQ360",[25,18,16]],["TQ361",[137,142,67]],["TQ362",[108,108,48]],["TQ363",[118,112,52]],["TQ364",[148,144,12]],["TQ365",[117,111,29]],["TQ366",[164,172,107]],["TQ367",[136,151,97]],["TQ368",[116,137,50]],["TQ369",[105,122,67]],["TQ370",[89,99,32]],["TQ371",[96,120,30]],["TQ372",[58,89,14]],["TQ373",[150,155,67]],["TQ374",[95,107,31]],["TQ375",[77,110,3]],["TQ376",[96,107,39]],["TQ377",[49,64,28]],["TQ378",[125,131,110]],["TQ379",[112,122,80]],["TQ380",[90,95,61]],["TQ381",[77,83,47]],["TQ382",[54,63,11]],["TQ383",[60,58,8]],["TQ384",[42,46,23]],["TQ385",[194,202,186]],["TQ386",[151,164,144]],["TQ387",[87,115,78]],["TQ388",[74,100,78]],["TQ389",[52,110,41]],["TQ390",[26,81,30]],["TQ391",[38,72,15]],["TQ392",[16,82,16]],["TQ393",[53,92,48]],["TQ394",[26,61,37]],["TQ395",[38,61,29]],["TQ396",[23,49,10]],["TQ397",[182,225,187]],["TQ398",[119,174,122]],["TQ399",[124,183,138]],["TQ400",[80,162,90]],["TQ401",[92,174,113]],["TQ402",[65,169,116]],["TQ403",[4,120,69]],["TQ404",[9,126,58]],["TQ405",[1,101,51]],["TQ406",[1,101,72]],["TQ407",[2,96,57]],["TQ408",[1,76,49]],["TQ409",[193,207,154]],["TQ410",[171,173,112]],["TQ411",[186,194,105]],["TQ412",[173,191,51]],["TQ413",[153,181,18]],["TQ414",[178,198,6]],["TQ415",[123,154,2]],["TQ416",[173,201,91]],["TQ417",[93,154,3]],["TQ418",[126,159,16]],["TQ419",[186,222,161]],["TQ420",[200,221,149]],["TQ421",[181,209,144]],["TQ422",[209,231,159]],["TQ423",[132,183,91]],["TQ424",[78,153,94]],["TQ425",[96,176,80]],["TQ426",[80,162,61]],["TQ427",[61,156,36]],["TQ428",[69,158,3]],["TQ429",[45,143,25]],["TQ430",[18,122,42]],["TQ431",[6,99,5]],["TQ432",[3,75,30]],["TQ433",[168,200,199]],["TQ434",[153,201,211]],["TQ435",[135,199,208]],["TQ436",[119,197,208]],["TQ437",[100,189,200]],["TQ438",[42,162,181]],["TQ439",[60,171,190]],["TQ440",[18,151,175]],["TQ441",[14,158,185]],["TQ442",[12,146,168]],["TQ443",[2,118,158]],["TQ444",[3,126,155]],["TQ445",[2,116,151]],["TQ446",[1,102,145]],["TQ447",[1,78,110]],["TQ448",[218,227,234]],["TQ449",[181,220,237]],["TQ450",[119,193,218]],["TQ451",[155,212,234]],["TQ452",[102,191,225]],["TQ453",[72,185,215]],["TQ454",[24,158,195]],["TQ455",[12,130,166]],["TQ456",[2,123,166]],["TQ457",[40,163,199]],["TQ458",[16,158,202]],["TQ459",[1,116,172]],["TQ460",[3,103,168]],["TQ461",[2,112,175]],["TQ462",[1,99,164]],["TQ463",[3,78,136]],["TQ464",[2,81,148]],["TQ465",[2,66,128]],["TQ466",[3,82,151]],["TQ467",[2,57,128]],["TQ468",[2,51,109]],["TQ469",[128,185,223]],["TQ470",[64,157,209]],["TQ471",[68,165,213]],["TQ472",[64,155,196]],["TQ473",[6,141,202]],["TQ474",[58,147,193]],["TQ475",[22,140,197]],["TQ476",[4,126,191]],["TQ477",[1,104,174]],["TQ478",[7,100,167]],["TQ479",[1,59,135]],["TQ480",[1,39,108]]];
@@ -130,7 +170,7 @@ window.PALETTE_RAW=[["QQ001",[203,200,220]],["QQ002",[193,185,183]],["QQ003",[21
     file: $('#fileInput'), demo: $('#demoBtn'), drop: $('#dropzone'), empty: $('#emptyState'), stage: $('#imageStage'), display: $('#displayCanvas'),
     minArea: $('#minArea'), minAreaValue: $('#minAreaValue'), bgTol: $('#bgTolerance'), bgTolValue: $('#bgToleranceValue'), merge: $('#mergeStrength'), detail: $('#detailSensitivity'), autoIgnore: $('#autoIgnore'), reanalyze: $('#reanalyzeBtn'),
     regionList: $('#regionList'), summary: $('#summaryPill'), tableBody: $('#resultTable tbody'), csv: $('#csvBtn'), annotated: $('#annotatedCanvas'), linked: $('#linkedCanvas'), annotatedBtn: $('#annotatedBtn'), linkedBtn: $('#linkedBtn'),
-    modal: $('#paletteModal'), closeModal: $('#closeModal'), paletteSearch: $('#paletteSearch'), paletteGrid: $('#paletteGrid'), modalRegionName: $('#modalRegionName')
+    modal: $('#paletteModal'), closeModal: $('#closeModal'), paletteSearch: $('#paletteSearch'), paletteGrid: $('#paletteGrid'), modalRegionName: $('#modalRegionName'), addBtn: $('#addRegionBtn'), undoAdd: $('#undoAddBtn'), clearAdded: $('#clearAddedBtn'), toolStatus: $('#toolStatus'), inspector: $('#selectionInspector')
   };
 
   let sourceImage = null;
@@ -138,6 +178,9 @@ window.PALETTE_RAW=[["QQ001",[203,200,220]],["QQ002",[193,185,183]],["QQ003",[21
   let analysis = null;
   let regions = [];
   let selectedRegion = null;
+  let addMode = false;
+  let manualHistory = [];
+  let manualSeq = 1;
   $('#paletteName').textContent = `${PALETTE.name} · ${PALETTE.entries.length} 色`;
   buildPaletteGrid('');
 
@@ -234,8 +277,101 @@ window.PALETTE_RAW=[["QQ001",[203,200,220]],["QQ002",[193,185,183]],["QQ003",[21
   function setSourceImage(im){
     sourceImage=im; els.empty.classList.add('hidden'); els.stage.classList.remove('hidden'); els.reanalyze.disabled=false;
     els.summary.textContent='正在识别…';
+    manualHistory=[]; manualSeq=1; addMode=false; updateToolUI();
     setTimeout(analyze, 40);
   }
+
+  function updateToolUI(){
+    if(els.addBtn) els.addBtn.classList.toggle('active', addMode);
+    if(els.toolStatus){ els.toolStatus.textContent=addMode ? '当前模式：补充区域（点击图片漏检处）' : '当前模式：选择区域'; els.toolStatus.classList.toggle('add', addMode); }
+    if(els.undoAdd) els.undoAdd.disabled = manualHistory.length===0;
+    if(els.clearAdded) els.clearAdded.disabled = !regions.some(r=>r.manual);
+  }
+
+  function resetManualState(){ manualHistory=[]; manualSeq=1; addMode=false; updateToolUI(); }
+
+  function isAutoName(name){ return /^主区域\s+\d+(?:\.\d+)?$/.test(name) || /^细节\s+\d+(?:\.\d+)?$/.test(name) || /^补充(主区域|细节)/.test(name); }
+
+  function relabelRegions(){
+    const mains=regions.filter(r=>r.type==='main').sort((a,b)=>a.cy-b.cy||a.cx-b.cx);
+    let mi=0;
+    for(const main of mains){
+      mi++; const ml=String(mi).padStart(2,'0'); main.label=ml; if(isAutoName(main.name)) main.name=main.manual?`补充主区域 ${ml}`:`主区域 ${ml}`;
+      const children=regions.filter(r=>r.type==='detail'&&r.mainKey===main.mainKey).sort((a,b)=>a.cy-b.cy||a.cx-b.cx);
+      children.forEach((d,idx)=>{d.label=`${ml}.${idx+1}`; if(isAutoName(d.name)) d.name=d.manual?`补充细节 ${d.label}`:`细节 ${d.label}`;});
+    }
+  }
+
+  function upsertInspector(){
+    if(!els.inspector) return;
+    const r=regions.find(x=>x.id===selectedRegion);
+    if(!r){ els.inspector.className='selection-inspector empty'; els.inspector.innerHTML='选择左侧画面或下方列表中的区域后，这里会显示摘要与操作建议。'; return; }
+    const p=getPalette(r.selected); const typeName=r.type==='detail'?'细节区域':'主区域';
+    els.inspector.className='selection-inspector';
+    els.inspector.innerHTML=`<div><strong>${r.label} · ${escapeHtml(r.name)}</strong><div class="muted" style="margin-top:6px;font-size:12px;color:#6b7280;line-height:1.6">${typeName} · ${r.manual?'手动补充':'自动识别'}${r.ignore?` · 当前忽略：${escapeHtml(r.ignoreReason||'手动设置')}`:''}</div></div><div class="inspector-grid"><div class="metric-box"><small>原图颜色</small><strong><span class="swatch-inline" style="background:${hex(r.rgb)}"></span>${hex(r.rgb)}</strong></div><div class="metric-box"><small>推荐色号</small><strong>${p?p.code:'—'}</strong></div><div class="metric-box"><small>色差 ΔE00</small><strong>${p?deltaFor(r,p).toFixed(2):'—'}</strong></div><div class="metric-box"><small>区域面积</small><strong>${Math.round(r.area||0)} px</strong></div></div>`;
+  }
+
+  function nextId(){ return regions.reduce((m,r)=>Math.max(m,r.id),0)+1; }
+
+  function makeRegionFromStats(stats, kind='detail', parent=null){
+    const rgb=stats.rgb.map(Math.round);
+    const candidates=bestMatches(rgb,5);
+    const reason=els.autoIgnore.checked?defaultIgnoreReason(rgb):'';
+    const mainKey = kind==='main' ? `manual-main-${manualSeq++}` : (parent?parent.mainKey:`manual-main-${manualSeq++}`);
+    return { id:nextId(), root:`manual-${Date.now()}-${Math.random().toString(36).slice(2,7)}`, type:kind, mainKey, parentRoot:parent?parent.root:null, name:kind==='main'?'补充主区域':'补充细节', rgb, cx:stats.cx, cy:stats.cy, bbox:stats.bbox, area:stats.area, ignore:!!reason, ignoreReason:reason, candidates, selected:candidates[0]?.p.code||'', manual:true };
+  }
+
+  function guessParentMain(stats){
+    const mains=regions.filter(r=>r.type==='main'); if(!mains.length) return null;
+    const cx=stats.cx, cy=stats.cy;
+    let inside=mains.filter(m=>cx>=m.bbox[0]-3&&cx<=m.bbox[2]+3&&cy>=m.bbox[1]-3&&cy<=m.bbox[3]+3);
+    if(inside.length) inside.sort((a,b)=>(a.area||1)-(b.area||1));
+    return inside[0] || mains.map(m=>({m,d:Math.hypot(m.cx-cx,m.cy-cy)})).sort((a,b)=>a.d-b.d)[0].m;
+  }
+
+  function regionGrowFromSeed(x,y){
+    if(!analysis||!analysis.imageData) return null;
+    const {w,h,imageData,bgRGB}=analysis; const data=imageData.data;
+    x=Math.round(clamp(x,0,w-1)); y=Math.round(clamp(y,0,h-1));
+    const idx=y*w+x, p=idx*4; const seed=[data[p],data[p+1],data[p+2]];
+    if(data[p+3]<16) return null;
+    if(Math.hypot(seed[0]-bgRGB[0],seed[1]-bgRGB[1],seed[2]-bgRGB[2]) < (+els.bgTol.value)+2) return null;
+    const detailLevel=els.detail.value;
+    const seedTol = detailLevel==='sensitive' ? 18 : detailLevel==='conservative' ? 12 : 15;
+    const meanTol = detailLevel==='sensitive' ? 16 : detailLevel==='conservative' ? 11 : 13;
+    const maxVisit = Math.min(w*h, 250000);
+    const seedLab=rgbToLab(seed); const vis=new Uint8Array(w*h); const q=[idx]; vis[idx]=1; let head=0;
+    let area=0,sr=0,sg=0,sb=0,sx=0,sy=0,minx=w,miny=h,maxx=0,maxy=0;
+    while(head<q.length && q.length<maxVisit){
+      const i=q[head++], yy=(i/w)|0, xx=i-yy*w, pp=i*4; const rgb=[data[pp],data[pp+1],data[pp+2]];
+      const currentMean = area ? [sr/area, sg/area, sb/area] : seed;
+      const accept = deltaE00(rgbToLab(rgb), seedLab)<=seedTol && deltaE00(rgbToLab(rgb), rgbToLab(currentMean))<=meanTol;
+      if(!accept) continue;
+      area++; sr+=rgb[0]; sg+=rgb[1]; sb+=rgb[2]; sx+=xx; sy+=yy; if(xx<minx)minx=xx; if(xx>maxx)maxx=xx; if(yy<miny)miny=yy; if(yy>maxy)maxy=yy;
+      const nbr=[i-1,i+1,i-w,i+w,i-w-1,i-w+1,i+w-1,i+w+1];
+      for(const ni of nbr){ if(ni<0||ni>=w*h||vis[ni]) continue; vis[ni]=1; q.push(ni); }
+    }
+    if(area<8) return null;
+    const rgb=[sr/area,sg/area,sb/area];
+    return {area,rgb,cx:sx/area,cy:sy/area,bbox:[minx,miny,maxx,maxy],bw:maxx-minx+1,bh:maxy-miny+1};
+  }
+
+  function addManualRegionAt(x,y){
+    const stats=regionGrowFromSeed(x,y);
+    if(!stats) return false;
+    const dup=regions.find(r=>Math.abs(r.cx-stats.cx)<6 && Math.abs(r.cy-stats.cy)<6 && deltaE00(rgbToLab(r.rgb),rgbToLab(stats.rgb))<4.5);
+    if(dup){ selectedRegion=dup.id; renderAll(); return true; }
+    const parent=guessParentMain(stats);
+    const kind=(parent && stats.area<=Math.max(140,parent.area*0.18)) ? 'detail' : 'main';
+    const region=makeRegionFromStats(stats,kind,kind==='detail'?parent:null);
+    if(kind==='detail' && parent) region.mainKey=parent.mainKey;
+    regions.push(region); manualHistory.push(region.id); relabelRegions(); selectedRegion=region.id; renderAll();
+    return true;
+  }
+
+  function undoManualRegion(){ const id=manualHistory.pop(); if(!id) return; regions=regions.filter(r=>r.id!==id); relabelRegions(); selectedRegion=regions[0]?.id||null; renderAll(); }
+
+  function clearManualRegions(){ regions=regions.filter(r=>!r.manual); manualHistory=[]; relabelRegions(); selectedRegion=regions[0]?.id||null; renderAll(); }
 
   function analyze(){
     if(!sourceImage)return;
@@ -246,6 +382,7 @@ window.PALETTE_RAW=[["QQ001",[203,200,220]],["QQ002",[193,185,183]],["QQ003",[21
     const id=ctx.getImageData(0,0,w,h), data=id.data, n=w*h;
     const bgTol=+els.bgTol.value, mergeTol=+els.merge.value, q=16, border=Math.max(3,Math.round(Math.min(w,h)*0.012));
 
+    // 1) Robust background estimate from the dominant border color family.
     const hist=new Map(), borderIdx=[];
     const pushBorder=i=>{const p=i*4,r=data[p],g=data[p+1],b=data[p+2],qr=Math.round(r/24),qg=Math.round(g/24),qb=Math.round(b/24),key=(qr<<16)|(qg<<8)|qb;hist.set(key,(hist.get(key)||0)+1);borderIdx.push([i,key]);};
     for(let y=0;y<border;y++)for(let x=0;x<w;x++)pushBorder(y*w+x);
@@ -255,16 +392,19 @@ window.PALETTE_RAW=[["QQ001",[203,200,220]],["QQ002",[193,185,183]],["QQ003",[21
     let br=0,bg=0,bb=0,bc=0;for(const [i,k] of borderIdx){if(k!==bgKey)continue;const p=i*4;br+=data[p];bg+=data[p+1];bb+=data[p+2];bc++;}
     const bgRGB=bc?[br/bc,bg/bc,bb/bc]:[data[0],data[1],data[2]];
 
+    // 2) Fine micro-regions: 8-connected components on a light color quantization.
+    //    We deliberately keep this stage fine; semantic-looking merging happens in the region graph below.
     const keys=new Int32Array(n);keys.fill(-1);
     for(let i=0;i<n;i++){
       const p=i*4;if(data[p+3]<16)continue;const r=data[p],g=data[p+1],b=data[p+2];
       if(Math.hypot(r-bgRGB[0],g-bgRGB[1],b-bgRGB[2])<bgTol)continue;
       const qr=Math.round(r/q),qg=Math.round(g/q),qb=Math.round(b/q);keys[i]=(qr<<16)|(qg<<8)|qb;
     }
-    const labels=new Int32Array(n);labels.fill(-1);const queue=new Int32Array(n),comps=[];let cid=0,tail=0;
+    const labels=new Int32Array(n);labels.fill(-1);const queue=new Int32Array(n),comps=[];let cid=0;
     const add=(j,key)=>{if(j>=0&&j<n&&labels[j]<0&&keys[j]===key){labels[j]=cid;queue[tail++]=j;}};
-    for(let st=0;st<n;st++){
-      if(keys[st]<0||labels[st]>=0)continue;const key=keys[st];let head=0;tail=0;queue[tail++]=st;labels[st]=cid;
+    let tail=0;
+    for(let start=0;start<n;start++){
+      if(keys[start]<0||labels[start]>=0)continue;const key=keys[start];let head=0;tail=0;queue[tail++]=start;labels[start]=cid;
       let area=0,sr=0,sg=0,sb=0,sr2=0,sg2=0,sb2=0,sx=0,sy=0,minx=w,maxx=0,miny=h,maxy=0;
       while(head<tail){
         const i=queue[head++],y=Math.floor(i/w),x=i-y*w,p=i*4,r=data[p],g=data[p+1],b=data[p+2];
@@ -275,6 +415,8 @@ window.PALETTE_RAW=[["QQ001",[203,200,220]],["QQ002",[193,185,183]],["QQ003",[21
       comps.push({id:cid,area,sr,sg,sb,sr2,sg2,sb2,sx,sy,minx,maxx,miny,maxy,rgb:[sr/area,sg/area,sb/area]});cid++;
     }
 
+    // 3) Region adjacency graph + perceptual merge (Lab / DeltaE00).
+    //    Only touching components may merge, so disconnected same-color parts remain separate.
     const edgeMap=new Map();
     const touch=(a,b)=>{if(a<0||b<0||a===b)return;const lo=a<b?a:b,hi=a<b?b:a,k=lo*cid+hi;edgeMap.set(k,(edgeMap.get(k)||0)+1);};
     for(let y=0;y<h;y++)for(let x=0;x<w-1;x++)touch(labels[y*w+x],labels[y*w+x+1]);
@@ -291,23 +433,27 @@ window.PALETTE_RAW=[["QQ001",[203,200,220]],["QQ002",[193,185,183]],["QQ003",[21
     const roots=[];for(let i=0;i<cid;i++)if(find(i)===i&&ua[i]>0){const rgb=mean(i),bw=umaxx[i]-uminx[i]+1,bh=umaxy[i]-uminy[i]+1,vr=Math.max(0,usr2[i]/ua[i]-rgb[0]*rgb[0]),vg=Math.max(0,usg2[i]/ua[i]-rgb[1]*rgb[1]),vb=Math.max(0,usb2[i]/ua[i]-rgb[2]*rgb[2]);roots.push({root:i,area:ua[i],rgb,cx:usx[i]/ua[i],cy:usy[i]/ua[i],bbox:[uminx[i],uminy[i],umaxx[i],umaxy[i]],bw,bh,fill:ua[i]/Math.max(1,bw*bh),std:Math.sqrt((vr+vg+vb)/3)});}
     const rootById=new Int32Array(cid);for(let i=0;i<cid;i++)rootById[i]=find(i);
     const rootEdges=new Map();for(const e of edges){const a=rootById[e.a],b=rootById[e.b];if(a===b)continue;const lo=a<b?a:b,hi=a<b?b:a,k=lo*cid+hi;rootEdges.set(k,(rootEdges.get(k)||0)+e.contact);}
-    const byRoot=new Map(roots.map(r=>[r.root,r])),neigh=new Map();const addN=(a,b,cnt)=>{if(!neigh.has(a))neigh.set(a,[]);neigh.get(a).push({r:byRoot.get(b),contact:cnt});};
+    const byRoot=new Map(roots.map(r=>[r.root,r]));const neigh=new Map();const addN=(a,b,cnt)=>{if(!neigh.has(a))neigh.set(a,[]);neigh.get(a).push({r:byRoot.get(b),contact:cnt});};
     rootEdges.forEach((contact,k)=>{const a=Math.floor(k/cid),b=k-a*cid;if(byRoot.has(a)&&byRoot.has(b)){addN(a,b,contact);addN(b,a,contact);}});
 
+    // 4) Hierarchical classification: Main Region + Detail Region.
     const mainMin=n*(+els.minArea.value/100), detailCfg={
       conservative:{thinPct:.0035,thinAbs:28,regularPct:.030,regularAbs:160,contrast:18.0,maxFrac:.14,minLong:7,margin:.05,std:24},
       balanced:{thinPct:.0025,thinAbs:20,regularPct:.020,regularAbs:120,contrast:15.0,maxFrac:.16,minLong:5,margin:.04,std:26},
       sensitive:{thinPct:.0012,thinAbs:12,regularPct:.012,regularAbs:70,contrast:10.0,maxFrac:.20,minLong:4,margin:.025,std:30}
     }[els.detail.value]||{thinPct:.0025,thinAbs:20,regularPct:.020,regularAbs:120,contrast:15.0,maxFrac:.16,minLong:5,margin:.04,std:26};
-    const detailMin=Math.max(detailCfg.thinAbs,n*(detailCfg.thinPct/100)),regularMin=Math.max(detailCfg.regularAbs,n*(detailCfg.regularPct/100));
-    let mainRoots=roots.filter(r=>r.area>=mainMin&&r.bw>=4&&r.bh>=4),mainSet=new Set(mainRoots.map(r=>r.root));
+    const detailMin=Math.max(detailCfg.thinAbs,n*(detailCfg.thinPct/100)), regularMin=Math.max(detailCfg.regularAbs,n*(detailCfg.regularPct/100));
+    let mainRoots=roots.filter(r=>r.area>=mainMin&&r.bw>=4&&r.bh>=4);
+    const mainSet=new Set(mainRoots.map(r=>r.root));
     const parentFor=r=>{
       const direct=(neigh.get(r.root)||[]).filter(x=>mainSet.has(x.r.root)&&x.r.area>r.area*2.5).sort((a,b)=>b.contact-a.contact);
       if(direct.length)return direct[0].r;
       let best=null,bestArea=Infinity;for(const m of mainRoots){if(m.area<=r.area*2.5)continue;const pad=2;if(r.cx>=m.bbox[0]-pad&&r.cx<=m.bbox[2]+pad&&r.cy>=m.bbox[1]-pad&&r.cy<=m.bbox[3]+pad&&m.area<bestArea){best=m;bestArea=m.area;}}return best;
     };
+
+    // Reclassify small islands that technically pass the main threshold but clearly live inside a much larger neighboring region.
     const demote=new Map();for(const r of mainRoots){const p0=parentFor(r);if(!p0)continue;const contrast=deltaE00(rgbToLab(r.rgb),rgbToLab(p0.rgb));if(r.area/p0.area<=detailCfg.maxFrac&&contrast>=detailCfg.contrast&&r.area<mainMin*6)demote.set(r.root,p0.root);}
-    if(demote.size){mainRoots=mainRoots.filter(r=>!demote.has(r.root));mainSet=new Set(mainRoots.map(r=>r.root));}
+    if(demote.size){mainRoots=mainRoots.filter(r=>!demote.has(r.root));mainSet.clear();mainRoots.forEach(r=>mainSet.add(r.root));}
 
     const details=[];for(const r of roots){
       if(mainSet.has(r.root))continue;
@@ -318,12 +464,14 @@ window.PALETTE_RAW=[["QQ001",[203,200,220]],["QQ002",[193,185,183]],["QQ003",[21
       if((regular||thinDetail)&&r.area<=p0.area*detailCfg.maxFrac&&contrast>=detailCfg.contrast&&longSide>=detailCfg.minLong&&shapeOK&&r.std<=detailCfg.std&&inside)details.push({...r,parentRoot:p0.root,contrast});
     }
 
+    // Do not surface low-value black/white/skin detail fragments when auto-ignore is on.
+    // Ignored main regions are kept only when they host a useful visible detail (e.g. a face that contains eyes/mouth).
     const visibleDetails=details.filter(d=>!(els.autoIgnore.checked&&defaultIgnoreReason(d.rgb.map(Math.round))));
     mainRoots.sort((a,b)=>a.cy-b.cy||a.cx-b.cx);const detailMap=new Map();visibleDetails.forEach(d=>{if(!detailMap.has(d.parentRoot))detailMap.set(d.parentRoot,[]);detailMap.get(d.parentRoot).push(d);});detailMap.forEach(v=>v.sort((a,b)=>a.cy-b.cy||a.cx-b.cx));
     const displayMain=mainRoots.filter(m=>{const reason=els.autoIgnore.checked?defaultIgnoreReason(m.rgb.map(Math.round)):'';return !reason||detailMap.has(m.root);});
-    regions=[];let uid=1,mainIndex=0;for(const m of displayMain){
+    regions=[]; resetManualState(); let uid=1,mainIndex=0;for(const m of displayMain){
       mainIndex++;const ml=String(mainIndex).padStart(2,'0'),children=detailMap.get(m.root)||[],items=[{...m,type:'main',label:ml,parentRoot:null}].concat(children.map((d,j)=>({...d,type:'detail',label:ml+'.'+(j+1)})));
-      for(const c0 of items){const rgb=c0.rgb.map(Math.round),reason=els.autoIgnore.checked?defaultIgnoreReason(rgb):'',candidates=bestMatches(rgb,5);regions.push({id:uid++,root:c0.root,type:c0.type,label:c0.label,parentRoot:c0.parentRoot,name:c0.type==='detail'?'细节 '+c0.label:'主区域 '+c0.label,rgb,cx:c0.cx,cy:c0.cy,bbox:c0.bbox,area:c0.area,ignore:!!reason,ignoreReason:reason,candidates,selected:candidates[0]?.p.code||''});}
+      for(const c0 of items){const rgb=c0.rgb.map(Math.round),reason=els.autoIgnore.checked?defaultIgnoreReason(rgb):'',candidates=bestMatches(rgb,5);regions.push({id:uid++,root:c0.root,type:c0.type,label:c0.label,mainKey:`auto-main-${m.root}`,parentRoot:c0.parentRoot,name:c0.type==='detail'?`细节 ${c0.label}`:`主区域 ${c0.label}`,rgb,cx:c0.cx,cy:c0.cy,bbox:c0.bbox,area:c0.area,ignore:!!reason,ignoreReason:reason,candidates,selected:candidates[0]?.p.code||'',manual:false});}
     }
     analysis={w,h,scale,canvas:c,imageData:id,labels,bgRGB,mainCount:displayMain.length,detailCount:visibleDetails.length};selectedRegion=regions[0]?.id||null;renderAll();
   }
@@ -331,23 +479,23 @@ window.PALETTE_RAW=[["QQ001",[203,200,220]],["QQ002",[193,185,183]],["QQ003",[21
   function getPalette(code){ return PALETTE.entries.find(x=>x.code===code); }
   function activeRegions(){ return regions.filter(r=>!r.ignore && r.selected); }
 
-  function renderAll(){ renderDisplay(); renderRegionList(); renderTable(); renderAnnotated(); renderLinked(); const active=activeRegions().length,main=regions.filter(r=>r.type==='main').length,detail=regions.filter(r=>r.type==='detail').length; els.summary.textContent=`${main} 主区域 · ${detail} 细节 · ${active} 个匹配`; const enabled=regions.length>0; els.csv.disabled=!enabled;els.annotatedBtn.disabled=!enabled;els.linkedBtn.disabled=!enabled; }
+  function renderAll(){ renderDisplay(); renderRegionList(); renderTable(); renderAnnotated(); renderLinked(); upsertInspector(); updateToolUI(); const active=activeRegions().length,main=regions.filter(r=>r.type==='main').length,detail=regions.filter(r=>r.type==='detail').length,manual=regions.filter(r=>r.manual).length; els.summary.textContent=`${main} 主区域 · ${detail} 细节 · ${active} 个匹配${manual?` · ${manual} 个补充`:''}`; const enabled=regions.length>0; els.csv.disabled=!enabled;els.annotatedBtn.disabled=!enabled;els.linkedBtn.disabled=!enabled; }
 
   function renderDisplay(){
     if(!analysis)return; const c=els.display;c.width=analysis.w;c.height=analysis.h;const ctx=c.getContext('2d');ctx.drawImage(analysis.canvas,0,0);
     for(const r of regions){
-      const x=r.cx,y=r.cy, sel=r.id===selectedRegion; ctx.beginPath();ctx.arc(x,y,sel?12:10,0,Math.PI*2);ctx.fillStyle=r.ignore?'rgba(107,114,128,.9)':sel?'rgba(17,24,39,.98)':'rgba(17,24,39,.82)';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='white';ctx.stroke();ctx.fillStyle='white';ctx.font='700 9px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=r.type==='detail'?'700 7px system-ui':'700 9px system-ui';ctx.fillText(r.label,x,y+.4);
+      const x=r.cx,y=r.cy, sel=r.id===selectedRegion; ctx.beginPath();ctx.arc(x,y,sel?12:10,0,Math.PI*2);ctx.fillStyle=r.ignore?'rgba(107,114,128,.9)':sel?'rgba(17,24,39,.98)':'rgba(17,24,39,.82)';ctx.fill();ctx.lineWidth=r.manual?3:2;ctx.strokeStyle=r.manual?'#a855f7':'white';ctx.stroke();ctx.fillStyle='white';ctx.font='700 9px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=r.type==='detail'?'700 7px system-ui':'700 9px system-ui';ctx.fillText(r.label,x,y+.4);
     }
   }
 
   function renderRegionList(){
-    if(!regions.length){els.regionList.innerHTML='<div class="placeholder-card">没有找到稳定区域。可降低“主区域最小面积”、调整背景容差，或提高“细节识别灵敏度”后重新识别。</div>';return;}
+    if(!regions.length){els.regionList.innerHTML='<div class="placeholder-card">没有找到稳定区域。可降低“主区域最小面积”、调整背景容差，或提高“细节识别灵敏度”灵敏度后重新识别。</div>';return;}
     els.regionList.innerHTML='';
     for(const r of regions){
       const p=getPalette(r.selected), best=r.candidates[0]; const card=document.createElement('div'); card.className='region-card '+r.type+(r.ignore?' ignored':'')+(r.id===selectedRegion?' selected':''); card.dataset.id=r.id;
-      card.innerHTML=`<div class="region-top"><div class="region-num">${r.label}</div><input class="region-name" value="${escapeHtml(r.name)}" aria-label="区域名称"><span class="type-badge ${r.type==='detail'?'detail':''}">${r.type==='detail'?'细节':'主区域'}</span><button class="toggle">${r.ignore?'加入匹配':'忽略'}</button></div>
+      card.innerHTML=`<div class="region-top"><div class="region-num">${r.label}</div><input class="region-name" value="${escapeHtml(r.name)}" aria-label="区域名称"><span class="type-badge ${r.type==='detail'?'detail':''}">${r.type==='detail'?'细节':'主区域'}</span>${r.manual?'<span class=\"type-badge\" style=\"background:#f3e8ff;color:#7c3aed\">补充</span>':''}<button class="toggle">${r.ignore?'加入匹配':'忽略'}</button></div>
       <div class="match-line"><div class="color-box"><span class="swatch" style="background:${hex(r.rgb)}"></span><div class="color-meta"><strong>原图颜色</strong><span>${hex(r.rgb)}</span></div></div><div class="arrow">→</div><div class="color-box"><span class="swatch" style="background:${p?p.hex:'#eee'}"></span><div class="color-meta"><strong>${r.ignore?'默认忽略':(p?p.code:'—')}</strong><span>${r.ignore?(r.ignoreReason||'手动忽略'):(p?`ΔE ${deltaFor(r,p).toFixed(2)}`:'')}</span></div></div></div>
-      ${r.ignore?`<div class="ignore-note">当前按“${r.ignoreReason||'手动设置'}”忽略。点击“加入匹配”可恢复。</div>`:`<div class="candidate-row">${r.candidates.slice(0,4).map(c=>`<button class="candidate ${c.p.code===r.selected?'active':''}" data-code="${c.p.code}"><span class="mini" style="background:${c.p.hex}"></span>${c.p.code} · ${c.de.toFixed(1)}</button>`).join('')}<button class="candidate more">全部 480 色</button></div>`}`;
+      ${r.ignore?`<div class="ignore-note">当前按“${r.ignoreReason||'手动设置'}”忽略。点击“加入匹配”可恢复；补充区域也支持正常匹配。</div>`:`<div class="candidate-row">${r.candidates.slice(0,4).map(c=>`<button class="candidate ${c.p.code===r.selected?'active':''}" data-code="${c.p.code}"><span class="mini" style="background:${c.p.hex}"></span>${c.p.code} · ${c.de.toFixed(1)}</button>`).join('')}<button class="candidate more">全部 480 色</button></div>`}`;
       card.addEventListener('click',()=>{selectedRegion=r.id;renderDisplay(); $$('.region-card').forEach(x=>x.classList.toggle('selected',+x.dataset.id===r.id));});
       card.querySelector('.region-name').addEventListener('input',e=>{r.name=e.target.value;renderTable();renderAnnotated();renderLinked();});
       card.querySelector('.toggle').addEventListener('click',e=>{e.stopPropagation();r.ignore=!r.ignore;if(!r.ignore)r.ignoreReason='';else r.ignoreReason='手动设置';renderAll();});
@@ -421,8 +569,9 @@ window.PALETTE_RAW=[["QQ001",[203,200,220]],["QQ002",[193,185,183]],["QQ003",[21
   els.file.addEventListener('change',e=>{if(e.target.files[0])readFile(e.target.files[0]);}); els.demo.addEventListener('click',loadDemo);
   ['dragenter','dragover'].forEach(ev=>els.drop.addEventListener(ev,e=>{e.preventDefault();els.drop.classList.add('drag');})); ['dragleave','drop'].forEach(ev=>els.drop.addEventListener(ev,e=>{e.preventDefault();els.drop.classList.remove('drag');})); els.drop.addEventListener('drop',e=>{const f=[...e.dataTransfer.files].find(x=>x.type.startsWith('image/'));if(f)readFile(f);});
   els.minArea.addEventListener('input',()=>els.minAreaValue.textContent=(+els.minArea.value).toFixed(2)+'%'); els.bgTol.addEventListener('input',()=>els.bgTolValue.textContent=els.bgTol.value); els.reanalyze.addEventListener('click',()=>{els.summary.textContent='正在识别…';setTimeout(analyze,30);});
-  els.display.addEventListener('click',e=>{if(!analysis)return;const rct=els.display.getBoundingClientRect(),x=(e.clientX-rct.left)*analysis.w/rct.width,y=(e.clientY-rct.top)*analysis.h/rct.height;let best=null,d=Infinity;for(const r of regions){const dd=Math.hypot(r.cx-x,r.cy-y);if(dd<d){d=dd;best=r;}}if(best&&d<45){selectedRegion=best.id;renderAll();const card=els.regionList.querySelector(`[data-id="${best.id}"]`);card?.scrollIntoView({behavior:'smooth',block:'nearest'});}});
+  els.display.addEventListener('click',e=>{if(!analysis)return;const rct=els.display.getBoundingClientRect(),x=(e.clientX-rct.left)*analysis.w/rct.width,y=(e.clientY-rct.top)*analysis.h/rct.height;if(addMode){const ok=addManualRegionAt(x,y);if(ok){const card=els.regionList.querySelector(`[data-id="${selectedRegion}"]`);card?.scrollIntoView({behavior:'smooth',block:'nearest'});}return;}let best=null,d=Infinity;for(const r of regions){const dd=Math.hypot(r.cx-x,r.cy-y);if(dd<d){d=dd;best=r;}}if(best&&d<45){selectedRegion=best.id;renderAll();const card=els.regionList.querySelector(`[data-id="${best.id}"]`);card?.scrollIntoView({behavior:'smooth',block:'nearest'});}});
   $$('.tab').forEach(t=>t.addEventListener('click',()=>{$$('.tab').forEach(x=>x.classList.remove('active'));$$('.tabpane').forEach(x=>x.classList.remove('active'));t.classList.add('active');$('#tab-'+t.dataset.tab).classList.add('active');if(t.dataset.tab==='annotated')renderAnnotated();if(t.dataset.tab==='linked')renderLinked();}));
+  els.addBtn?.addEventListener('click',()=>{addMode=!addMode; updateToolUI();}); els.undoAdd?.addEventListener('click',undoManualRegion); els.clearAdded?.addEventListener('click',clearManualRegions);
   els.csv.addEventListener('click',downloadCSV);els.annotatedBtn.addEventListener('click',()=>downloadCanvas(els.annotated,`${sourceName}-annotated.png`));els.linkedBtn.addEventListener('click',()=>downloadCanvas(els.linked,`${sourceName}-palette-linked.png`));
   els.closeModal.addEventListener('click',closePaletteModal);els.modal.addEventListener('click',e=>{if(e.target===els.modal)closePaletteModal();});els.paletteSearch.addEventListener('input',e=>buildPaletteGrid(e.target.value));
 })();
