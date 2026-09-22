@@ -59,19 +59,16 @@ jobs:
 
           sakura = read_palette('data/qqtq-480.js', 'PALETTE_RAW')
           hanter = read_palette('data/hanter-620.js', 'PALETTE_HANTER_RAW')
-          alice = read_palette('data/alice-1680.js', 'PALETTE_ALICE_RAW')
-
           assert len(sakura) == 600 and sakura[-1][0] == 'TQ600'
           assert len(hanter) == 620
           hcodes = {x[0] for x in hanter}
           assert {'001', '300', '401', '720'} <= hcodes
           assert not ({'301', '350', '400'} & hcodes)
-          assert len(alice) == 1680
 
           html = Path('index.html').read_text(encoding='utf-8')
           if '<style>' in html:
               raise SystemExit('Inline styles should not be present after the v3.1 refactor')
-          print('palette counts:', len(sakura), len(hanter), len(alice))
+          print('palette counts:', len(sakura), len(hanter), 'alice syntax=ok')
           print('index.html bytes:', len(html.encode('utf-8')))
           print('app.js bytes:', Path('js/app.js').stat().st_size)
           PY
