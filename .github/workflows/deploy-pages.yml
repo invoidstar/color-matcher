@@ -37,7 +37,13 @@ jobs:
           test -f data/hanter-620.js
           test -f data/alice-1680.js
           test -f guide.html
+          test -f palette.html
           test -f css/guide.css
+          test -f css/palette.css
+          test -f css/announcement.css
+          test -f js/palette-gallery.js
+          test -f js/announcements.js
+          test -f data/announcements.js
           grep -q 'js/app.js' index.html
           grep -q 'css/base.css' index.html
           node --check js/core/color.js
@@ -45,6 +51,9 @@ jobs:
           node --check data/hanter-620.js
           node --check data/alice-1680.js
           node --check js/app.js
+          node --check js/palette-gallery.js
+          node --check js/announcements.js
+          node --check data/announcements.js
           python - <<'PY'
           from pathlib import Path
           import json

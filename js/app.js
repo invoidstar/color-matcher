@@ -56,7 +56,7 @@
     return arr.slice(0,k);
   }
 
-  function paletteLabel(p){ if(!p)return '—'; if(p.paletteId==='alice-1680'){if(!p.alias)return p.code;if(p.quality==='verified'||p.quality==='high')return p.alias;if(p.quality==='medium')return `${p.alias} ?`;return p.code;} return p.alias?`${p.code} · ${p.alias}`:p.code; }
+  function paletteLabel(p){ if(!p)return '—'; if(p.paletteId==='alice-1680'){if(!p.alias)return p.code;if(['verified','high','v','h'].includes(p.quality))return p.alias;if(['medium','m'].includes(p.quality))return `${p.alias} ?`;return p.code;} return p.alias?`${p.code} · ${p.alias}`:p.code; }
 
   function paletteCountText(p=PALETTE){
     return p.declaredCount && p.declaredCount!==p.entries.length ? `${p.entries.length} / ${p.declaredCount} 已录入` : `${p.entries.length} 色`;

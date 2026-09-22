@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#7c3aed">
+  <meta name="description" content="浏览毛绒娃娃配色助手提取后的樱花、涵特、亚丽丝色卡。">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <title>色卡浏览 · 毛绒娃娃配色助手</title>
+  <link rel="stylesheet" href="./css/palette.css">
+  <link rel="stylesheet" href="./css/announcement.css">
+</head>
+<body>
+  <header class="gallery-header">
+    <div>
+      <div class="eyebrow">PLUSH COLOR MATCHER · PALETTE GALLERY</div>
+      <h1>色卡浏览</h1>
+      <p>把我们从原始色卡中提取出的颜色完整铺开，方便查色号、看色块和人工核对。</p>
+    </div>
+    <nav class="gallery-nav">
+      <a href="./">返回工作台</a>
+      <a href="./guide.html">使用说明</a>
+      <button id="announcementBtn" type="button">公告</button>
+    </nav>
+  </header>
+
+  <main class="gallery-shell">
+    <section class="gallery-toolbar">
+      <div class="control-group">
+        <label>色卡
+          <select id="galleryPalette">
+            <option value="qqtq-480">樱花</option>
+            <option value="hanter-620">涵特</option>
+            <option value="alice-1680">亚丽丝</option>
+          </select>
+        </label>
+        <label class="search-label">搜索
+          <input id="gallerySearch" placeholder="例如 TQ481 / 301 / AL0001 / 481-520">
+        </label>
+        <label>排序
+          <select id="gallerySort">
+            <option value="original">原始顺序</option>
+            <option value="hue">按色相</option>
+            <option value="lightness">按明度</option>
+            <option value="saturation">按饱和度</option>
+          </select>
+        </label>
+      </div>
+      <div class="gallery-meta">
+        <strong id="galleryTitle">樱花</strong>
+        <span id="galleryCount">600 色</span>
+        <span id="galleryShown">显示 600</span>
+      </div>
+    </section>
+
+    <section class="palette-note" id="galleryNote"></section>
+    <section id="paletteGrid" class="color-grid" aria-live="polite"></section>
+    <div id="emptyPalette" class="empty-palette" hidden>没有找到符合条件的颜色。</div>
+  </main>
+
+  <div id="colorDetailModal" class="detail-modal" hidden>
+    <div class="detail-card" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+      <button id="detailClose" class="detail-close" aria-label="关闭">×</button>
+      <div id="detailSwatch" class="detail-swatch"></div>
+      <div class="detail-main">
+        <div class="detail-kicker" id="detailPalette"></div>
+        <h2 id="detailTitle">—</h2>
+        <div id="detailAlias" class="detail-alias"></div>
+        <div class="detail-values">
+          <div><small>HEX</small><strong id="detailHex">—</strong></div>
+          <div><small>RGB</small><strong id="detailRgb">—</strong></div>
+          <div><small>Lab</small><strong id="detailLab">—</strong></div>
+          <div><small>位置</small><strong id="detailPosition">—</strong></div>
+        </div>
+        <div class="detail-actions">
+          <button id="copyCodeBtn" type="button">复制色号</button>
+          <button id="copyHexBtn" type="button">复制 HEX</button>
+        </div>
+        <div class="nearby-block">
+          <h3>同色卡中的相近颜色</h3>
+          <div id="nearbyColors" class="nearby-colors"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="gallery-footer">色卡图片提取值仅作视觉参考 · 实际线材颜色请以实物为准</footer>
+
+  <script src="./js/core/color.js"></script>
+  <script src="./data/qqtq-480.js"></script>
+  <script src="./data/hanter-620.js"></script>
+  <script src="./data/alice-1680.js"></script>
+  <script src="./data/announcements.js"></script>
+  <script src="./js/announcements.js"></script>
+  <script src="./js/palette-gallery.js"></script>
+</body>
+</html>

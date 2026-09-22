@@ -7,7 +7,7 @@
 一个面向毛绒娃娃设计、配色与制作整理的纯前端小工具。  
 帮你从设计图中识别颜色和区域，在不同色卡中寻找接近色号，并把配色一步步整理成可以真正拿去做娃的方案。
 
-[🌷 在线使用](https://invoidstar.github.io/color-matcher/) · [📖 使用说明](https://invoidstar.github.io/color-matcher/guide.html)
+[🌷 在线使用](https://invoidstar.github.io/color-matcher/) · [🎨 色卡浏览](https://invoidstar.github.io/color-matcher/palette.html) · [📖 使用说明](https://invoidstar.github.io/color-matcher/guide.html)
 
 </div>
 
@@ -45,6 +45,10 @@
 > 色卡来自图片采样，实际颜色仍会受到拍摄光线、白平衡、显示器、线材材质和批次影响。网站给出的是视觉近似匹配，最终制作建议结合实物色卡确认。
 
 除了内置色卡，也支持通过 **色卡管理器** 导入规则网格色卡、导入 / 导出色卡 JSON，并进行简单校准。
+
+### 🎨 色卡浏览页
+
+可以直接打开 **[色卡浏览](https://invoidstar.github.io/color-matcher/palette.html)**，完整查看樱花、涵特、亚丽丝的每一个提取色块。支持色号 / 区间搜索、原始顺序 / 色相 / 明度 / 饱和度排序；点击任意色块还能查看 HEX、RGB、Lab 与相近颜色。
 
 ---
 
@@ -127,6 +131,7 @@
 | **A / B 方案** | 保存并比较两套完整配色 |
 | **限色优化** | 尽量减少需要购买的颜色种类 |
 | **BOM / 采购整理** | 汇总色号、使用部件、面积、库存与成本 |
+| **色卡浏览** | 浏览每一个提取色块，支持搜索、排序和详情查看 |
 | **色卡管理器** | 导入、导出、校准自己的色卡 |
 | **标注 / 导出** | CSV、PNG、标注图、色卡连线图、打印页 |
 | **PWA / 离线** | 支持安装，常用资源可离线使用 |
@@ -171,6 +176,7 @@
 color-matcher/
 ├── index.html
 ├── guide.html
+├── palette.html
 ├── manifest.webmanifest
 ├── sw.js
 ├── icon.svg
@@ -178,8 +184,7 @@ color-matcher/
 ├── assets/
 │   └── readme/
 │       ├── hero.webp
-│       ├── features.webp
-│       └── workflow.webp
+│       └── hero.webp
 │
 ├── css/
 │   ├── base.css
@@ -189,16 +194,20 @@ color-matcher/
 │
 ├── js/
 │   ├── app.js
+│   ├── palette-gallery.js
+│   ├── announcements.js
 │   └── core/
 │       └── color.js
 │
 ├── data/
+│   ├── announcements.js
 │   ├── qqtq-480.js
 │   ├── hanter-620.js
 │   └── alice-1680.js
 │
 ├── docs/
 │   ├── ARCHITECTURE.md
+│   ├── ANNOUNCEMENTS.md
 │   ├── PALETTES.md
 │   └── USER_GUIDE.md
 │
