@@ -5,7 +5,7 @@
   const { clamp, hex, rgbToLab, deltaE00, rgbToHsv } = PCMColor;
   const PALETTES = {
     'qqtq-480': { id:'qqtq-480', name:'樱花', source:'参考色卡图像', note:'樱花色卡，共 480 色；保留 QQ/TQ 色号体系。', entries:(window.PALETTE_RAW||[]).map(([code,rgb])=>({code,rgb,alias:'',hex:hex(rgb),lab:null})) },
-    'natural-720': { id:'natural-720', name:'昭', source:'20 页自然光照片', note:'昭色卡，共 720 色；由 20 张自然光色卡页提取。001–004 分别对应黑色、大红、雪白、本白。照片/屏幕存在色差，仅作视觉匹配参考。', entries:(window.PALETTE_720_RAW||[]).map(([code,rgb,alias,page,row,col])=>({code,rgb,alias,page,row,col,hex:hex(rgb),lab:null})) },
+    'hanter-620': { id:'hanter-620', name:'涵特', source:'HANTE 120D/2 高速绣花线色卡', note:'涵特色卡：当前上传包共提供 620 个色位，覆盖 001–300、401–720；原文件未包含 301–400 色号页。颜色取自每个色块中央区域采样，仅作视觉匹配参考。', entries:(window.PALETTE_HANTER_RAW||[]).map(([code,rgb,alias,page,row,col])=>({code,rgb,alias,page,row,col,paletteId:'hanter-620',hex:hex(rgb),lab:null})) },
     'alice-1680': { id:'alice-1680', name:'亚丽丝', source:'12 张 75D 涤纶绣花线色卡照片', note:'亚丽丝色卡，共 1680 色；由 12 张实拍色卡、60 行 × 28 色提取。印刷色号采用图像识别：高置信色号直接显示，低置信或冲突位置保留唯一 AL 编号，避免误标。照片/屏幕存在色差，仅作视觉匹配参考。', entries:(window.PALETTE_ALICE_RAW||[]).map(([code,rgb,alias,page,row,col,quality])=>({code,rgb,alias,page,row,col,quality,paletteId:'alice-1680',hex:hex(rgb),lab:null})) }
   };
   let PALETTE = PALETTES['qqtq-480'];
@@ -62,7 +62,7 @@
     if(els.paletteSelect) els.paletteSelect.value=PALETTE.id;
     if(els.paletteCount) els.paletteCount.textContent=`${PALETTE.entries.length} 色`;
     if(els.paletteInfo) els.paletteInfo.innerHTML=`<strong>${PALETTE.name}</strong> · ${PALETTE.entries.length} 色<br>${PALETTE.note}`;
-    if(els.paletteSearch) els.paletteSearch.placeholder=PALETTE.id==='natural-720'?'搜索 001 / 黑色 / 720 ...':PALETTE.id==='alice-1680'?'搜索 101 / 1786 / AL0001 ...':'搜索 QQ155 / TQ433 ...';
+    if(els.paletteSearch) els.paletteSearch.placeholder=PALETTE.id==='hanter-620'?'搜索 001 / 401 / 720 ...':PALETTE.id==='alice-1680'?'搜索 101 / 1786 / AL0001 ...':'搜索 QQ155 / TQ433 ...';
   }
 
   function rememberSelection(r){ r.paletteSelections=r.paletteSelections||{}; r.paletteSelections[PALETTE.id]=r.selected; }

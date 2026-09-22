@@ -16,7 +16,7 @@
   <div class="layout">
     <nav class="toc">
       <strong>目录</strong>
-      <a href="#quick">1. 快速开始</a><a href="#palettes">2. 樱花 / 昭 / 亚丽丝色卡</a><a href="#project">3. 项目保存与多图</a>
+      <a href="#quick">1. 快速开始</a><a href="#palettes">2. 樱花 / 涵特 / 亚丽丝色卡</a><a href="#project">3. 项目保存与多图</a>
       <a href="#detect">4. 自动识别设置</a><a href="#edit">5. 区域编辑工具</a><a href="#regions">6. 区域与色号</a>
       <a href="#confidence">7. 匹配可信度</a><a href="#palette-manager">8. 色卡管理器</a><a href="#preview">9. 配色预览</a>
       <a href="#bom">10. BOM / 采购</a><a href="#limit">11. 限色优化</a><a href="#compare">12. 跨色卡比较</a>
@@ -32,12 +32,12 @@
         <div class="step-row"><div><strong>导出制作信息</strong><p>最终可导出色号 CSV、BOM 采购表、配色预览、标注图和色卡连线图。</p></div></div>
       </section>
 
-      <section class="card" id="palettes"><h2>2. 内置色卡：樱花、昭 与 亚丽丝</h2>
+      <section class="card" id="palettes"><h2>2. 内置色卡：樱花、涵特 与 亚丽丝</h2>
         <div class="grid">
           <div class="item"><strong>樱花</strong><p>第一次提供的 480 色色卡。保留原有 QQ001–QQ360 / TQ361–TQ480 色号体系。适合按这些色号直接找线。</p></div>
-          <div class="item"><strong>昭</strong><p>第二套更大色卡，共 720 色，由 20 张自然光色卡页提取。编号为 001–720。</p></div><div class="item"><strong>亚丽丝</strong><p>第三套色卡，共 1680 色，来自 12 张 75D 涤纶绣花线色卡照片。高置信厂家印刷色号直接显示；少量低置信位置使用 AL 内部编号。</p></div>
+          <div class="item"><strong>涵特</strong><p>HANTE 120D/2 高速绣花线色卡。当前上传包共整理 620 个色位，覆盖 001–300、401–720；301–400 色号页未包含在本次文件中。</p></div><div class="item"><strong>亚丽丝</strong><p>第三套色卡，共 1680 色，来自 12 张 75D 涤纶绣花线色卡照片。高置信厂家印刷色号直接显示；少量低置信位置使用 AL 内部编号。</p></div>
         </div>
-        <h3>怎么切换</h3><p>页面右上角色卡下拉框选择“樱花”“昭”或“亚丽丝”。切换后，系统会针对同一批区域重新计算最佳色号、候选色和 ΔE00；各色卡的人工选择会分别记忆。</p>
+        <h3>怎么切换</h3><p>页面右上角色卡下拉框选择“樱花”“涵特”或“亚丽丝”。切换后，系统会针对同一批区域重新计算最佳色号、候选色和 ΔE00；各色卡的人工选择会分别记忆。</p>
         <div class="callout warn">色卡来自图片采样，受到拍摄光线、白平衡、屏幕和毛线材质影响。网站给出的是“视觉最近匹配”，不是实验室测色结果。</div>
               <div class="callout warn"><strong>亚丽丝色号读取说明：</strong>亚丽丝的印刷色号不是连续编号。网站会优先显示高置信识别到的厂家色号；对低置信或重复冲突位置使用唯一 AL 编号，并保留页 / 行 / 列定位，避免错误标注。</div>
       </section>
@@ -125,7 +125,7 @@
       </section>
 
       <section class="card" id="compare"><h2>12. 跨色卡比较</h2>
-        <p>同一个设计颜色会同时在所有已安装色卡中查找最佳色。比如一个蓝色可能在“樱花”中 ΔE 3.1，在“昭”中 ΔE 1.8。这个页面用于判断哪套线卡更接近原设计。</p>
+        <p>同一个设计颜色会同时在所有已安装色卡中查找最佳色。比如一个蓝色可能在“樱花”中 ΔE 3.1，在“涵特”中 ΔE 1.8。这个页面用于判断哪套线卡更接近原设计。</p>
       </section>
 
       <section class="card" id="schemes"><h2>13. 配色方案 A / B</h2>
@@ -153,7 +153,7 @@
           <li>用默认识别参数跑一遍，不要一开始就追求参数完美。</li>
           <li>先用“合并所选”解决大部件碎裂，再用“补区域 / 画笔 / 橡皮 / 拆分”处理少数异常。</li>
           <li>给关键部件改名，并给左右/重复部件建立联动。</li>
-          <li>在樱花 / 昭 / 亚丽丝之间做跨色卡比较，重点人工检查低可信度颜色。</li>
+          <li>在樱花 / 涵特 / 亚丽丝之间做跨色卡比较，重点人工检查低可信度颜色。</li>
           <li>保存 A/B 方案，再通过配色预览做最终选择。</li>
           <li>最后生成 BOM / 限色方案 / 标注图，并保存项目文件。</li>
         </ol>
@@ -169,7 +169,7 @@
       </section>
     </main>
   </div>
-  <div class="footer">Plush Color Matcher v3.3 · 说明书</div>
+  <div class="footer">Plush Color Matcher v3.4 · 说明书</div>
 </div>
 </body>
 </html>
