@@ -47,6 +47,50 @@ jobs:
           node --check js/app.js
           python - <<'PY'
           from pathlib import Path
+          import json, re
+          def read_palette(path, var):
+              s=Path(path).read_text(encoding='utf-8')
+              m=re.search(rf'window\\.{var}=(\\[.*\\]);\\s*
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s = Path("index.html").read_text(encoding="utf-8")
+          if re.search(r"<script>(.*?)</script>", s, re.S):
+              raise SystemExit("Inline scripts should not be present after the v3.1 refactor")
+          if "<style>" in s:
+              raise SystemExit("Inline styles should not be present after the v3.1 refactor")
+          print("index.html bytes:", len(s.encode("utf-8")))
+          print("app.js bytes:", Path("js/app.js").stat().st_size)
+          PY
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload static site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+, s, re.S)
+              if not m:
+                  raise SystemExit(f'Cannot parse {path}')
+              return json.loads(m.group(1))
+          sakura=read_palette('data/qqtq-480.js','PALETTE_RAW')
+          hanter=read_palette('data/hanter-620.js','PALETTE_HANTER_RAW')
+          alice=read_palette('data/alice-1680.js','PALETTE_ALICE_RAW')
+          assert len(sakura)==600 and sakura[-1][0]=='TQ600'
+          assert len(hanter)==620
+          hcodes={x[0] for x in hanter}
+          assert {'001','300','401','720'} <= hcodes
+          assert not ({'301','350','400'} & hcodes)
+          assert len(alice)==1680
+          print('palette counts:', len(sakura), len(hanter), len(alice))
+          PY
+          python - <<'PY'
+          from pathlib import Path
           import re
           s = Path("index.html").read_text(encoding="utf-8")
           if re.search(r"<script>(.*?)</script>", s, re.S):

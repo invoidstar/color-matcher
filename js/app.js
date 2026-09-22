@@ -4,8 +4,8 @@
   if(!PCMColor) throw new Error('PCMColor core module is missing');
   const { clamp, hex, rgbToLab, deltaE00, rgbToHsv } = PCMColor;
   const PALETTES = {
-    'qqtq-480': { id:'qqtq-480', name:'樱花', source:'参考色卡图像', note:'樱花色卡，共 480 色；保留 QQ/TQ 色号体系。', entries:(window.PALETTE_RAW||[]).map(([code,rgb])=>({code,rgb,alias:'',hex:hex(rgb),lab:null})) },
-    'hanter-620': { id:'hanter-620', name:'涵特', source:'HANTE 120D/2 高速绣花线色卡', note:'涵特色卡：当前上传包共提供 620 个色位，覆盖 001–300、401–720；原文件未包含 301–400 色号页。颜色取自每个色块中央区域采样，仅作视觉匹配参考。', entries:(window.PALETTE_HANTER_RAW||[]).map(([code,rgb,alias,page,row,col])=>({code,rgb,alias,page,row,col,paletteId:'hanter-620',hex:hex(rgb),lab:null})) },
+    'qqtq-480': { id:'qqtq-480', name:'樱花', source:'参考色卡图像', note:'樱花色卡，共 600 色；保留 QQ001–QQ360 / TQ361–TQ600 色号体系。', entries:(window.PALETTE_RAW||[]).map(([code,rgb])=>({code,rgb,alias:'',hex:hex(rgb),lab:null})) },
+    'hanter-620': { id:'hanter-620', name:'涵特', declaredCount:720, source:'HANTE 120D/2 高速绣花线色卡', note:'涵特为 720 色系；当前上传包实际可采样 620 色，已录入 001–300、401–720，缺少 301–400 色号页。缺失颜色不会参与匹配。', entries:(window.PALETTE_HANTER_RAW||[]).map(([code,rgb,alias,page,row,col])=>({code,rgb,alias,page,row,col,paletteId:'hanter-620',hex:hex(rgb),lab:null})) },
     'alice-1680': { id:'alice-1680', name:'亚丽丝', source:'12 张 75D 涤纶绣花线色卡照片', note:'亚丽丝色卡，共 1680 色；由 12 张实拍色卡、60 行 × 28 色提取。印刷色号采用图像识别：高置信色号直接显示，低置信或冲突位置保留唯一 AL 编号，避免误标。照片/屏幕存在色差，仅作视觉匹配参考。', entries:(window.PALETTE_ALICE_RAW||[]).map(([code,rgb,alias,page,row,col,quality])=>({code,rgb,alias,page,row,col,quality,paletteId:'alice-1680',hex:hex(rgb),lab:null})) }
   };
   let PALETTE = PALETTES['qqtq-480'];
@@ -58,11 +58,15 @@
 
   function paletteLabel(p){ if(!p)return '—'; if(p.paletteId==='alice-1680'){if(!p.alias)return p.code;if(p.quality==='verified'||p.quality==='high')return p.alias;if(p.quality==='medium')return `${p.alias} ?`;return p.code;} return p.alias?`${p.code} · ${p.alias}`:p.code; }
 
+  function paletteCountText(p=PALETTE){
+    return p.declaredCount && p.declaredCount!==p.entries.length ? `${p.entries.length} / ${p.declaredCount} 已录入` : `${p.entries.length} 色`;
+  }
+
   function updatePaletteUI(){
     if(els.paletteSelect) els.paletteSelect.value=PALETTE.id;
-    if(els.paletteCount) els.paletteCount.textContent=`${PALETTE.entries.length} 色`;
-    if(els.paletteInfo) els.paletteInfo.innerHTML=`<strong>${PALETTE.name}</strong> · ${PALETTE.entries.length} 色<br>${PALETTE.note}`;
-    if(els.paletteSearch) els.paletteSearch.placeholder=PALETTE.id==='hanter-620'?'搜索 001 / 401 / 720 ...':PALETTE.id==='alice-1680'?'搜索 101 / 1786 / AL0001 ...':'搜索 QQ155 / TQ433 ...';
+    if(els.paletteCount) els.paletteCount.textContent=paletteCountText(PALETTE);
+    if(els.paletteInfo) els.paletteInfo.innerHTML=`<strong>${PALETTE.name}</strong> · ${paletteCountText(PALETTE)}<br>${PALETTE.note}`;
+    if(els.paletteSearch) els.paletteSearch.placeholder=PALETTE.id==='hanter-620'?'搜索 001 / 401 / 720 ...':PALETTE.id==='alice-1680'?'搜索 101 / 1786 / AL0001 ...':'搜索 QQ155 / TQ481 / TQ600 ...';
   }
 
   function rememberSelection(r){ r.paletteSelections=r.paletteSelections||{}; r.paletteSelections[PALETTE.id]=r.selected; }
@@ -500,7 +504,7 @@
   function v3PersistCustomPalettes(){try{const list=Object.values(PALETTES).filter(p=>p.custom).map(v3PaletteSerializable);localStorage.setItem('pcm-v3-custom-palettes',JSON.stringify(list));}catch(e){}}
   function v3LoadCustomPalettes(){try{const list=JSON.parse(localStorage.getItem('pcm-v3-custom-palettes')||'[]');for(const raw of list){raw.entries=(raw.entries||[]).map(e=>({...e,hex:hex(e.rgb),lab:null,baseRgb:e.baseRgb||e.rgb}));raw.custom=true;PALETTES[raw.id]=raw;}}catch(e){}}
   function v3RefreshPaletteSelect(){if(!els.paletteSelect)return;const cur=PALETTE.id;els.paletteSelect.innerHTML=Object.values(PALETTES).map(p=>`<option value="${v3Escape(p.id)}">${v3Escape(p.name)}</option>`).join('');els.paletteSelect.value=PALETTES[cur]?cur:Object.keys(PALETTES)[0];}
-  function v3RenderPaletteManager(){if(!els.paletteManagerList)return;const list=Object.values(PALETTES);els.paletteManagerList.innerHTML=list.map(p=>`<div class="manager-card" data-pid="${v3Escape(p.id)}"><strong>${v3Escape(p.name)}</strong><p>${p.entries.length} 色 · ${v3Escape(p.source||'色卡')}<br>${v3Escape(p.note||'')}</p><div class="manager-actions"><button class="button small pm-use">使用</button><button class="button small pm-export">导出 JSON</button>${p.custom?'<button class="button small pm-calibrate">校准</button><button class="button small pm-delete">删除</button>':''}</div></div>`).join('');
+  function v3RenderPaletteManager(){if(!els.paletteManagerList)return;const list=Object.values(PALETTES);els.paletteManagerList.innerHTML=list.map(p=>`<div class="manager-card" data-pid="${v3Escape(p.id)}"><strong>${v3Escape(p.name)}</strong><p>${${paletteCountText(p)} · ${v3Escape(p.source||'色卡')}<br>${v3Escape(p.note||'')}</p><div class="manager-actions"><button class="button small pm-use">使用</button><button class="button small pm-export">导出 JSON</button>${p.custom?'<button class="button small pm-calibrate">校准</button><button class="button small pm-delete">删除</button>':''}</div></div>`).join('');
     els.paletteManagerList.querySelectorAll('.manager-card').forEach(card=>{const id=card.dataset.pid,p=PALETTES[id];card.querySelector('.pm-use')?.addEventListener('click',()=>{setPalette(id);v3RefreshPaletteSelect();v3RenderPaletteManager();});card.querySelector('.pm-export')?.addEventListener('click',()=>{v3DownloadBlob(new Blob([JSON.stringify(v3PaletteSerializable(p),null,2)],{type:'application/json'}),`${p.id}.palette.json`);});card.querySelector('.pm-delete')?.addEventListener('click',()=>{if(!p.custom)return;if(PALETTE.id===id)setPalette('qqtq-480');delete PALETTES[id];v3PersistCustomPalettes();v3RefreshPaletteSelect();v3RenderPaletteManager();v3ScheduleAutosave();});card.querySelector('.pm-calibrate')?.addEventListener('click',()=>v3CalibratePalette(id));});
   }
   function v3CalibratePalette(id){const p=PALETTES[id];if(!p?.custom)return;const raw=prompt('输入校准百分比：亮度,R,G,B（例如 100,100,100,100）','100,100,100,100');if(!raw)return;const vals=raw.split(',').map(Number);if(vals.length<4||vals.some(x=>!isFinite(x)||x<=0))return alert('格式不正确。');const [v,rg,gg,bg]=vals.map(x=>x/100);for(const e of p.entries){const b=e.baseRgb||e.rgb;e.baseRgb=b.slice();e.rgb=[clamp(b[0]*v*rg,0,255),clamp(b[1]*v*gg,0,255),clamp(b[2]*v*bg,0,255)].map(Math.round);e.hex=hex(e.rgb);e.lab=null;}v3PersistCustomPalettes();if(PALETTE.id===id){for(const r of regions){r.candidates=bestMatches(r.rgb,5);if(!getPalette(r.selected))r.selected=r.candidates[0]?.p.code||'';}renderAll();}v3RenderPaletteManager();}
