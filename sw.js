@@ -1,4 +1,4 @@
-const CACHE='plush-color-matcher-v3.5';
+const CACHE='plush-color-matcher-v3.6';
 const ASSETS=[
   './','./index.html','./manifest.webmanifest','./icon.svg',
   './css/base.css','./css/theme.css','./css/features.css',

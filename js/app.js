@@ -5,7 +5,7 @@
   const { clamp, hex, rgbToLab, deltaE00, rgbToHsv } = PCMColor;
   const PALETTES = {
     'qqtq-480': { id:'qqtq-480', name:'樱花', source:'参考色卡图像', note:'樱花色卡，共 600 色；保留 QQ001–QQ360 / TQ361–TQ600 色号体系。', entries:(window.PALETTE_RAW||[]).map(([code,rgb])=>({code,rgb,alias:'',hex:hex(rgb),lab:null})) },
-    'hanter-620': { id:'hanter-620', name:'涵特', declaredCount:720, source:'HANTE 120D/2 高速绣花线色卡', note:'涵特为 720 色系；当前上传包实际可采样 620 色，已录入 001–300、401–720，缺少 301–400 色号页。缺失颜色不会参与匹配。', entries:(window.PALETTE_HANTER_RAW||[]).map(([code,rgb,alias,page,row,col])=>({code,rgb,alias,page,row,col,paletteId:'hanter-620',hex:hex(rgb),lab:null})) },
+    'hanter-620': { id:'hanter-620', name:'涵特', declaredCount:720, source:'HANTE 120D/2 高速绣花线色卡', note:'涵特色卡现已完整录入 001–720 共 720 色；301–400 来自后续补充色卡页。颜色取自图片中央区域采样，仅作视觉匹配参考。', entries:(window.PALETTE_HANTER_RAW||[]).map(([code,rgb,alias,page,row,col])=>({code,rgb,alias,page,row,col,paletteId:'hanter-620',hex:hex(rgb),lab:null})) },
     'alice-1680': { id:'alice-1680', name:'亚丽丝', source:'12 张 75D 涤纶绣花线色卡照片', note:'亚丽丝色卡，共 1680 色；由 12 张实拍色卡、60 行 × 28 色提取。印刷色号采用图像识别：高置信色号直接显示，低置信或冲突位置保留唯一 AL 编号，避免误标。照片/屏幕存在色差，仅作视觉匹配参考。', entries:(window.PALETTE_ALICE_RAW||[]).map(([code,rgb,alias,page,row,col,quality])=>({code,rgb,alias,page,row,col,quality,paletteId:'alice-1680',hex:hex(rgb),lab:null})) }
   };
   let PALETTE = PALETTES['qqtq-480'];
@@ -66,7 +66,7 @@
     if(els.paletteSelect) els.paletteSelect.value=PALETTE.id;
     if(els.paletteCount) els.paletteCount.textContent=paletteCountText(PALETTE);
     if(els.paletteInfo) els.paletteInfo.innerHTML=`<strong>${PALETTE.name}</strong> · ${paletteCountText(PALETTE)}<br>${PALETTE.note}`;
-    if(els.paletteSearch) els.paletteSearch.placeholder=PALETTE.id==='hanter-620'?'搜索 001 / 401 / 720 ...':PALETTE.id==='alice-1680'?'搜索 101 / 1786 / AL0001 ...':'搜索 QQ155 / TQ481 / TQ600 ...';
+    if(els.paletteSearch) els.paletteSearch.placeholder=PALETTE.id==='hanter-620'?'搜索 001 / 301 / 720 ...':PALETTE.id==='alice-1680'?'搜索 101 / 1786 / AL0001 ...':'搜索 QQ155 / TQ481 / TQ600 ...';
   }
 
   function rememberSelection(r){ r.paletteSelections=r.paletteSelections||{}; r.paletteSelections[PALETTE.id]=r.selected; }
