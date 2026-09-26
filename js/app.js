@@ -4,9 +4,9 @@
   if(!PCMColor) throw new Error('PCMColor core module is missing');
   const { clamp, hex, rgbToLab, deltaE00, rgbToHsv } = PCMColor;
   const PALETTES = {
-    'qqtq-480': { id:'qqtq-480', name:'樱花', source:'参考色卡图像', note:'樱花色卡，共 600 色；保留 QQ001–QQ360 / TQ361–TQ600 色号体系。', entries:(window.PALETTE_RAW||[]).map(([code,rgb])=>({code,rgb,alias:'',hex:hex(rgb),lab:null})) },
+    'qqtq-480': { id:'qqtq-480', name:'樱花', source:'最新 5 张实拍色卡', note:'樱花 600 色已于 2026-09-26 使用最新 5 张实拍色卡整体重新采样，旧版 RGB 提取数据已全部替换；色号保持 QQ001–QQ360 / TQ361–TQ600。', entries:(window.PALETTE_RAW||[]).map(([code,rgb])=>({code,rgb,alias:'',hex:hex(rgb),lab:null})) },
     'hanter-620': { id:'hanter-620', name:'涵特', declaredCount:720, source:'HANTE 120D/2 高速绣花线色卡', note:'涵特色卡现已完整录入 001–720 共 720 色；301–400 来自后续补充色卡页。颜色取自图片中央区域采样，仅作视觉匹配参考。', entries:(window.PALETTE_HANTER_RAW||[]).map(([code,rgb,alias,page,row,col])=>({code,rgb,alias,page,row,col,paletteId:'hanter-620',hex:hex(rgb),lab:null})) },
-    'alice-1680': { id:'alice-1680', name:'亚丽丝', source:'12 张 75D 涤纶绣花线色卡照片', note:'亚丽丝色卡，共 1680 色；由 12 张实拍色卡、60 行 × 28 色提取。印刷色号采用图像识别：高置信色号直接显示，低置信或冲突位置保留唯一 AL 编号，避免误标。照片/屏幕存在色差，仅作视觉匹配参考。', entries:(window.PALETTE_ALICE_RAW||[]).map(([code,rgb,alias,page,row,col,quality])=>({code,rgb,alias,page,row,col,quality,paletteId:'alice-1680',hex:hex(rgb),lab:null})) }
+    'alice-1680': { id:'alice-1680', name:'亚丽丝', source:'12 张 75D 涤纶绣花线色卡照片', note:'亚丽丝色卡，共 1680 色；2026-09-26 依据新增近照校准了厂家色号 101、102、1786 对应色值。其余数据与 AL 内部编号保持不变。照片/屏幕存在色差，仅作视觉匹配参考。', entries:(window.PALETTE_ALICE_RAW||[]).map(([code,rgb,alias,page,row,col,quality])=>({code,rgb,alias,page,row,col,quality,paletteId:'alice-1680',hex:hex(rgb),lab:null})) }
   };
   let PALETTE = PALETTES['qqtq-480'];
   const $ = s => document.querySelector(s);

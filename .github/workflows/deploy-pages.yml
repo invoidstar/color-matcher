@@ -50,6 +50,19 @@ jobs:
           node --check data/qqtq-480.js
           node --check data/hanter-620.js
           node --check data/alice-1680.js
+          node - <<'NODE'
+          global.window=global;
+          require('./data/alice-1680.js');
+          const a=global.PALETTE_ALICE_RAW;
+          if(!Array.isArray(a)||a.length!==1680)throw new Error('Alice palette length invalid');
+          const expected={'101':[221,220,218],'102':[217,220,217],'1786':[221,221,231]};
+          for(const [alias,rgb] of Object.entries(expected)){
+            const e=a.find(x=>x[2]===alias);
+            if(!e)throw new Error('Alice alias missing: '+alias);
+            if(e[1].join(',')!==rgb.join(','))throw new Error('Alice RGB mismatch: '+alias+' '+e[1]);
+          }
+          console.log('alice corrected:',Object.keys(expected).join(', '));
+          NODE
           node --check js/app.js
           node --check js/palette-gallery.js
           node --check js/announcements.js

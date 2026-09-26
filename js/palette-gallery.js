@@ -15,7 +15,7 @@
   const palettes={
     'qqtq-480':{
       id:'qqtq-480',name:'樱花',
-      note:'共 600 色：QQ001–QQ360 / TQ361–TQ600。原 001–480 保持不变，TQ481–TQ600 来自补充色卡。',
+      note:'共 600 色：QQ001–QQ360 / TQ361–TQ600。2026-09-26 使用最新 5 张实拍色卡整体重新采样，旧版提取数据已替换。',
       entries:(window.PALETTE_RAW||[]).map((x,i)=>({code:x[0],rgb:x[1],alias:'',index:i}))
     },
     'hanter-620':{
@@ -25,7 +25,7 @@
     },
     'alice-1680':{
       id:'alice-1680',name:'亚丽丝',
-      note:'共 1680 个提取色位。高置信厂家色号优先展示；无法可靠确认的位置使用 AL 内部编号。',
+      note:'共 1680 个提取色位。2026-09-26 依据新增近照校准了 101、102、1786；高置信厂家色号优先展示。',
       entries:(window.PALETTE_ALICE_RAW||[]).map((x,i)=>({code:x[0],rgb:x[1],alias:x[2]||'',page:x[3],row:x[4],col:x[5],quality:x[6],index:i}))
     }
   };
