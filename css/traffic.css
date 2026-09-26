@@ -1,0 +1,1 @@
+.traffic-stats{display:inline-flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;color:#aaa4b0;font-size:11px;line-height:1.6}.traffic-stats .traffic-dot{opacity:.55}.traffic-stats strong{font-weight:700;color:#8a8391}.traffic-stats span[id^="busuanzi_"]{font-variant-numeric:tabular-nums;color:#6f6877}@media(max-width:620px){.traffic-stats{gap:5px}}
