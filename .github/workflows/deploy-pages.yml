@@ -47,11 +47,11 @@ jobs:
           test -f data/announcements.js
           grep -q 'js/app.js' index.html
           grep -q 'css/base.css' index.html
-          grep -q 'busuanzi_site_pv' index.html
-          grep -q 'busuanzi_site_uv' index.html
+          grep -q 'busuanzi_page_pv' index.html
+          grep -q 'busuanzi_page_uv' index.html
           grep -q 'cdn.busuanzi.cc/busuanzi/3.6.9/busuanzi.min.js' index.html
-          grep -q 'busuanzi_site_pv' palette.html
-          grep -q 'busuanzi_site_pv' guide.html
+          grep -q 'busuanzi_page_pv' palette.html
+          grep -q 'busuanzi_page_pv' guide.html
           node --check js/core/color.js
           node --check data/qqtq-480.js
           node --check data/hanter-620.js
