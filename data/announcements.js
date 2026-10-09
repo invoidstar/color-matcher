@@ -1,6 +1,22 @@
 /* Add a new object at the top for every major release. A new id makes the announcement appear again. */
 window.PCM_ANNOUNCEMENTS=[
   {
+    id:'v4.0-workspace-redesign',
+    version:'v4.0',
+    date:'2026-10-09',
+    title:'Color Matcher 工作台焕新',
+    summary:'全新桌面与手机操作布局、画布移动缩放，以及更简洁的功能结构。',
+    details:[
+      '桌面端让画布更突出，右侧集中查看区域及色号，结果区整合预览和导出。',
+      '手机端新增「画布 / 区域 / 结果」底部导航，减少长页面反复滚动。',
+      '新增画布放大、缩小和适应功能；移动模式支持单指拖动与双指缩放。',
+      '移除 BOM、库存、用量与采购成本功能，保留限色优化与现有配色导出。',
+      '留言板仍暂不开放，后续完成管理员权限配置后再上线。'
+    ],
+    link:'./',
+    linkText:'体验新版工作台'
+  },
+  {
     id:'v3.8-palette-refresh',
     version:'v3.8',
     date:'2026-09-26',

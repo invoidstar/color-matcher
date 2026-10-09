@@ -17,6 +17,9 @@ Plush Color Matcher 保持 **无构建步骤（no-build）的静态 GitHub Pages
 
 项目继续保持无 npm、无 bundler、无后端；普通静态 HTTP Server 即可本地运行。
 
+v4.0 增加 `css/ui-v4.css`（工作台视觉与手机端响应式）以及 `js/ui-v4.js`（移动工作区导航、画布缩放和拖动），保留既有色卡数据与项目文件格式。BOM、采购/用量/成本功能已从 UI 与应用运行逻辑中移除，历史项目里的对应元数据会被忽略。
+
+
 ## CSS layers
 
 - `base.css`：基础布局、通用组件、原始响应式规则。

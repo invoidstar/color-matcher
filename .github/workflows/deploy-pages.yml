@@ -42,11 +42,25 @@ jobs:
           test -f css/palette.css
           test -f css/announcement.css
           test -f css/traffic.css
+          test -f css/ui-v4.css
+          test -f js/ui-v4.js
           test -f js/palette-gallery.js
           test -f js/announcements.js
           test -f data/announcements.js
           grep -q 'js/app.js' index.html
           grep -q 'css/base.css' index.html
+          grep -q 'css/ui-v4.css' index.html
+          grep -q 'js/ui-v4.js' index.html
+          grep -q 'v4-mobile-nav' index.html
+          if grep -Eq 'id="tab-bom"|id="bomTable"|id="costOptimizeBtn"' index.html; then
+            echo "Obsolete purchasing UI found" >&2
+            exit 1
+          fi
+          if grep -Eq 'buildBOM|renderBOM|downloadBOM' js/app.js; then
+            echo "Obsolete BOM code found" >&2
+            exit 1
+          fi
+
           grep -q 'busuanzi_page_pv' index.html
           grep -q 'busuanzi_page_uv' index.html
           grep -q 'cdn.busuanzi.cc/busuanzi/3.6.9/busuanzi.min.js' index.html
@@ -70,6 +84,7 @@ jobs:
           console.log('alice corrected:',Object.keys(expected).join(', '));
           NODE
           node --check js/app.js
+          node --check js/ui-v4.js
           node --check js/palette-gallery.js
           node --check js/announcements.js
           node --check data/announcements.js
