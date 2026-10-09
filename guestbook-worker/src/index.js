@@ -1,12 +1,16 @@
 import {
   HttpError, CATEGORIES, validateMessage, parsePagination, readJson,
-  publicReady, fingerprint, verifyTurnstile, requireAdmin
+  publicReady, fingerprint, verifyTurnstile
 } from './security.js';
+import {
+  beginGitHubLogin, finishGitHubLogin, requireAdmin, logoutAdmin, loginHtml
+} from './github-auth.js';
+import { LOGIN_CSS } from './login-ui.js';
 import { ADMIN_HTML, ADMIN_CSS, ADMIN_JS } from './admin-ui.js';
 
 // The public API is intentionally disabled unless PUBLIC_ENABLED is explicitly
 // set to "true" AND all D1 / Turnstile / rate-limit secrets are configured.
-// Administrator endpoints always require a separately verified Access JWT.
+// Admin APIs require revocable GitHub OAuth sessions and CSRF protection.
 
 function securityHeaders() {
   return {
@@ -198,10 +202,24 @@ async function deleteAdminMessage(env, id) {
 }
 
 async function handleAdmin(request, env, url) {
-  // Every admin route is protected, including HTML/CSS/JS. The verified
-  // signature, AUD, issuer, expiry and email are checked server-side.
-  await requireAdmin(request, env);
   const path = url.pathname.replace(/\/+$/, '') || '/';
+  if (path === '/admin/login' && request.method === 'GET') {
+    return loginHtml();
+  }
+  const unsafe = !['GET','HEAD'].includes(request.method);
+  let session;
+  try {
+    session = await requireAdmin(request, env, unsafe);
+  } catch (error) {
+    if (error instanceof HttpError && error.status === 401 &&
+        request.method === 'GET' && (path === '/admin' || path === '/admin/index.html')) {
+      return new Response(null, {
+        status: 303,
+        headers: { location: '/admin/login', 'cache-control': 'no-store' }
+      });
+    }
+    throw error;
+  }
   if (request.method === 'GET' && (path === '/admin' || path === '/admin/index.html')) {
     return page(ADMIN_HTML, 'text/html; charset=utf-8');
   }
@@ -210,6 +228,12 @@ async function handleAdmin(request, env, url) {
   }
   if (request.method === 'GET' && path === '/admin/styles.css') {
     return page(ADMIN_CSS, 'text/css; charset=utf-8');
+  }
+  if (request.method === 'GET' && path === '/admin/api/session') {
+    return json({ ok: true, csrfToken: session.csrfToken, userId: session.userId });
+  }
+  if (request.method === 'POST' && path === '/admin/api/logout') {
+    return logoutAdmin(session, env);
   }
   const match = path.match(/^\/admin\/api\/messages\/([a-f0-9-]{36})$/i);
   if (request.method === 'GET' && path === '/admin/api/messages') {
@@ -223,7 +247,6 @@ async function handleAdmin(request, env, url) {
   }
   throw new HttpError(404, 'not_found', '页面不存在');
 }
-
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -251,6 +274,15 @@ export default {
       if (path === '/api/messages' && request.method === 'POST') {
         return await postPublicMessage(request, env);
       }
+      if (request.method === 'GET' && path === '/auth/login.css') {
+        return page(LOGIN_CSS, 'text/css; charset=utf-8');
+      }
+      if (request.method === 'GET' && path === '/auth/github/start') {
+        return await beginGitHubLogin(request, env);
+      }
+      if (request.method === 'GET' && path === '/auth/github/callback') {
+        return await finishGitHubLogin(request, env, url);
+      }
       if (path === '/admin' || path.startsWith('/admin/')) {
         return await handleAdmin(request, env, url);
       }
@@ -260,7 +292,7 @@ export default {
         return json({ error: error.code, message: error.message }, error.status,
           request, env, path.startsWith('/api/'));
       }
-      // Do not leak SQL errors, IP hashes, Access tokens or Turnstile secrets.
+      // Do not leak SQL errors, IP hashes, OAuth tokens or Turnstile secrets.
       console.error('guestbook internal error:', error?.name || 'unknown');
       return json({ error: 'internal_error', message: '服务暂时不可用，请稍后再试' },
         500, request, env, path.startsWith('/api/'));
