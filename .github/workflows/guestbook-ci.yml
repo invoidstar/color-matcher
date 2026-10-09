@@ -27,6 +27,10 @@ jobs:
           node --check guestbook-worker/src/github-auth.js
           node --check guestbook-worker/src/login-ui.js
           node --check guestbook-worker/src/index.js
+      - name: One-time D1 registry script dry-run (no remote access)
+        run: |
+          node --check guestbook-worker/scripts/register-d1-baseline.mjs
+          node guestbook-worker/scripts/register-d1-baseline.mjs --self-test
       - name: Backend and security tests
         run: node --test guestbook-worker/tests/*.test.mjs
       - name: Isolated visitor acceptance (real local D1; simulated Turnstile, no production writes)
