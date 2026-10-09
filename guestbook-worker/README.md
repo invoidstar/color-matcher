@@ -84,16 +84,20 @@ Session Cookie 设置 Secure、HttpOnly、SameSite=Lax；D1 只存储哈希。OA
 
 ## 下一步（尚未执行）
 
-1. 确认 OAuth App 创建完成，获取 Client ID；Client Secret 仅在 Cloudflare 中配置。
-2. 核对真正 D1 UUID、Turnstile Site Key、站长 GitHub 数字 ID。
-3. 检查是否执行过旧版 messages SQL，防止已有表结构和迁移发生冲突。
-4. 从 guestbook-worker 目录受控执行：
+GitHub OAuth 的公开 Client ID 与站长数字 ID **已经配置完毕**，无需重复创建应用。
+
+1. 打开 Cloudflare 控制台 → Storage & databases → D1 → color-matcher-guestbook，复制页面显示的 **Database ID（UUID）**。这里不是数据库名称。
+2. 打开 Cloudflare Turnstile → color-matcher-guestbook Widget，复制 **Site Key（公开值）**。这里不是 Widget 名称。
+3. 在 Cloudflare Workers & Pages → color-matcher-guestbook-api → Settings → Variables and Secrets 中将 GITHUB_CLIENT_SECRET、TURNSTILE_SECRET、RATE_LIMIT_SALT 都保存为 **Secret**。不要提交到 GitHub，也不要在聊天中发送。
+4. 检查是否执行过旧版 messages SQL，防止已有表结构和迁移发生冲突。
+5. 从 guestbook-worker 目录受控执行：
    npx wrangler d1 migrations apply color-matcher-guestbook --remote
    依次创建 messages 和 admin_sessions。
-5. 配好变量后才手动部署：
+6. 配好变量后才手动部署：
    npx wrangler deploy
    部署阶段保持 PUBLIC_ENABLED=false，首先测试 GitHub 登录、隐藏/回复/删除、退出、越权拒绝。
-6. 管理权限实测通过并获得用户明确批准后，再开启匿名提交并把入口合并到 GitHub Pages 主站。
+7. 管理权限实测通过并获得用户明确批准后，再开启匿名提交并把入口合并到 GitHub Pages 主站。
 
-若今后把开发分支合并 main，GitHub Pages 工作流需要排除 guestbook-worker 源码。
-本分支 GitHub Actions 只运行 Node 测试、SQL 迁移验证和安全锁检查，**不会部署**。
+静态部署安全门禁现已完成：`scripts/stage_pages.py` 会将 GitHub Pages 的部署内容复制到 `_site/`，**默认排除**整个 Worker 后端以及留言板页面和前端脚本。即便以后先合并代码，GitHub Pages 也不会自动开放留言入口。只有正式验收通过，单独批准后才能显式采用 `--include-guestbook` 公共打包参数，并添加主站导航。
+
+本分支 GitHub Actions 只运行 Node 测试、SQL 迁移验证和静态产物隔离检查，**不会部署 Worker 或正式 GitHub Pages**。
