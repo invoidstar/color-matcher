@@ -371,3 +371,36 @@ test('admin assets parse as JavaScript and no hidden HTML scripting exists',()=>
   assert.doesNotThrow(()=>new Function(ADMIN_JS));
   assert.equal(ADMIN_HTML.includes('<script>'),false);
 });
+
+// Cloudflare Siteverify may encode an invalid verification verdict as HTTP 400.
+// Never misreport that as an upstream connection outage or accept a message.
+test('Siteverify 400 with invalid token verdict rejects submission as 403',async()=>{
+  const instance=env(),original=globalThis.fetch;
+  globalThis.fetch=async url=>{
+    assert.match(String(url),/turnstile\/v0\/siteverify/);
+    return Response.json({success:false,'error-codes':['invalid-input-response']},{status:400});
+  };
+  try{
+    const r=await result('/api/messages','POST',postBody('Rejected bad token'),
+      instance,{'CF-Connecting-IP':'192.0.2.3'});
+    assert.equal(r.response.status,403);
+    assert.equal(r.data.error,'captcha_failed');
+    assert.equal(instance.DB.rows.length,0);
+  }finally{globalThis.fetch=original;}
+});
+
+test('Siteverify invalid secret does not expose credentials and fails closed',async()=>{
+  const instance=env(),original=globalThis.fetch;
+  globalThis.fetch=async url=>{
+    assert.match(String(url),/turnstile\/v0\/siteverify/);
+    return Response.json({success:false,'error-codes':['invalid-input-secret']},{status:400});
+  };
+  try{
+    const r=await result('/api/messages','POST',postBody('No access on invalid secret'),
+      instance,{'CF-Connecting-IP':'192.0.2.4'});
+    assert.equal(r.response.status,503);
+    assert.equal(r.data.error,'captcha_configuration');
+    assert.ok(!JSON.stringify(r.data).includes(instance.TURNSTILE_SECRET));
+    assert.equal(instance.DB.rows.length,0);
+  }finally{globalThis.fetch=original;}
+});

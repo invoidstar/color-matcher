@@ -127,16 +127,36 @@ export async function verifyTurnstile(token, ip, env) {
     console.error('Turnstile Siteverify transport failure', error?.name || 'unknown');
     throw new HttpError(503, 'captcha_network_fetch', '人机验证服务繁忙，请稍后重试');
   }
-  if (!response.ok) {
-    console.error('Turnstile Siteverify non-2xx HTTP', response.status);
-    throw new HttpError(503, 'captcha_network_http_' + response.status, '人机验证服务繁忙，请稍后重试');
-  }
+  // Siteverify may return a JSON verification verdict with an HTTP 4xx
+  // status. Parse that verdict *before* treating non-2xx as connectivity.
   let result;
   try {
     result = await response.json();
   } catch {
-    console.error('Turnstile Siteverify invalid JSON response');
-    throw new HttpError(503, 'captcha_network_response', '人机验证服务繁忙，请稍后重试');
+    console.error('Turnstile Siteverify unexpected non-JSON response', response.status);
+    throw new HttpError(503, 'captcha_network_response_' + response.status,
+      '人机验证服务繁忙，请稍后重试');
+  }
+  const codes = Array.isArray(result?.['error-codes'])
+    ? result['error-codes'].filter(x => typeof x === 'string').slice(0, 6) : [];
+  if (codes.includes('invalid-input-secret') || codes.includes('missing-input-secret') ||
+      codes.includes('invalid-widget-id') || codes.includes('invalid-parsed-secret')) {
+    console.error('Turnstile Siteverify key/config issue', { status: response.status, codes });
+    throw new HttpError(503, 'captcha_configuration', '人机验证配置异常，请联系站长');
+  }
+  if (codes.includes('bad-request') || codes.includes('internal-error')) {
+    console.error('Turnstile Siteverify request/server issue', { status: response.status, codes });
+    throw new HttpError(503, 'captcha_siteverify_' + codes[0], '人机验证服务繁忙，请稍后重试');
+  }
+  if (result?.success === false) {
+    // An invalid, expired or reused token is a user challenge failure,
+    // NOT evidence of a Siteverify network outage.
+    throw new HttpError(403, 'captcha_failed', '人机验证未通过，请重新验证');
+  }
+  if (!response.ok) {
+    console.error('Turnstile Siteverify non-2xx HTTP without a valid verdict', response.status);
+    throw new HttpError(503, 'captcha_network_http_' + response.status,
+      '人机验证服务繁忙，请稍后重试');
   }
   if (!result || result.success !== true ||
       result.hostname !== env.TURNSTILE_HOSTNAME ||
