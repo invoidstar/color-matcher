@@ -103,7 +103,7 @@ jobs:
         run: |
           set -euo pipefail
           test "${GITHUB_REF}" = 'refs/heads/main'
-          for branch in 'feature/guestbook-v1' 'release/guestbook-v1'; do
+          for branch in 'feature/guestbook-v1'; do
             echo "Deleting obsolete GitHub ref: $branch"
             gh api --method DELETE "repos/${GH_REPO}/git/refs/heads/${branch}"
           done
@@ -112,21 +112,3 @@ jobs:
           remaining="$(gh api "repos/${GH_REPO}/branches?per_page=100" --jq '.[].name')"
           test "$remaining" = 'main'
           echo 'PASS: only main branch remains.'
-
-  prune-merged-release-only:
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[delete-merged-guestbook-release]') }}
-    needs: verify-live
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Delete merged release branch without touching current Worker source
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-          test "${GITHUB_REF}" = "refs/heads/main"
-          gh api --method DELETE "repos/${GH_REPO}/git/refs/heads/release/guestbook-v1"
-          gh api "repos/${GH_REPO}/branches?per_page=100" --jq '.[].name'
-          echo "PASS: retired merged release/guestbook-v1 branch"
