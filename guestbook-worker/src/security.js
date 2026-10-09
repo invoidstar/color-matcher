@@ -129,7 +129,7 @@ export async function verifyTurnstile(token, ip, env) {
   }
   if (!response.ok) {
     console.error('Turnstile Siteverify non-2xx HTTP', response.status);
-    throw new HttpError(503, 'captcha_network_http', '人机验证服务繁忙，请稍后重试');
+    throw new HttpError(503, 'captcha_network_http_' + response.status, '人机验证服务繁忙，请稍后重试');
   }
   let result;
   try {
