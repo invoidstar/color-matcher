@@ -1,6 +1,21 @@
 /* Add a new object at the top for every major release. A new id makes the announcement appear again. */
 window.PCM_ANNOUNCEMENTS=[
   {
+    id:'guestbook-v1-launch',
+    version:'v4.1',
+    date:'2026-10-09',
+    title:'留言反馈正式开放 💌',
+    summary:'使用时遇到问题或有新的配色建议？现在可直接留下反馈，无需注册或登录。',
+    details:[
+      '支持使用体验、问题反馈、功能建议和其他四类留言。',
+      '填写昵称和留言内容，通过人机验证后即可公开展示。',
+      '可以查看大家的留言和站长回复；内容以纯文本显示，不支持上传附件。',
+      '留言不是私信，请勿填写个人敏感信息；站长可隐藏或删除不合适的内容。'
+    ],
+    link:'./guestbook.html',
+    linkText:'去留言'
+  },
+  {
     id:'v4.0-workspace-redesign',
     version:'v4.0',
     date:'2026-10-09',
@@ -11,7 +26,7 @@ window.PCM_ANNOUNCEMENTS=[
       '手机端新增「画布 / 区域 / 结果」底部导航，减少长页面反复滚动。',
       '新增画布放大、缩小和适应功能；移动模式支持单指拖动与双指缩放。',
       '移除 BOM、库存、用量与采购成本功能，保留限色优化与现有配色导出。',
-      '留言板仍暂不开放，后续完成管理员权限配置后再上线。'
+      '后续较大的功能更新也将继续通过站内公告提醒。'
     ],
     link:'./',
     linkText:'体验新版工作台'

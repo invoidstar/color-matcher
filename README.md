@@ -6,7 +6,8 @@
 
 [🌷 在线工作台](https://invoidstar.github.io/color-matcher/) ·
 [🎨 色卡浏览](https://invoidstar.github.io/color-matcher/palette.html) ·
-[📖 使用说明](https://invoidstar.github.io/color-matcher/guide.html)
+[📖 使用说明](https://invoidstar.github.io/color-matcher/guide.html) ·
+[💌 留言反馈](https://invoidstar.github.io/color-matcher/guestbook.html)
 
 <img src="assets/readme/hero.webp" alt="Color Matcher 项目展示" width="100%">
 
@@ -42,6 +43,12 @@
 
 色卡来自图片采样，线材的实际颜色可能受拍摄光线、显示设备、材质和批次影响。可导入自己的自定义色卡。
 
+## 💌 留言反馈（v4.1）
+
+新增独立留言页面：免登录发布使用体验、问题反馈与功能建议；通过 Turnstile 人机验证后展示，支持分页和站长回复。
+昵称与留言正文是公开内容，请勿填写个人敏感信息。站长使用 GitHub OAuth 进入独立管理后台，支持回复、隐藏、恢复与删除。
+留言板采用 Cloudflare Workers + D1，与原有浏览器端配色计算隔离。
+
 ## 📱 手机端如何操作？
 
 在画布工作区上传图片并选中区域；切换「区域」可查看、修改颜色；切换「结果」可完成预览、对比和导出。
@@ -50,11 +57,11 @@
 
 ## 💾 数据安全和旧项目兼容
 
-配色工作台仍是 GitHub Pages 静态工具，图像分析、色卡匹配、区域编辑均在浏览器本地完成。留言板使用独立的 Cloudflare Worker / D1 后端，目前仅供站长管理和受控验收，尚未开放公众入口。请对重要配色项目下载 `.plushcolor.json` 备份。
+配色工作台仍是 GitHub Pages 静态工具，图像分析、色卡匹配、区域编辑均在浏览器本地完成。留言反馈功能使用独立的 Cloudflare Worker / D1 后端；公开昵称和留言只由此服务保存，配色项目仍在浏览器本地。请对重要配色项目下载 `.plushcolor.json` 备份。
 
 旧版项目仍可以恢复图纸、区域、色卡、自定义色卡和 A/B 方案；已删除的库存、成本、采购元数据不再维护或写入新项目文件。
 
-留言板后端已完成真实管理员验收与隔离访客测试，生产投稿仍关闭。部署状态、D1 迁移登记及发布计划见 [`guestbook-worker/README.md`](guestbook-worker/README.md) 与 [`D1 核对文档`](docs/GUESTBOOK_D1_AUDIT.md)。流量插件使用不蒜子的**本页 UV/PV** 统计。
+留言板已完成管理员真实操作及访客隔离浏览器验收。部署说明和发布验收记录见 [`guestbook-worker/README.md`](guestbook-worker/README.md) 与 [`验收记录`](docs/GUESTBOOK_V1_ACCEPTANCE.md)。流量插件使用不蒜子的**本页 UV/PV** 统计。
 
 ## 🛠 本地运行
 
