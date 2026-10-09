@@ -12,6 +12,27 @@ jobs:
   verify-live:
     runs-on: ubuntu-latest
     steps:
+      - name: Diagnose Siteverify safely using an invalid token (no D1 writes)
+        run: |
+          node --input-type=module <<'JS'
+          const url='https://color-matcher-guestbook-api.3518925535.workers.dev/api/messages';
+          const r=await fetch(url,{
+            method:'POST',redirect:'manual',signal:AbortSignal.timeout(15000),
+            headers:{origin:'https://invoidstar.github.io','content-type':'application/json'},
+            body:JSON.stringify({
+              nickname:'SafeTest',category:'other',
+              content:'Invalid captcha probe - MUST NOT create a message',
+              turnstileToken:'definitely.invalid.token.no.real.widget'
+            })
+          });
+          const data=await r.json().catch(()=>({error:'invalid_response'}));
+          console.log('Turnstile invalid-token diagnostic:',JSON.stringify({status:r.status,error:data.error}));
+          if(r.status===201)throw new Error('FATAL: invalid token was accepted');
+          if(r.status===503&&data.error==='captcha_network')throw new Error('Siteverify outgoing fetch failed; captcha_network');
+          if(r.status!==403||data.error!=='captcha_failed')
+            throw new Error('Unexpected invalid-token response: '+r.status+' '+data.error);
+          console.log('PASS: production Worker reached Siteverify and rejected a forged token');
+          JS
       - name: Check public site and Worker (no D1 writes)
         run: |
           node --input-type=module <<'JS'
