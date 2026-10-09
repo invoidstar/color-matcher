@@ -12,7 +12,7 @@ function configuration(env){
   const clientSecret=String(env.GITHUB_CLIENT_SECRET||'');
   const adminId=String(env.GITHUB_ADMIN_USER_ID||'').trim();
   const redirectUri=String(env.GITHUB_REDIRECT_URI||'').trim();
-  if(!/^[-\w]{8,128}$/.test(clientId) || clientSecret.length<16 ||
+  if(!/^[A-Za-z0-9_.-]{6,128}$/.test(clientId) || clientSecret.length<16 ||
      !/^[1-9]\d{0,18}$/.test(adminId) ||
      !/^https:\/\/[^/?#]+\/auth\/github\/callback$/.test(redirectUri)){
     throw new HttpError(503,'github_auth_unconfigured','GitHub 管理员登录尚未配置');
@@ -165,7 +165,7 @@ export async function requireAdmin(request,env,unsafe=false){
     'FROM admin_sessions WHERE session_hash = ? LIMIT 1')
     .bind(sessionHash).first();
   if(!row||String(row.github_user_id)!==cfg.adminId||
-      Number(row.expires_at)<=Math.floor(Date.now()/1000)){
+      !Number.isFinite(Number(row.expires_at))||Number(row.expires_at)<=Math.floor(Date.now()/1000)){
     throw new HttpError(401,'admin_session_expired','管理员会话已经过期，请重新登录');
   }
   if(unsafe){
