@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#7c3aed" />
-  <meta name="description" content="毛绒娃娃配色、区域编辑、色卡匹配、BOM 与采购辅助工具" />
+  <meta name="description" content="毛绒娃娃配色、区域编辑、色卡匹配、图像配色、区域编辑及色卡匹配工具" />
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./icon.svg" type="image/svg+xml" />
   <title>Plush Color Matcher · 毛绒娃娃配色与制作工作台</title>
@@ -13,45 +13,48 @@
   <link rel="stylesheet" href="./css/features.css" />
   <link rel="stylesheet" href="./css/announcement.css" />
   <link rel="stylesheet" href="./css/traffic.css" />
+  <link rel="stylesheet" href="./css/ui-v4.css" />
 </head>
-<body>
-  <header class="topbar">
-    <div>
-      <div class="eyebrow">Plush Color Studio · v3.8.2</div>
-      <h1>Plush Color Matcher</h1>
-      <p>面向毛绒娃娃设计与制作的本地工作台：多图项目、区域编辑、多色卡比较、配色方案、BOM、用量与采购优化一体化。</p>
-    </div>
+<body class="v4-ui" data-v4-pane="canvas">
+  <header class="topbar v4-header">
+    <a class="v4-brand" href="./" aria-label="Color Matcher 工作台">
+      <span class="v4-brand-mark" aria-hidden="true">✿</span><span class="v4-brand-copy"><strong>Color Matcher</strong><small>毛绒娃娃配色助手</small></span>
+    </a>
+    <nav class="v4-top-nav" aria-label="网站导航"><a href="./" class="current" aria-current="page">工作台</a><a href="./palette.html">色卡库</a><a href="./guide.html">使用说明</a></nav>
     <div class="header-right">
-      <div class="palette-badge palette-switch"><span class="dot"></span><select id="paletteSelect" aria-label="选择色卡"><option value="qqtq-480">樱花</option><option value="hanter-620">涵特</option><option value="alice-1680">亚丽丝</option></select><span id="paletteCount">600 色</span></div>
-      <a class="button" href="./palette.html">色卡浏览</a><button id="paletteManagerBtn" class="button">色卡管理</button><button id="announcementBtn" class="button">公告</button><a class="button" href="./guide.html" target="_blank" rel="noopener">使用说明</a>
+      <button type="button" id="announcementBtn" class="v4-header-link">更新公告</button>
+      <details class="v4-more-menu"><summary>更多 ⌄</summary><div class="v4-more-content">
+        <button type="button" id="paletteManagerBtn">色卡管理</button>
+        <a href="./palette.html">浏览全部色卡</a><a href="./guide.html">使用帮助</a>
+      </div></details>
     </div>
   </header>
 
-  <section class="workflow-wrap">
-    <div class="workflow">
-      <div class="wf-step active"><span>1</span><div><strong>上传</strong><small>导入拆件图</small></div></div>
-      <div class="wf-line"></div>
-      <div class="wf-step active"><span>2</span><div><strong>识别</strong><small>Main + Detail</small></div></div>
-      <div class="wf-line"></div>
-      <div class="wf-step"><span>3</span><div><strong>校正</strong><small>漏检区域补全</small></div></div>
-      <div class="wf-line"></div>
-      <div class="wf-step"><span>4</span><div><strong>导出</strong><small>色号清单 / 标注图</small></div></div>
-    </div>
+  <section class="workflow-wrap v4-overview" aria-label="配色工作流程">
+    <div class="v4-overview-text"><span class="v4-eyebrow">DESIGN · MATCH · CREATE</span><h1>让每一块颜色，都找到合适的色号。</h1>
+    <p>上传设计图、微调区域、预览配色。把复杂的配色过程，整理成清晰顺手的工作流。</p></div>
+    <div class="v4-progress"><span><b>01</b> 上传设计</span><i class="v4-step-line"></i><span><b>02</b> 编辑配色</span><i class="v4-step-line"></i><span><b>03</b> 预览导出</span></div>
   </section>
 
-  <section class="projectbar-wrap">
+  <section class="projectbar-wrap" aria-label="项目">
     <div class="projectbar">
       <div class="project-title-wrap">
-        <span class="project-kicker">PROJECT</span>
-        <input id="projectNameInput" class="project-name" value="我的毛绒娃娃" aria-label="项目名称" />
-        <span id="autosaveStatus" class="autosave-status">本地自动保存</span>
+        <span class="v4-project-icon" aria-hidden="true">✦</span>
+        <div class="v4-project-title"><span class="project-kicker">当前项目</span>
+          <input id="projectNameInput" class="project-name" value="我的毛绒娃娃" aria-label="项目名称" />
+          <span id="autosaveStatus" class="autosave-status">本地自动保存</span></div>
       </div>
-      <div class="project-actions">
-        <button id="saveProjectBtn" class="button primary">保存项目</button>
-        <label class="button" for="openProjectInput">打开项目</label><input id="openProjectInput" type="file" accept="application/json,.plushcolor.json" hidden />
-        <button id="restoreAutosaveBtn" class="button hidden">恢复最近项目</button>
-        <button id="printSheetBtn" class="button">打印制作单</button>
-        <button id="installAppBtn" class="button hidden">安装应用</button>
+      <div class="v4-project-tools">
+        <div class="palette-badge palette-switch"><span class="v4-palette-label">匹配色卡</span>
+          <select id="paletteSelect" aria-label="选择色卡"><option value="qqtq-480">樱花</option><option value="hanter-620">涵特</option><option value="alice-1680">亚丽丝</option></select>
+          <span id="paletteCount">600 色</span></div>
+        <div class="project-actions">
+          <button id="saveProjectBtn" class="button primary">保存项目</button>
+          <label class="button" for="openProjectInput">打开项目</label><input id="openProjectInput" type="file" accept="application/json,.plushcolor.json" hidden />
+          <button id="restoreAutosaveBtn" class="button hidden">恢复最近项目</button>
+          <button id="printSheetBtn" class="button">打印配色单</button>
+          <button id="installAppBtn" class="button hidden">安装应用</button>
+        </div>
       </div>
     </div>
     <div class="pages-row">
@@ -61,14 +64,14 @@
   </section>
 
   <main>
-    <section class="hero-grid">
+    <section class="hero-grid" id="v4Workspace">
       <div class="panel upload-panel">
         <div class="panel-head">
-          <div><span class="step">01</span><h2>工作台</h2></div>
+          <div><span class="step">01</span><h2>设计画布</h2><span class="v4-head-note">上传 · 选择 · 编辑</span></div>
           <div class="head-actions">
             <label class="button primary" for="fileInput">上传图片</label>
             <input id="fileInput" type="file" accept="image/*" hidden />
-            <button id="demoBtn" class="button">加载示例</button>
+            <button id="demoBtn" class="button">体验示例</button><button type="button" id="v4GoRegionsBtn" class="button v4-mobile-only">查看区域 →</button>
           </div>
         </div>
 
@@ -80,41 +83,47 @@
           </div>
           <div id="imageStage" class="image-stage hidden">
             <canvas id="displayCanvas"></canvas>
-            <div class="canvas-tip">点击编号可定位右侧区域；开启“补充区域”后，直接点图补回漏检区域。</div>
+            <div class="canvas-tip">选中部件后可在「区域」面板更换颜色；需要看细节时可使用「移动画布」。</div>
+          </div>
+          <div class="v4-zoom-controls" aria-label="画布缩放">
+            <button id="v4ZoomOutBtn" type="button" title="缩小画布" aria-label="缩小画布">−</button>
+            <span id="v4ZoomLabel">100%</span>
+            <button id="v4ZoomInBtn" type="button" title="放大画布" aria-label="放大画布">＋</button>
+            <button id="v4ZoomFitBtn" type="button">适应</button>
           </div>
         </div>
 
-        <div class="workspace-toolbar">
+        <div class="workspace-toolbar" aria-label="区域编辑工具">
+          <div class="v4-toolbar-head"><strong>编辑工具</strong><span class="v4-muted">先选中一个区域，再用画笔、橡皮微调</span></div>
           <div class="tool-cluster editor-tools">
-            <button id="selectModeBtn" class="button soft active">选择</button>
+            <button id="selectModeBtn" class="button soft active">↖ 选择</button>
+            <button type="button" id="v4PanModeBtn" class="button soft" aria-pressed="false">✥ 移动画布</button>
             <button id="addRegionBtn" class="button soft">＋ 补区域</button>
-            <button id="brushModeBtn" class="button soft">画笔＋</button>
-            <button id="eraseModeBtn" class="button soft">橡皮</button>
-            <button id="splitModeBtn" class="button soft">画线拆分</button>
-            <label class="brush-size">笔刷 <input id="brushSize" type="range" min="2" max="24" value="7" /><span id="brushSizeValue">7</span></label>
-            <button id="mergeSelectedBtn" class="button">合并所选</button>
-            <button id="linkSelectedBtn" class="button">联动所选</button>
-            <button id="unlinkSelectedBtn" class="button">解除联动</button>
-            <button id="similarPartsBtn" class="button">重复部件建议</button>
-            <button id="undoEditBtn" class="button" disabled>撤销编辑</button>
-            <button id="undoAddBtn" class="button" disabled>撤销补充</button>
-            <button id="clearAddedBtn" class="button" disabled>清空补充</button>
+            <button id="brushModeBtn" class="button soft">✎ 画笔</button>
+            <button id="eraseModeBtn" class="button soft">◇ 橡皮</button>
+            <button id="splitModeBtn" class="button soft">╱ 拆分</button>
+            <button id="undoEditBtn" class="button v4-undo" disabled>↶ 撤销</button>
           </div>
-          <div class="tool-status-wrap">
-            <span id="toolStatus" class="tool-status">当前模式：选择区域</span>
-            <span class="tool-hint">选择“补区域”可点选漏检细节；画笔 / 橡皮可修边；“画线拆分”用于把误连区域切开。</span>
+          <div class="v4-toolbar-secondary">
+            <label class="brush-size">笔刷大小 <input id="brushSize" type="range" min="2" max="24" value="7" /><span id="brushSizeValue">7</span></label>
+            <details class="v4-advanced-tools"><summary>更多区域操作 ⌄</summary>
+              <div class="v4-extra-actions">
+                <button id="mergeSelectedBtn" class="button">合并所选</button>
+                <button id="linkSelectedBtn" class="button">联动所选</button>
+                <button id="unlinkSelectedBtn" class="button">解除联动</button>
+                <button id="similarPartsBtn" class="button">重复部件建议</button>
+                <button id="undoAddBtn" class="button" disabled>撤销补充</button>
+                <button id="clearAddedBtn" class="button" disabled>清空补充</button>
+              </div>
+            </details>
           </div>
-        </div>
-
-        <div class="mini-cards">
-          <div class="mini-card"><strong>更少碎块</strong><span>通过相邻区域合并，把视觉上接近的碎片重新并到主区域。</span></div>
-          <div class="mini-card"><strong>漏检可补</strong><span>对嘴巴、腮红、小挂件等细节，允许手动一点补回，不必反复调参数。</span></div>
+          <div class="tool-status-wrap"><span id="toolStatus" class="tool-status">当前模式：选择区域</span><span class="tool-hint">手机端在「移动画布」模式可单指拖动、双指缩放；关闭后恢复区域编辑。</span></div>
         </div>
 
         <div id="similarSuggestions" class="similar-box hidden"></div>
 
-        <details class="settings" open>
-          <summary>识别设置</summary>
+        <details class="settings">
+          <summary>高级识别设置 <span class="v4-settings-caption">默认参数通常即可使用</span></summary>
           <div id="paletteInfo" class="palette-info">当前使用 樱花 色卡。</div>
           <div class="settings-grid">
             <label>主区域最小面积
@@ -137,7 +146,7 @@
 
       <div class="panel regions-panel">
         <div class="panel-head">
-          <div><span class="step">02</span><h2>区域与色号</h2></div>
+          <div><span class="step">02</span><h2>区域与色号</h2></div><div class="v4-panel-links"><button type="button" id="v4BackCanvasBtn" class="button v4-mobile-only">← 返回画布</button><button type="button" id="v4GoResultsBtn" class="button v4-mobile-only">查看结果 →</button></div>
           <div id="summaryPill" class="summary-pill">尚未识别</div>
         </div>
         <div id="selectionInspector" class="selection-inspector empty">选择左侧画面或下方列表中的区域后，这里会显示摘要与操作建议。</div>
@@ -148,17 +157,16 @@
     </section>
 
     <section class="panel results-panel">
-      <div class="panel-head">
-        <div><span class="step">03</span><h2>结果与导出</h2></div>
+      <div class="panel-head v4-results-head">
+        <div><span class="step">03</span><h2>配色结果</h2><span class="v4-head-note">预览 · 比较 · 导出</span></div>
         <div class="tabs" role="tablist">
           <button class="tab active" data-tab="list">色号列表</button>
           <button class="tab" data-tab="preview">配色预览</button>
-          <button class="tab" data-tab="bom">BOM</button>
-          <button class="tab" data-tab="limit">限色优化</button>
+          <button class="tab" data-tab="annotated">区域标注</button>
+          <button class="tab" data-tab="linked">色卡连线</button>
           <button class="tab" data-tab="compare">色卡比较</button>
           <button class="tab" data-tab="schemes">方案 A/B</button>
-          <button class="tab" data-tab="annotated">标注图</button>
-          <button class="tab" data-tab="linked">色卡连线图</button>
+          <button class="tab" data-tab="limit">限色优化</button>
         </div>
       </div>
 
@@ -171,29 +179,14 @@
       </div>
 
       <div id="tab-preview" class="tabpane">
-        <div class="result-toolbar"><span>把参与匹配的区域直接替换为当前色卡的所选颜色，用于下单前快速检查整体配色。</span><button id="previewBtn" class="button small" disabled>导出预览 PNG</button></div>
+        <div class="result-toolbar"><span>把参与匹配的区域直接替换为当前色卡的所选颜色，用于导出前快速检查整体配色。</span><button id="previewBtn" class="button small" disabled>导出预览 PNG</button></div>
         <div class="preview-note">预览使用色卡照片提取的参考色；实际毛线会受材质、光照、屏幕和拍摄设备影响。</div>
         <canvas id="previewCanvas" class="result-canvas"></canvas>
       </div>
 
-      <div id="tab-bom" class="tabpane">
-        <div class="result-toolbar"><span>BOM 现已按整个项目聚合。二维面积用于估算配比；毛线克重与团数属于经验估算，请按实际工艺留余量。</span><div><button id="bomBtn" class="button small" disabled>导出采购 CSV</button></div></div>
-        <div class="purchase-controls">
-          <label>项目总用量估算 <input id="totalGrams" type="number" min="1" value="120"> g</label>
-          <label>每团重量 <input id="spoolGrams" type="number" min="1" value="50"> g</label>
-          <label>默认单价 <input id="defaultPrice" type="number" min="0" step="0.01" value="0"></label>
-          <label>成本替代容差 <input id="costTolerance" type="number" min="0" max="12" step="0.5" value="3"> ΔE</label>
-          <button id="costOptimizeBtn" class="button small">生成成本优化</button>
-          <button id="costApplyBtn" class="button small primary" disabled>应用成本方案</button>
-        </div>
-        <div id="costSummary" class="limit-summary">填写库存 / 单价后，可在可接受色差范围内寻找更省的替代色。</div>
-        <div id="bomSummary" class="bom-summary">暂无 BOM</div>
-        <div class="table-wrap"><table id="bomTable"><thead><tr><th>色号</th><th>颜色</th><th>使用位置</th><th>占比</th><th>估算克重</th><th>估算团数</th><th>库存</th><th>需购</th><th>单价</th><th>小计</th><th>已购</th><th>备注</th></tr></thead><tbody><tr><td colspan="12" class="muted">暂无结果</td></tr></tbody></table></div>
-      </div>
-
       <div id="tab-limit" class="tabpane">
         <div class="optimizer-card">
-          <div class="optimizer-head"><div><strong>限色优化</strong><span>尽量减少需要购买的颜色，同时优先选择整体感知色差增加最小的合并方案。</span></div><div class="optimizer-controls"><label>最多颜色 <input id="limitCount" type="number" min="2" max="30" value="8"></label><button id="limitGenerateBtn" class="button small">生成方案</button><button id="limitApplyBtn" class="button small primary" disabled>应用方案</button><button id="limitRestoreBtn" class="button small" disabled>恢复优化前</button></div></div>
+          <div class="optimizer-head"><div><strong>限色优化</strong><span>尽量减少使用的颜色种类，同时优先选择整体感知色差增加最小的合并方案。</span></div><div class="optimizer-controls"><label>最多颜色 <input id="limitCount" type="number" min="2" max="30" value="8"></label><button id="limitGenerateBtn" class="button small">生成方案</button><button id="limitApplyBtn" class="button small primary" disabled>应用方案</button><button id="limitRestoreBtn" class="button small" disabled>恢复优化前</button></div></div>
           <div id="limitSummary" class="limit-summary">上传并识别图片后，可把当前用色压缩到指定数量。</div>
           <div class="table-wrap"><table id="limitTable"><thead><tr><th>原色号</th><th>→</th><th>目标色号</th><th>受影响区域</th></tr></thead><tbody><tr><td colspan="4" class="muted">尚未生成方案</td></tr></tbody></table></div>
         </div>
@@ -249,9 +242,14 @@
     </div>
   </div>
 
+  <nav class="v4-mobile-nav" aria-label="手机端工作区切换">
+    <button type="button" data-v4-pane="canvas" aria-pressed="true"><span aria-hidden="true">▧</span><small>画布</small></button>
+    <button type="button" data-v4-pane="regions" aria-pressed="false"><span aria-hidden="true">◫</span><small>区域</small></button>
+    <button type="button" data-v4-pane="results" aria-pressed="false"><span aria-hidden="true">≡</span><small>结果</small></button>
+  </nav>
   <section id="printSheet" class="print-sheet"></section>
 
-  <footer>v3.8.2 · 项目管理 · 区域编辑 · 樱花 / 涵特 / 亚丽丝色卡 · A/B 配色 · BOM / 用量 / 成本 · PWA 离线。<br><span class="traffic-stats" aria-label="网站访问统计">本页统计 <span class="traffic-dot">·</span> 访客 UV <span id="busuanzi_page_uv">加载中...</span> <span class="traffic-dot">·</span> 浏览量 PV <span id="busuanzi_page_pv">加载中...</span></span></footer>
+  <footer>v4.0 · 项目管理 · 区域编辑 · 樱花 / 涵特 / 亚丽丝色卡 · A/B 配色 · 配色结果与导出 · PWA 离线。<br><span class="traffic-stats" aria-label="网站访问统计">本页统计 <span class="traffic-dot">·</span> 访客 UV <span id="busuanzi_page_uv">加载中...</span> <span class="traffic-dot">·</span> 浏览量 PV <span id="busuanzi_page_pv">加载中...</span></span></footer>
   <script src="./js/core/color.js"></script>
   <script src="./data/qqtq-480.js"></script>
   <script src="./data/hanter-620.js"></script>
@@ -259,6 +257,7 @@
   <script src="./data/announcements.js"></script>
   <script src="./js/announcements.js"></script>
   <script src="./js/app.js"></script>
+  <script src="./js/ui-v4.js"></script>
 
   <script src="//cdn.busuanzi.cc/busuanzi/3.6.9/busuanzi.min.js" defer></script>
 </body>
