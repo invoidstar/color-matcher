@@ -129,6 +129,9 @@
       await loadMessages();
     } catch {
       showNotice('留言服务暂时不可用，请稍后再试。');
+      const networkHint = document.createElement('strong');
+      networkHint.textContent = '（需要科学上网）';
+      els.notice.appendChild(networkHint);
     }
   }
   els.content.addEventListener('input', () => {
