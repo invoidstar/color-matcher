@@ -42,8 +42,8 @@
 
 - **生产 Site Key / Secret 的真人提交闭环**：隔离 Chromium 测试已使用真实浏览器和官方测试密钥验证通路，但仍未调用生产密钥提交真实生产 D1。在正式公开前，如需要强生产验收，应在单独授权的发布窗口执行一次人工操作，并清理其测试数据。
 - 重复、限流、分页、非法 Token 与管理员操作已在隔离后端及真实管理员环境分别覆盖；正式真人投稿测试仍需单独批准。不要直接在生产 Worker 上开启匿名发布以替代隔离验收。
-- 2026-10-09 站长提供的远程 D1 查询已核对：两张业务表与三个索引完整，符合两份基础迁移定义，**`d1_migrations` 的确不存在**。迁移登记尚待备份、授权与 Wrangler 受控操作；详细记录见 [`GUESTBOOK_D1_AUDIT.md`](GUESTBOOK_D1_AUDIT.md)。
-- 部署与上线文案已整理至 [`guestbook-worker/README.md`](../guestbook-worker/README.md) 和 [`GUESTBOOK_RELEASE_COPY.md`](GUESTBOOK_RELEASE_COPY.md)；仍需站长明确发布许可。禁止未经授权切换 `PUBLIC_ENABLED` 或在 `main` 添加公开入口。
+- 2026-10-09 站长提供的远程 D1 查询已核对：两张业务表与三个索引完整，符合两份基础迁移定义，**`d1_migrations` 已由 Wrangler 登记两份基础迁移**，站长的远程查询已确认记录为 `0001_init.sql` 和 `0002_github_sessions.sql`，且清理验收数据后 `message_count=0`；详细记录见 [`GUESTBOOK_D1_AUDIT.md`](GUESTBOOK_D1_AUDIT.md)。
+- 已完成数据库历史登记和发布候选版本的准备；正式生产密钥真人投稿、合并及公告发布仍需站长授权。部署与上线文案已整理至 [`guestbook-worker/README.md`](../guestbook-worker/README.md) 和 [`GUESTBOOK_RELEASE_COPY.md`](GUESTBOOK_RELEASE_COPY.md)；仍需站长明确发布许可。禁止未经授权切换 `PUBLIC_ENABLED` 或在 `main` 添加公开入口。
 
 ## 参考测试与工作流
 

@@ -15,7 +15,7 @@
 | 管理后台 | GitHub OAuth 实际登录、回复/隐藏/恢复/删除与 CSRF 403 已验收 |
 | 访客投稿 | 隔离 Chromium + 官方 Turnstile 测试密钥 + 本地 D1 验收通过，**生产仍关闭** |
 
-详细测试记录：`../docs/GUESTBOOK_V1_ACCEPTANCE.md`。D1 只读核对：`../docs/GUESTBOOK_D1_AUDIT.md`。上线文案：`../docs/GUESTBOOK_RELEASE_COPY.md`。
+详细测试记录：`../docs/GUESTBOOK_V1_ACCEPTANCE.md`。发布与回滚步骤：`../docs/GUESTBOOK_V1_RELEASE_CHECKLIST.md`。D1 只读核对：`../docs/GUESTBOOK_D1_AUDIT.md`。上线文案：`../docs/GUESTBOOK_RELEASE_COPY.md`。
 
 ## 服务目录
 
@@ -59,7 +59,7 @@ Cloudflare → Workers & Pages → `color-matcher-guestbook-api` → Settings �
 
 ## D1 迁移版本的特殊处理
 
-由于这次数据库最初是 D1 Console **手动建表**，不应把“表存在”等同于“Wrangler 已登记迁移”。站长已提供真实远程 `sqlite_master` 查询：两张业务表和三个索引完整，**`d1_migrations` 不存在**。审计记录在 `../docs/GUESTBOOK_D1_AUDIT.md`。下一步仅需在备份就绪、验证目标数据库名称与 UUID、明确授权后，通过 Wrangler 正式补登记两份基础迁移；之前已在隔离 SQLite 确认 `IF NOT EXISTS` 的基础脚本重复执行不会清除现有测试数据。在获得授权前，**不要执行** `wrangler d1 migrations apply --remote`，也不要手动创建或插入迁移历史。
+由于这次数据库最初是 D1 Console **手动建表**，不应把“表存在”等同于“Wrangler 已登记迁移”。站长已提供真实远程 `sqlite_master` 查询：两张业务表和三个索引完整，**`d1_migrations` 已登记两份基础迁移**。审计记录在 `../docs/GUESTBOOK_D1_AUDIT.md`。该流程已在 2026-10-09 通过 Wrangler 完成，并由站长在 Console 再次核对迁移历史与留言表清理结果；之前已在隔离 SQLite 确认 `IF NOT EXISTS` 的基础脚本重复执行不会清除现有测试数据。**不要再次运行一次性迁移登记**；未来 schema 变更请新增独立版本。请将此前 Cloudflare Builds 的临时 Build command 清空为 None。
 
 ## 可访问的接口
 
