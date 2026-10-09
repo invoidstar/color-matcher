@@ -253,7 +253,7 @@ export default {
     const path = url.pathname.replace(/\/+$/, '') || '/';
     try {
       if (path === '/health' && request.method === 'GET') {
-        return json({ service: 'color-matcher-guestbook', publicEnabled: publicReady(env) });
+        return json({ service: 'color-matcher-guestbook', publicEnabled: publicReady(env), version: '1.0.1-main-cutover' });
       }
       if (path === '/api/config' && request.method === 'GET') {
         const enabled = publicReady(env);
