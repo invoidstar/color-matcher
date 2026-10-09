@@ -49,7 +49,8 @@ test('Chromium visitor publish and isolated D1 cleanup', {timeout:150000}, async
   fetchMock.get('https://challenges.cloudflare.com').intercept({
     method:'POST',path:'/turnstile/v0/siteverify'
   }).reply(async request=>{
-    const requestBody=JSON.parse(request.body);
+    const requestBody=JSON.parse(typeof request.body==='string'
+      ? request.body : await new Response(request.body).text());
     assert.equal(requestBody.secret,'1x0000000000000000000000000000000AA');
     assert.equal(requestBody.response,'XXXX.DUMMY.TOKEN.XXXX');
     const response=await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify',{
