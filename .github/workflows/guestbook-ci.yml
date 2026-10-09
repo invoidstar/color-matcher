@@ -55,7 +55,22 @@ jobs:
           assert 'guestbook.html' not in main
           assert 'js/guestbook.js' not in main
           assert 'guestbook.html' not in Path('sw.js').read_text()
-          assert 'guestbook-worker/' not in Path('.github/workflows/deploy-pages.yml').read_text()
           assert 'TURNSTILE_SECRET' not in Path('js/guestbook-config.js').read_text()
+          assert 'PUBLIC_ENABLED' not in Path('index.html').read_text()
+          print('Guestbook public link absent, Worker code excluded from Pages')
+          PY
+      - name: Verify public Pages staging
+        run: |
+          python3 scripts/stage_pages.py
+          python3 - <<'PY'
+          from pathlib import Path
+          out = Path('_site')
+          for required in ('index.html','sw.js','palette.html','guide.html',
+                           'css/ui-v4.css','js/app.js','data/qqtq-480.js'):
+              assert (out/required).exists(),required
+          for blocked in ('guestbook.html','guestbook-worker','docs','.github',
+                          'js/guestbook.js','js/guestbook-config.js','css/guestbook.css'):
+              assert not (out/blocked).exists(), blocked
+          print('Static site assets verified, guestbook not publicly staged.')
           print('migrations valid; GitHub OAuth identity configured; public launch disabled; no production entry')
           PY
