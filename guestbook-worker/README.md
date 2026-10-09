@@ -11,7 +11,7 @@
 - 管理员一键隐藏、恢复、回复、永久删除，手机端可操作。
 - 管理员 Session 使用随机 Cookie + D1 保存哈希，8 小时到期，可退出撤销。
 - 任何隐藏/回复/删除操作必须使用同源请求和 CSRF Token。
-- PUBLIC_ENABLED 默认为 false，未明确启用时访客不可提交。
+- PUBLIC_ENABLED 默认为 false，未明确启用时访客不可提交；另外只有 GitHub OAuth 管理员登录的必要配置也齐备后才可能开放留言。
 - 不再依赖 Cloudflare Zero Trust / Access。
 
 ## GitHub OAuth App 注册
@@ -53,8 +53,8 @@ Worker wrangler.jsonc 的配置项：
 - ALLOWED_ORIGIN=https://invoidstar.github.io
 - TURNSTILE_HOSTNAME=invoidstar.github.io
 - TURNSTILE_SITE_KEY=真正的公开 Site Key，当前为空
-- GITHUB_CLIENT_ID=真正的公开 Client ID，当前为空
-- GITHUB_ADMIN_USER_ID=站长的 GitHub 数字用户 ID，当前为空
+- GITHUB_CLIENT_ID=Ov23ctbZCJlcKuhDQjU3（已填写，公开 Client ID）
+- GITHUB_ADMIN_USER_ID=63053541（已从连接的 GitHub invoidstar 账号核实）
 - GITHUB_REDIRECT_URI=https://color-matcher-guestbook-api.3518925535.workers.dev/auth/github/callback
 - D1 binding DB、database_name=color-matcher-guestbook、database_id=真实 UUID
 

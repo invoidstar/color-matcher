@@ -10,7 +10,7 @@ GitHub OAuth Redirect URL：
 https://color-matcher-guestbook-api.3518925535.workers.dev/auth/github/callback
 
 Worker：color-matcher-guestbook-api，D1 名称：color-matcher-guestbook，DB 绑定：DB。
-真实 D1 UUID、Turnstile Site Key、GitHub OAuth Client ID 仍待提供。
+GitHub OAuth Client ID 已配置为 Ov23ctbZCJlcKuhDQjU3，管理员数字 ID 已核实为 63053541。真实 D1 UUID、Turnstile Site Key 仍待提供。
 所有 Secret 只能放在 Cloudflare Worker，不能提供给助手或写入 GitHub。
 
 上线保护：PUBLIC_ENABLED=false、无生产主站入口、无 D1 远程迁移、没有 Cloudflare Worker 代码发布、main 未改变。管理员需要先通过真实环境登录、隐藏、删除、未授权拒绝和退出失效测试。测试环境中的 Mock 通过并不等于线上认证已经成功。

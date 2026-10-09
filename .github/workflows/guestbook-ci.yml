@@ -47,8 +47,8 @@ jobs:
           assert config['d1_databases'][0]['binding'] == 'DB'
           assert config['d1_databases'][0]['database_name'] == 'color-matcher-guestbook'
           assert config['d1_databases'][0]['database_id'] == 'REPLACE_WITH_D1_DATABASE_UUID'
-          assert config['vars']['GITHUB_CLIENT_ID'] == ''
-          assert config['vars']['GITHUB_ADMIN_USER_ID'] == ''
+          assert config['vars']['GITHUB_CLIENT_ID'] == 'Ov23ctbZCJlcKuhDQjU3'
+          assert config['vars']['GITHUB_ADMIN_USER_ID'] == '63053541'
           assert config['vars']['GITHUB_REDIRECT_URI'].endswith('/auth/github/callback')
           main = Path('index.html').read_text()
           assert 'guestbook.html' not in main
@@ -56,5 +56,5 @@ jobs:
           assert 'guestbook.html' not in Path('sw.js').read_text()
           assert 'guestbook-worker/' not in Path('.github/workflows/deploy-pages.yml').read_text()
           assert 'TURNSTILE_SECRET' not in Path('js/guestbook-config.js').read_text()
-          print('migrations valid; GitHub OAuth unconfigured; public launch disabled; no production entry')
+          print('migrations valid; GitHub OAuth identity configured; public launch disabled; no production entry')
           PY

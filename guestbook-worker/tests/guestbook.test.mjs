@@ -209,6 +209,15 @@ test('public config requires all secrets; never returns Turnstile secret',async(
   assert.equal(JSON.stringify(config.data).includes('testing-secret'),false);
   delete instance.RATE_LIMIT_SALT;
   assert.equal(publicReady(instance),false);
+  instance.RATE_LIMIT_SALT='local-test-salt-must-be-long';
+  delete instance.GITHUB_CLIENT_SECRET;
+  assert.equal(publicReady(instance),false);
+  instance.GITHUB_CLIENT_SECRET='fixture-github-client-secret-do-not-use';
+  instance.GITHUB_ADMIN_USER_ID='0';
+  assert.equal(publicReady(instance),false);
+  instance.GITHUB_ADMIN_USER_ID='12345';
+  instance.GITHUB_REDIRECT_URI='https://wrong.example/auth/github/callback';
+  assert.equal(publicReady(instance),false);
 });
 test('invalid Origin, invalid captcha and incorrect siteverify hostname fail closed',async()=>{
   const instance=env();

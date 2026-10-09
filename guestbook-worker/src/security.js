@@ -73,10 +73,20 @@ export async function readJson(request, maxBytes = 4096) {
 }
 
 export function publicReady(env) {
+  // Avoid opening anonymous posting when the owner cannot sign in to
+  // moderate it. This is a configuration check, not a substitute for
+  // testing the real admin login and delete flow before launch.
+  const clientId = String(env.GITHUB_CLIENT_ID || '');
+  const clientSecret = String(env.GITHUB_CLIENT_SECRET || '');
+  const adminId = String(env.GITHUB_ADMIN_USER_ID || '');
+  const callback = String(env.GITHUB_REDIRECT_URI || '');
+  const oauthReady = /^[A-Za-z0-9_.-]{6,128}$/.test(clientId) &&
+    clientSecret.length >= 16 && /^[1-9]\d{0,18}$/.test(adminId) &&
+    callback === 'https://color-matcher-guestbook-api.3518925535.workers.dev/auth/github/callback';
   return env.PUBLIC_ENABLED === 'true' && Boolean(
     env.DB && env.TURNSTILE_SITE_KEY && env.TURNSTILE_SECRET &&
     env.TURNSTILE_HOSTNAME && env.RATE_LIMIT_SALT &&
-    String(env.RATE_LIMIT_SALT).length >= 16
+    String(env.RATE_LIMIT_SALT).length >= 16 && oauthReady
   );
 }
 
