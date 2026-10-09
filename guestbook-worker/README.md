@@ -10,7 +10,7 @@
 | Worker `color-matcher-guestbook-api` | 已由 Cloudflare Builds 从开发分支构建部署 |
 | 健康检查 | `/health` 返回 `{"service":"color-matcher-guestbook","publicEnabled":false}` |
 | D1 `color-matcher-guestbook` | 两张表及三个业务索引由站长通过 Console 手动创建；真实管理员会话/读写已验证 |
-| `d1_migrations` | 尚未远程核对；**禁止盲目重新应用基础迁移** |
+| `d1_migrations` | **2026-10-09 远程核对确认不存在**；业务表与三个索引完整，待备份与授权后由 Wrangler 正式登记两份基础迁移 |
 | 三个 Secret | 用户确认已配置在 Cloudflare，仓库不得包含其值 |
 | 管理后台 | GitHub OAuth 实际登录、回复/隐藏/恢复/删除与 CSRF 403 已验收 |
 | 访客投稿 | 隔离 Chromium + 官方 Turnstile 测试密钥 + 本地 D1 验收通过，**生产仍关闭** |
@@ -59,7 +59,7 @@ Cloudflare → Workers & Pages → `color-matcher-guestbook-api` → Settings �
 
 ## D1 迁移版本的特殊处理
 
-由于这次数据库最初是 D1 Console **手动建表**，不应把“表存在”等同于“Wrangler 已登记迁移”。先依照 `../docs/GUESTBOOK_D1_AUDIT.md` 逐条执行只读 SQL 并核对 schema、业务索引、`d1_migrations`。在得到真实结果、备份和明确授权前，**不要执行** `wrangler d1 migrations apply --remote`，也不要手动插入迁移记录。
+由于这次数据库最初是 D1 Console **手动建表**，不应把“表存在”等同于“Wrangler 已登记迁移”。站长已提供真实远程 `sqlite_master` 查询：两张业务表和三个索引完整，**`d1_migrations` 不存在**。审计记录在 `../docs/GUESTBOOK_D1_AUDIT.md`。下一步仅需在备份就绪、验证目标数据库名称与 UUID、明确授权后，通过 Wrangler 正式补登记两份基础迁移；之前已在隔离 SQLite 确认 `IF NOT EXISTS` 的基础脚本重复执行不会清除现有测试数据。在获得授权前，**不要执行** `wrangler d1 migrations apply --remote`，也不要手动创建或插入迁移历史。
 
 ## 可访问的接口
 

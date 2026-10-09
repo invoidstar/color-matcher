@@ -1,8 +1,24 @@
 # Color Matcher 留言板 · D1 迁移记录只读核对
 
-> 2026-10-09：`messages`、`admin_sessions` 已由站长在 Cloudflare D1 Console 手工创建并完成真实管理员读写验收；但远程 `d1_migrations` 版本记录**尚未核对**。本文只提供只读查询，不会修改正式数据。
+> **2026-10-09 已确认的远程状态：** 站长在 Cloudflare D1 Console 提供 `sqlite_master` 查询结果：`messages` 和 `admin_sessions` 共两张业务表、三条业务索引全部存在且与基础迁移定义吻合；**`d1_migrations` 迁移历史表确实不存在**。本次只读审计没有改动正式数据。
 
-## 在 Cloudflare D1 Console 逐条执行
+## 已完成的远程核对（2026-10-09）
+
+确认存在的对象：
+
+| 对象 | 类型 | 结构核对 |
+| --- | --- | --- |
+| `messages` | table | 字段、主键、NOT NULL、状态/分类 CHECK、DEFAULT 均与 `0001_init.sql` 一致 |
+| `idx_messages_status_created` | index | `messages(status, created_at DESC, id DESC)` |
+| `idx_messages_fingerprint_created` | index | `messages(fingerprint, created_at DESC)` |
+| `admin_sessions` | table | 字段、主键、NOT NULL、默认创建时间与 `0002_github_sessions.sql` 一致 |
+| `idx_admin_sessions_expiry` | index | `admin_sessions(expires_at)` |
+
+已确认 **`d1_migrations` 不存在**：数据库之前在 D1 Console 手工建立，尚未通过 Wrangler 正式登记这两份基础迁移。无需再重复此首轮查询，除非数据库之后发生变更。
+
+**影响：** 当前留言板业务表正常，之前真实管理员登录/读写已经通过；迁移历史缺失本身不会使 API 停用。但下一次使用 Wrangler 应用新的 schema 变更前，应先妥善补齐旧版本登记，避免后续重复执行或混淆历史。不要手工补写版本记录。
+
+## 在 Cloudflare D1 Console 逐条执行（将来需要复核时）
 
 数据库：`color-matcher-guestbook`。**一次只运行一条 SQL**，并保存非敏感结果。
 
@@ -72,4 +88,4 @@ npx wrangler d1 migrations list color-matcher-guestbook --remote
 
 请勿在 Cloudflare SQL Console 输入这些 CLI 命令，也不要执行 `DROP`、`DELETE FROM d1_migrations` 或手工插入历史行。没有 Wrangler 环境就保留为待办，不强制安装 Node.js。
 
-最后请将**第一条 SQL 的表名/建表 SQL 输出**及（如果存在）`d1_migrations` 的记录返回给维护者；不要提供 Secret、Cookie 或 OAuth 登录参数。
+2026-10-09 的首轮只读查询已经由站长提供并完成核对；**不用再发送相同结果**。下一步在明确授权、已有备份且可使用可信 Wrangler 环境时再登记迁移历史，并核验 `d1_migrations` 中恰好登记 `0001_init.sql` 和 `0002_github_sessions.sql`。不要提供 Secret、Cookie 或 OAuth 登录参数。
