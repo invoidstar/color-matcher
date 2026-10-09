@@ -1,0 +1,96 @@
+name: Guestbook release candidate (no deployment)
+
+on:
+  push:
+    branches:
+      - release/guestbook-v1
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release candidate
+        uses: actions/checkout@v6
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript and baseline safety checks
+        run: |
+          node --check js/guestbook.js
+          node --check js/guestbook-config.js
+          node --check sw.js
+          node --check data/announcements.js
+          node --check guestbook-worker/src/index.js
+          node guestbook-worker/scripts/register-d1-baseline.mjs --self-test
+          node --test guestbook-worker/tests/guestbook.test.mjs
+      - name: Validate staging in closed mode
+        run: |
+          python3 scripts/stage_pages.py
+          python3 - <<'PY'
+          from pathlib import Path
+          out = Path('_site')
+          for blocked in (
+              'guestbook.html', 'css/guestbook.css', 'js/guestbook.js',
+              'js/guestbook-config.js', 'guestbook-worker', '.github', 'docs'
+          ):
+              assert not (out / blocked).exists(), blocked
+          print('PASS: default staging cannot expose guestbook')
+          PY
+      - name: Build and verify release candidate (no deploy)
+        run: |
+          python3 scripts/stage_pages.py --include-guestbook
+          python3 - <<'PY'
+          from pathlib import Path
+          site=Path('_site')
+          required = (
+              'index.html','palette.html','guide.html','guestbook.html',
+              'css/guestbook.css','css/traffic.css','js/guestbook.js',
+              'js/guestbook-config.js','sw.js','data/announcements.js',
+              'data/qqtq-480.js','data/hanter-620.js','data/alice-1680.js',
+          )
+          for item in required:
+              assert (site / item).is_file(), f'Missing released asset: {item}'
+          for forbidden in (
+              '.github','docs','guestbook-worker','scripts','README.md',
+              'guestbook-worker/wrangler.jsonc',
+          ):
+              assert not (site / forbidden).exists(), f'Unsafe bundled asset: {forbidden}'
+          for page in ('index.html','palette.html','guide.html','guestbook.html'):
+              html=(site/page).read_text(encoding='utf8')
+              assert 'href="./guestbook.html"' in html, f'Missing guestbook navigation from {page}'
+          home=(site/'index.html').read_text(encoding='utf8')
+          assert home.count('href="./guestbook.html"') >= 2, 'Desktop and mobile navigation required'
+          guestbook=(site/'guestbook.html').read_text(encoding='utf8')
+          assert 'busuanzi_page_uv' in guestbook and 'busuanzi_page_pv' in guestbook
+          assert 'busuanzi_site_' not in guestbook
+          assert 'js/guestbook-config.js' in guestbook
+          assert 'js/guestbook.js' in guestbook
+          announcements=(site/'data/announcements.js').read_text(encoding='utf8')
+          assert "id:'guestbook-v1-launch'" in announcements
+          assert "link:'./guestbook.html'" in announcements
+          assert '留言板仍暂不开放' not in announcements
+          worker=Path('guestbook-worker/wrangler.jsonc').read_text(encoding='utf8')
+          assert '"PUBLIC_ENABLED": "false"' in worker, 'RC should not activate production'
+          assert 'GITHUB_CLIENT_SECRET' not in (site/'js/guestbook-config.js').read_text()
+          sw=(site/'sw.js').read_text(encoding='utf8')
+          assert 'url.origin!==self.location.origin' in sw
+          assert "url.pathname.includes('guestbook')" in sw
+          assert "e.request.cache==='no-store'" in sw
+          deploy=Path('.github/workflows/deploy-pages.yml').read_text(encoding='utf8')
+          assert 'stage_pages.py --include-guestbook' in deploy
+          assert "assert.equal(health.publicEnabled,true" in deploy
+          assert "assert.equal(config.enabled,true" in deploy
+          assert "assert.ok(Array.isArray(listing.items)" in deploy
+          print('PASS: guestbook RC prepared with static links, official assets and fail-closed Pages deployment gate')
+          PY
+      - name: Save static release preview (not published)
+        uses: actions/upload-artifact@v4
+        with:
+          name: color-matcher-guestbook-rc-static
+          path: _site/
+          retention-days: 7
