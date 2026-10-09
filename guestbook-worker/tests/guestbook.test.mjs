@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import worker from '../src/index.js';
 import {
-  HttpError, validateMessage, parsePagination, publicReady, fingerprint, requireAdmin
+  HttpError, validateMessage, parsePagination, publicReady, fingerprint
 } from '../src/security.js';
 import { ADMIN_HTML, ADMIN_CSS, ADMIN_JS } from '../src/admin-ui.js';
 
@@ -10,7 +10,7 @@ const API = 'https://color-matcher-guestbook-api.3518925535.workers.dev';
 const ORIGIN = 'https://invoidstar.github.io';
 
 class FakeD1 {
-  constructor() { this.rows = []; }
+  constructor() { this.rows = []; this.sessions = []; }
   prepare(query) {
     const db = this;
     const sql = query.replace(/\s+/g, ' ').trim();
@@ -23,6 +23,9 @@ class FakeD1 {
             }
             if (sql.startsWith('SELECT id FROM messages WHERE fingerprint')) {
               return db.rows.find(r=>r.fingerprint===values[0]&&r.content===values[1]&&r.created_at>=values[2]) || null;
+            }
+            if (sql.startsWith('SELECT session_hash,csrf_token')) {
+              return db.sessions.find(r=>r.session_hash===values[0]) || null;
             }
             throw new Error('Unexpected first SQL: ' + sql);
           },
@@ -72,6 +75,16 @@ class FakeD1 {
               db.rows=db.rows.filter(r=>r.id!==values[0]);
               return {meta:{changes:initial-db.rows.length}};
             }
+            if (sql.startsWith('INSERT INTO admin_sessions')) {
+              const [session_hash,csrf_token,github_user_id,created_at,expires_at]=values;
+              db.sessions.push({session_hash,csrf_token,github_user_id,created_at,expires_at});
+              return {meta:{changes:1}};
+            }
+            if (sql.startsWith('DELETE FROM admin_sessions')) {
+              const length=db.sessions.length;
+              db.sessions=db.sessions.filter(row=>row.session_hash!==values[0]);
+              return {meta:{changes:length-db.sessions.length}};
+            }
             throw new Error('Unexpected run SQL: ' + sql);
           }
         };
@@ -84,8 +97,10 @@ function env(db=new FakeD1()) {
     DB:db,PUBLIC_ENABLED:'true',ALLOWED_ORIGIN:ORIGIN,
     TURNSTILE_HOSTNAME:'invoidstar.github.io',TURNSTILE_SITE_KEY:'testing-site-key',
     TURNSTILE_SECRET:'testing-secret',RATE_LIMIT_SALT:'local-test-salt-must-be-long',
-    CF_ACCESS_TEAM_DOMAIN:'cm-test.cloudflareaccess.com',
-    CF_ACCESS_AUD:'expected-access-aud', ADMIN_EMAIL:'site-owner@example.test'
+    GITHUB_CLIENT_ID:'Iv1.testClientId12345',
+    GITHUB_CLIENT_SECRET:'fixture-github-client-secret-do-not-use',
+    GITHUB_ADMIN_USER_ID:'12345',
+    GITHUB_REDIRECT_URI: API+'/auth/github/callback'
   };
 }
 function request(path,method='GET',body=null,headers={}) {
@@ -103,39 +118,61 @@ async function result(path,method='GET',body=null,envData=env(),headers={}) {
   return {response,data};
 }
 
-const {publicKey,privateKey} = await crypto.subtle.generateKey({
-  name:'RSASSA-PKCS1-v1_5',modulusLength:2048,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'
-},true,['sign','verify']);
-const jwk=await crypto.subtle.exportKey('jwk',publicKey);
-jwk.kid='test-access-key';jwk.alg='RS256';
 function mockNetwork(mode='valid') {
   const realFetch=globalThis.fetch;
-  globalThis.fetch=async url=>{
-    const value=String(url);
-    if(value.includes('/cdn-cgi/access/certs'))return Response.json({keys:[jwk]});
-    if(value.includes('/turnstile/v0/siteverify')) {
+  globalThis.fetch=async (url,options)=>{
+    const target=String(url);
+    if (target.includes('turnstile/v0/siteverify')) {
       return Response.json({
-        success:mode==='valid',
+        success:mode!=='invalid',
         hostname:mode==='wrong-host'?'evil.example':'invoidstar.github.io',
         action:'guestbook_post'
       });
     }
-    throw new Error('Unexpected external request: '+value);
+    if (target.includes('github.com/login/oauth/access_token')) {
+      assert.equal(options.method,'POST');
+      assert.equal(JSON.parse(options.body).client_id,'Iv1.testClientId12345');
+      return Response.json({access_token:'oauth-fixture-token',token_type:'bearer'});
+    }
+    if (target.includes('api.github.com/user')) {
+      assert.match(options.headers.authorization,/Bearer /);
+      return Response.json({
+        id:mode==='wrong-user'?98765:12345,
+        login:mode==='wrong-user'?'intruder':'site-owner'
+      });
+    }
+    throw new Error('Unexpected network request: '+target);
   };
   return ()=>{globalThis.fetch=realFetch;};
 }
-const now=()=>Math.floor(Date.now()/1000);
-async function accessJwt(overrides={}) {
-  const header=Buffer.from(JSON.stringify({alg:'RS256',kid:jwk.kid})).toString('base64url');
-  const payload=Buffer.from(JSON.stringify({
-    iss:'https://cm-test.cloudflareaccess.com',
-    aud:['expected-access-aud'],
-    email:'site-owner@example.test',iat:now()-10,exp:now()+300,...overrides
-  })).toString('base64url');
-  const data=header+'.'+payload;
-  const signature=Buffer.from(await crypto.subtle.sign('RSASSA-PKCS1-v1_5',privateKey,
-    new TextEncoder().encode(data))).toString('base64url');
-  return data+'.'+signature;
+async function login(instance) {
+  const start=await worker.fetch(request('/auth/github/start','GET',null,{Origin:API}),instance);
+  assert.equal(start.status,303);
+  const authorize=new URL(start.headers.get('location'));
+  assert.equal(authorize.hostname,'github.com');
+  assert.equal(authorize.searchParams.get('client_id'),'Iv1.testClientId12345');
+  assert.equal(authorize.searchParams.get('redirect_uri'),API+'/auth/github/callback');
+  const state=authorize.searchParams.get('state');
+  assert.ok(state&&state.length===43);
+  const stateCookie=start.headers.get('set-cookie').split(';')[0];
+  const cb=await worker.fetch(request(
+    '/auth/github/callback?state='+encodeURIComponent(state)+'&code=fixtureCode12345678',
+    'GET',null,{Origin:API,Cookie:stateCookie}
+  ),instance);
+  assert.equal(cb.status,303);
+  assert.equal(cb.headers.get('location'),'/admin/');
+  const cookies=cb.headers.getSetCookie?.() || [cb.headers.get('set-cookie')];
+  const sessionSetCookie=cookies.find(c=>c&&c.startsWith('__Host-cmgb_session='));
+  assert.ok(sessionSetCookie);
+  assert.match(sessionSetCookie,/HttpOnly/);
+  assert.match(sessionSetCookie,/SameSite=Lax/);
+  const sessionCookie=sessionSetCookie.split(';')[0];
+  const status=await result('/admin/api/session','GET',null,instance,{Cookie:sessionCookie,Origin:API});
+  assert.equal(status.response.status,200);
+  assert.ok(status.data.csrfToken);
+  return {cookie:sessionCookie,headers:{
+    Cookie:sessionCookie,Origin:API,'x-cm-csrf':status.data.csrfToken
+  }};
 }
 
 test('submission normalization, length limits and category whitelist',()=>{
@@ -159,7 +196,7 @@ test('public mode is off by default and admin rejects unconfigured identity',asy
   const denied=await result('/api/messages','POST',postBody('hi'),disabled);
   assert.equal(denied.response.status,503);
   assert.equal(disabled.DB.rows.length,0);
-  const admin=env();delete admin.CF_ACCESS_AUD;
+  const admin=env();delete admin.GITHUB_CLIENT_SECRET;
   const response=await worker.fetch(request('/admin/'),admin);
   assert.equal(response.status,503);
 });
@@ -222,63 +259,97 @@ test('duplicates and per-fingerprint rate limits reject rapid submissions',async
     assert.equal(instance.DB.rows.length,2);
   } finally {restore();}
 });
-test('admin pages and data reject missing or invalid Access JWT',async()=>{
+test('missing session redirects browser and rejects admin API',async()=>{
   const instance=env();
-  const noToken=await worker.fetch(request('/admin/'),instance);
-  assert.equal(noToken.status,401);
-  const forgery=await worker.fetch(request('/admin/api/messages','GET',null,{
-    'Cf-Access-Jwt-Assertion':'fake.invalid.jwt'
-  }),instance);
-  assert.equal(forgery.status,401);
-  const jwt=await accessJwt({email:'intruder@example.org'});
-  const bad=await worker.fetch(request('/admin/api/messages','GET',null,{
-    'Cf-Access-Jwt-Assertion':jwt
-  }),instance);
-  assert.equal(bad.status,403);
+  const loginPage=await worker.fetch(request('/admin/login','GET',null,{Origin:API}),instance);
+  assert.equal(loginPage.status,200);
+  assert.match(await loginPage.text(),/使用 GitHub 登录/);
+  const redirected=await worker.fetch(request('/admin/','GET',null,{Origin:API}),instance);
+  assert.equal(redirected.status,303);
+  assert.equal(redirected.headers.get('location'),'/admin/login');
+  const missing=await result('/admin/api/messages','GET',null,instance,{Origin:API});
+  assert.equal(missing.response.status,401);
+  const forged=await result('/admin/api/messages','GET',null,instance,{
+    Origin:API,Cookie:'__Host-cmgb_session='+('x'.repeat(43))
+  });
+  assert.equal(forged.response.status,401);
 });
-test('valid Access token permits hide, restore, reply and permanent delete',async()=>{
+
+test('OAuth state mismatch, wrong origin, and non-admin GitHub ID are rejected',async()=>{
   const instance=env();
-  const restore=mockNetwork();
+  const state=await result('/auth/github/callback?state=wrong&code=fixtureCode12345678',
+    'GET',null,instance,{Origin:API});
+  assert.equal(state.response.status,403);
+  const startFromWrongHost=await result('/auth/github/start','GET',null,instance,{Origin:API});
+  assert.equal(startFromWrongHost.response.status,303);
+  const restore=mockNetwork('wrong-user');
+  try{
+    const start=await worker.fetch(request('/auth/github/start','GET',null,{Origin:API}),instance);
+    const authorize=new URL(start.headers.get('location'));
+    const stateCookie=start.headers.get('set-cookie').split(';')[0];
+    const response=await worker.fetch(request(
+      '/auth/github/callback?state='+authorize.searchParams.get('state')+
+      '&code=fixtureCode12345678','GET',null,{Origin:API,Cookie:stateCookie}
+    ),instance);
+    assert.equal(response.status,403);
+    assert.equal(instance.DB.sessions.length,0);
+  }finally{restore();}
+});
+
+test('GitHub login creates opaque revocable session and requires CSRF',async()=>{
+  const instance=env(), restore=mockNetwork();
   try {
+    const admin=await login(instance);
+    assert.equal(instance.DB.sessions.length,1);
+    assert.ok(!JSON.stringify(instance.DB.sessions).includes('oauth-fixture-token'));
+    assert.ok(!JSON.stringify(instance.DB.sessions).includes(admin.cookie.slice(19)));
+    const session=await result('/admin/api/session','GET',null,instance,admin.headers);
+    assert.equal(session.data.userId,'12345');
+    const denied=await result('/admin/api/messages/00000000-0000-4000-8000-000000000000',
+      'DELETE',null,instance,{Origin:API,Cookie:admin.cookie});
+    assert.equal(denied.response.status,403);
+    const wrongOrigin=await result('/admin/api/messages/00000000-0000-4000-8000-000000000000',
+      'DELETE',null,instance,{...admin.headers,Origin:'https://evil.example'});
+    assert.equal(wrongOrigin.response.status,403);
+  }finally{restore();}
+});
+
+test('authorized GitHub owner can hide, restore, reply and delete',async()=>{
+  const instance=env(),restore=mockNetwork();
+  try{
     const posted=await result('/api/messages','POST',postBody('important feedback'),
       instance,{'CF-Connecting-IP':'203.0.113.111'});
     const id=posted.data.item.id;
-    const jwt=await accessJwt();
-    const auth={'Cf-Access-Jwt-Assertion':jwt};
-    const page=await worker.fetch(request('/admin/','GET',null,auth),instance);
+    const admin=await login(instance);
+    const page=await worker.fetch(request('/admin/','GET',null,admin.headers),instance);
     assert.equal(page.status,200);
     assert.match(await page.text(),/留言管理/);
     assert.match(page.headers.get('content-security-policy'),/script-src 'self'/);
-    const adminList=await result('/admin/api/messages','GET',null,instance,auth);
-    assert.equal(adminList.data.items.length,1);
-    let changed=await result('/admin/api/messages/'+id,'PATCH',{action:'hide'},instance,auth);
+    const list=await result('/admin/api/messages','GET',null,instance,admin.headers);
+    assert.equal(list.data.items.length,1);
+    let changed=await result('/admin/api/messages/'+id,'PATCH',{action:'hide'},instance,admin.headers);
     assert.equal(changed.response.status,200);
     assert.equal((await result('/api/messages','GET',null,instance)).data.items.length,0);
-    changed=await result('/admin/api/messages/'+id,'PATCH',{action:'restore'},instance,auth);
+    changed=await result('/admin/api/messages/'+id,'PATCH',{action:'restore'},instance,admin.headers);
     assert.equal(changed.response.status,200);
     assert.equal((await result('/api/messages','GET',null,instance)).data.items.length,1);
     changed=await result('/admin/api/messages/'+id,'PATCH',
-      {action:'reply',reply:'谢谢反馈，我们会修复。'},instance,auth);
+      {action:'reply',reply:'谢谢反馈，我们会修复。'},instance,admin.headers);
     assert.equal(changed.response.status,200);
     assert.match((await result('/api/messages','GET',null,instance)).data.items[0].admin_reply,/谢谢/);
-    const removed=await result('/admin/api/messages/'+id,'DELETE',null,instance,auth);
+    const removed=await result('/admin/api/messages/'+id,'DELETE',null,instance,admin.headers);
     assert.equal(removed.response.status,200);
     assert.equal((await result('/api/messages','GET',null,instance)).data.items.length,0);
     assert.equal(instance.DB.rows.length,0);
-  } finally {restore();}
+    const logout=await result('/admin/api/logout','POST',null,instance,admin.headers);
+    assert.equal(logout.response.status,200);
+    assert.equal(instance.DB.sessions.length,0);
+    assert.match(logout.response.headers.get('set-cookie'),/Max-Age=0/);
+    const after=await result('/admin/api/messages','GET',null,instance,admin.headers);
+    assert.equal(after.response.status,401);
+  }finally{restore();}
 });
-test('tampering with a signed token is rejected',async()=>{
-  const instance=env(), restore=mockNetwork();
-  try {
-    const jwt=await accessJwt();
-    const segments=jwt.split('.');
-    segments[2]=(segments[2][0]==='A'?'B':'A')+segments[2].slice(1);
-    const response=await worker.fetch(request('/admin/api/messages','GET',null,{
-      'Cf-Access-Jwt-Assertion':segments.join('.')
-    }),instance);
-    assert.equal(response.status,401);
-  } finally {restore();}
-});
+
 test('admin assets parse as JavaScript and no hidden HTML scripting exists',()=>{
   assert.match(ADMIN_HTML,/\/admin\/app.js/);
   assert.match(ADMIN_CSS,/min-height:42px/);
