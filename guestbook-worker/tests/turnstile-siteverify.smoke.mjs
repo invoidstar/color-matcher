@@ -19,7 +19,7 @@ test('official Siteverify dummy success and forced failure', async () => {
   const passed = await verify('1x0000000000000000000000000000000AA');
   assert.equal(passed.success, true, 'the published always-pass test secret must validate the dummy token');
   assert.equal(typeof passed.hostname, 'string');
-  console.log('PASS Turnstile official always-pass test key: success=true; test hostname=', passed.hostname);
+  console.log('PASS Turnstile official always-pass test key: success=true; test hostname=', passed.hostname, '; action=', passed.action ?? '(unset)', '; cdata=', passed.cdata ?? '(unset)');
 
   const rejected = await verify('2x0000000000000000000000000000000AA');
   assert.equal(rejected.success, false, 'the published always-fail test secret must reject the dummy token');
