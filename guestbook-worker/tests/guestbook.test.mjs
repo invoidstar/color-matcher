@@ -280,8 +280,8 @@ test('OAuth state mismatch, wrong origin, and non-admin GitHub ID are rejected',
   const state=await result('/auth/github/callback?state=wrong&code=fixtureCode12345678',
     'GET',null,instance,{Origin:API});
   assert.equal(state.response.status,403);
-  const startFromWrongHost=await result('/auth/github/start','GET',null,instance,{Origin:API});
-  assert.equal(startFromWrongHost.response.status,303);
+  const wrongHost=await worker.fetch(new Request('https://unknown.example/auth/github/start'),instance);
+  assert.equal(wrongHost.status,403);
   const restore=mockNetwork('wrong-user');
   try{
     const start=await worker.fetch(request('/auth/github/start','GET',null,{Origin:API}),instance);
