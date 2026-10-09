@@ -107,18 +107,36 @@ export async function verifyTurnstile(token, ip, env) {
   if (typeof token !== 'string' || token.length < 1 || token.length > 2048) {
     throw new HttpError(422, 'captcha_required', '请完成人机验证');
   }
+  // Cloudflare's Worker reference implementation posts form-encoded fields.
+  // Avoid attaching AbortSignal.timeout() here: production transport errors
+  // were swallowed into captcha_network before receiving a Siteverify verdict.
+  // A failed verification must still reject every post (fail closed).
+  const form = new URLSearchParams({
+    secret: String(env.TURNSTILE_SECRET),
+    response: token
+  });
+  if (ip) form.set('remoteip', ip);
+  let response;
+  try {
+    response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded', 'accept': 'application/json' },
+      body: form
+    });
+  } catch (error) {
+    console.error('Turnstile Siteverify transport failure', error?.name || 'unknown');
+    throw new HttpError(503, 'captcha_network_fetch', '人机验证服务繁忙，请稍后重试');
+  }
+  if (!response.ok) {
+    console.error('Turnstile Siteverify non-2xx HTTP', response.status);
+    throw new HttpError(503, 'captcha_network_http', '人机验证服务繁忙，请稍后重试');
+  }
   let result;
   try {
-    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ secret: env.TURNSTILE_SECRET, response: token, remoteip: ip }),
-      signal: AbortSignal.timeout(6000)
-    });
-    if (!response.ok) throw new Error('siteverify_unavailable');
     result = await response.json();
   } catch {
-    throw new HttpError(503, 'captcha_network', '人机验证服务繁忙，请稍后重试');
+    console.error('Turnstile Siteverify invalid JSON response');
+    throw new HttpError(503, 'captcha_network_response', '人机验证服务繁忙，请稍后重试');
   }
   if (!result || result.success !== true ||
       result.hostname !== env.TURNSTILE_HOSTNAME ||
