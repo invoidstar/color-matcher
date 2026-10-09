@@ -36,6 +36,21 @@ jobs:
           node --test tests/visitor-d1.integration.mjs
       - name: Official Turnstile Siteverify dummy-key checks (no production secrets)
         run: node --test guestbook-worker/tests/turnstile-siteverify.smoke.mjs
+      - name: Real Chromium visitor acceptance (only on explicit request)
+        if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[browser-e2e]') }}
+        run: |
+          cd guestbook-worker
+          npm install --no-save --no-package-lock --no-audit --no-fund miniflare@4 playwright@1.56.1
+          npx playwright install --with-deps chromium
+          node --test tests/visitor-browser.e2e.mjs
+      - name: Save browser acceptance screenshots
+        if: ${{ always() && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[browser-e2e]')) }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: guestbook-visitor-browser
+          path: guestbook-worker/test-results/*.png
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Database migration and branch-only safety
         run: |
           python3 - <<'PY'
