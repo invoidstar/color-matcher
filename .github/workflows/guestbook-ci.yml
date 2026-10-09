@@ -29,6 +29,11 @@ jobs:
           node --check guestbook-worker/src/index.js
       - name: Backend and security tests
         run: node --test guestbook-worker/tests/*.test.mjs
+      - name: Isolated visitor acceptance (real local D1; simulated Turnstile, no production writes)
+        run: |
+          cd guestbook-worker
+          npm install --no-save --no-package-lock --no-audit --no-fund miniflare@4
+          node --test tests/visitor-d1.integration.mjs
       - name: Database migration and branch-only safety
         run: |
           python3 - <<'PY'
