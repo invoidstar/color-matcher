@@ -43,8 +43,11 @@ test('visitor acceptance: workerd + real local D1 + controlled Siteverify respon
   });
   try {
     const db = await mf.getD1Database('DB');
-    await db.exec(readFileSync(INIT_SQL, 'utf8'));
-    await db.exec(readFileSync(SESSION_SQL, 'utf8'));
+    // D1's exec() rejects comment-only lines; the SQL itself stays unchanged.
+    const sql = file => readFileSync(file, 'utf8').split('\n')
+      .filter(line => !line.trimStart().startsWith('--')).join('\n');
+    await db.exec(sql(INIT_SQL));
+    await db.exec(sql(SESSION_SQL));
 
     async function req(path, method = 'GET', body, ip = '198.51.100.101', origin = VISITOR_ORIGIN) {
       const headers = { Origin: origin, 'CF-Connecting-IP': ip };
