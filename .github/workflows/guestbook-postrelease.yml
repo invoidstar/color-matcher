@@ -60,7 +60,7 @@ jobs:
             }
             throw Error('Public site check failed for '+base+path+': '+error?.message);
           }
-          const html=await read('/guestbook.html','id="guestbookForm"');
+          const html=await read('/guestbook.html','guestbook.js?v=20261009-2');
           assert.match(html,/js\/guestbook\.js/);
           assert.ok(html.includes('./js/guestbook.js?v=20261009-2'),
             'Guestbook page must force fresh JavaScript after UI error hint fix');
