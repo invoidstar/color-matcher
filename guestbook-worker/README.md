@@ -42,21 +42,22 @@ GitHub 页面显示的 Redirect URL 就是旧称 Authorization callback URL。
 https://color-matcher-guestbook-api.3518925535.workers.dev
 
 已建立 D1 数据库名称：color-matcher-guestbook，绑定名 DB。
-尚需从 Cloudflare 控制台找到 **真正的 D1 Database ID UUID**。
-当前用户提供的是数据库名称，不能代替 UUID。
+D1 Database ID UUID 已由用户确认：e136a183-92b3-437c-a823-3f548db341c1。
+此值是公开部署标识，不属于密钥。
 
 已建立 Turnstile Widget 名称：color-matcher-guestbook。
-尚需真正的 Turnstile Site Key（公钥），及仅保存在 Cloudflare 中的私密 Secret。
+Turnstile Site Key（公开）已由用户确认：0x4AAAAAAFR_pCEvHTjb0_E1。
+仍需仅保存在 Cloudflare 中的私密 Secret。
 
 Worker wrangler.jsonc 的配置项：
 - PUBLIC_ENABLED=false（联调期间不要开启）
 - ALLOWED_ORIGIN=https://invoidstar.github.io
 - TURNSTILE_HOSTNAME=invoidstar.github.io
-- TURNSTILE_SITE_KEY=真正的公开 Site Key，当前为空
+- TURNSTILE_SITE_KEY=0x4AAAAAAFR_pCEvHTjb0_E1（已配置，公开值）
 - GITHUB_CLIENT_ID=Ov23ctbZCJlcKuhDQjU3（已填写，公开 Client ID）
 - GITHUB_ADMIN_USER_ID=63053541（已从连接的 GitHub invoidstar 账号核实）
 - GITHUB_REDIRECT_URI=https://color-matcher-guestbook-api.3518925535.workers.dev/auth/github/callback
-- D1 binding DB、database_name=color-matcher-guestbook、database_id=真实 UUID
+- D1 binding DB、database_name=color-matcher-guestbook、database_id=e136a183-92b3-437c-a823-3f548db341c1（已配置）
 
 Cloudflare Worker Secrets（**切勿提交到仓库**，Wrangler 会在部署时检查这三项已设置）：
 - GITHUB_CLIENT_SECRET：GitHub OAuth App 私钥
@@ -86,17 +87,16 @@ Session Cookie 设置 Secure、HttpOnly、SameSite=Lax；D1 只存储哈希。OA
 
 GitHub OAuth 的公开 Client ID 与站长数字 ID **已经配置完毕**，无需重复创建应用。
 
-1. 打开 Cloudflare 控制台 → Storage & databases → D1 → color-matcher-guestbook，复制页面显示的 **Database ID（UUID）**。这里不是数据库名称。
-2. 打开 Cloudflare Turnstile → color-matcher-guestbook Widget，复制 **Site Key（公开值）**。这里不是 Widget 名称。
-3. 在 Cloudflare Workers & Pages → color-matcher-guestbook-api → Settings → Variables and Secrets 中将 GITHUB_CLIENT_SECRET、TURNSTILE_SECRET、RATE_LIMIT_SALT 都保存为 **Secret**。不要提交到 GitHub，也不要在聊天中发送。
-4. 检查是否执行过旧版 messages SQL，防止已有表结构和迁移发生冲突。
-5. 从 guestbook-worker 目录受控执行：
+1. **配置已完成：** 真实 D1 UUID、Turnstile Site Key、GitHub Client ID、GitHub 管理员数字 ID 均已写入 wrangler.jsonc，不需要重复查找。
+2. 在 Cloudflare Workers & Pages → color-matcher-guestbook-api → Settings → Variables and Secrets 中将 GITHUB_CLIENT_SECRET、TURNSTILE_SECRET、RATE_LIMIT_SALT 都保存为 **Secret**。不要提交到 GitHub，也不要在聊天中发送。
+3. 检查是否执行过旧版 messages SQL，防止已有表结构和迁移发生冲突。
+4. 从 guestbook-worker 目录受控执行：
    npx wrangler d1 migrations apply color-matcher-guestbook --remote
    依次创建 messages 和 admin_sessions。
-6. 配好变量后才手动部署：
+5. 配好变量后才手动部署：
    npx wrangler deploy
    部署阶段保持 PUBLIC_ENABLED=false，首先测试 GitHub 登录、隐藏/回复/删除、退出、越权拒绝。
-7. 管理权限实测通过并获得用户明确批准后，再开启匿名提交并把入口合并到 GitHub Pages 主站。
+6. 管理权限实测通过并获得用户明确批准后，再开启匿名提交并把入口合并到 GitHub Pages 主站。
 
 静态部署安全门禁现已完成：`scripts/stage_pages.py` 会将 GitHub Pages 的部署内容复制到 `_site/`，**默认排除**整个 Worker 后端以及留言板页面和前端脚本。即便以后先合并代码，GitHub Pages 也不会自动开放留言入口。只有正式验收通过，单独批准后才能显式采用 `--include-guestbook` 公共打包参数，并添加主站导航。
 

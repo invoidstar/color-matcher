@@ -46,7 +46,9 @@ jobs:
           assert config['vars']['PUBLIC_ENABLED'] == 'false'
           assert config['d1_databases'][0]['binding'] == 'DB'
           assert config['d1_databases'][0]['database_name'] == 'color-matcher-guestbook'
-          assert config['d1_databases'][0]['database_id'] == 'REPLACE_WITH_D1_DATABASE_UUID'
+          assert config['d1_databases'][0]['database_id'] == 'e136a183-92b3-437c-a823-3f548db341c1'
+          assert config['vars']['TURNSTILE_SITE_KEY'] == '0x4AAAAAAFR_pCEvHTjb0_E1'
+          assert config['vars']['TURNSTILE_HOSTNAME'] == 'invoidstar.github.io'
           assert config['vars']['GITHUB_CLIENT_ID'] == 'Ov23ctbZCJlcKuhDQjU3'
           assert config['vars']['GITHUB_ADMIN_USER_ID'] == '63053541'
           assert config['vars']['GITHUB_REDIRECT_URI'].endswith('/auth/github/callback')
@@ -72,5 +74,5 @@ jobs:
                           'js/guestbook.js','js/guestbook-config.js','css/guestbook.css'):
               assert not (out/blocked).exists(), blocked
           print('Static site assets verified, guestbook not publicly staged.')
-          print('migrations valid; GitHub OAuth identity configured; public launch disabled; no production entry')
+          print('migrations valid; real D1 UUID & Turnstile Site Key configured; public launch disabled; no production entry')
           PY
