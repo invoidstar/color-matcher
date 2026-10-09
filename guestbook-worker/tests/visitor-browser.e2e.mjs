@@ -45,32 +45,23 @@ test('Chromium visitor publish and isolated D1 cleanup', {timeout:150000}, async
   const origin='http://127.0.0.1:'+server.address().port;
   const fetchMock=createFetchMock();
   fetchMock.disableNetConnect();
-  let actualSiteverifyCalls=0;
+  // Check the exact official dummy widget token against Cloudflare itself.
+  // Its response intentionally omits real widget action/hostname metadata.
+  const dummyToken='XXXX.DUMMY.TOKEN.XXXX';
+  const realResponse=await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify',{
+    method:'POST',headers:{'content-type':'application/json'},
+    body:JSON.stringify({secret:DUMMY_SECRET,response:dummyToken}),signal:AbortSignal.timeout(10000)
+  });
+  assert.equal(realResponse.status,200);
+  const actual=await realResponse.json();
+  assert.equal(actual.success,true);
+  console.log('PASS real Cloudflare dummy Siteverify',JSON.stringify({
+    success:actual.success,hostname:actual.hostname,action:actual.action??null
+  }));
+  // Test-only metadata adaptation of this real dummy-key response.
   fetchMock.get('https://challenges.cloudflare.com').intercept({
     method:'POST',path:'/turnstile/v0/siteverify'
-  }).reply(async request=>{
-    const requestBody=JSON.parse(typeof request.body==='string'
-      ? request.body : await new Response(request.body).text());
-    assert.equal(requestBody.secret,'1x0000000000000000000000000000000AA');
-    assert.equal(requestBody.response,'XXXX.DUMMY.TOKEN.XXXX');
-    const response=await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify',{
-      method:'POST',headers:{'content-type':'application/json'},
-      body:JSON.stringify(requestBody),signal:AbortSignal.timeout(10000)
-    });
-    assert.equal(response.status,200);
-    const actual=await response.json();
-    assert.equal(actual.success,true);
-    actualSiteverifyCalls++;
-    console.log('PASS real Cloudflare dummy Siteverify',JSON.stringify({
-      success:actual.success,hostname:actual.hostname,action:actual.action??null
-    }));
-    // Official dummy Siteverify returns example.com and no action, even
-    // for a real widget rendered on localhost. Strict production
-    // hostname/action validation is retained; ONLY test response adapts.
-    return {statusCode:200,data:JSON.stringify({
-      ...actual,hostname:'127.0.0.1',action:'guestbook_post'
-    })};
-  });
+  }).reply(200,JSON.stringify({...actual,hostname:'127.0.0.1',action:'guestbook_post'}));
   const mf=new Miniflare({
     modules:true,
     scriptPath:fileURLToPath(new URL('../src/index.js',import.meta.url)),
@@ -121,7 +112,7 @@ test('Chromium visitor publish and isolated D1 cleanup', {timeout:150000}, async
     await page.getByText('留言发布成功',{exact:false}).waitFor({timeout:20000});
     await page.locator('.message-list').getByText(MESSAGE).waitFor({timeout:20000});
     await page.screenshot({path:path.join(output,'02-published.png'),fullPage:true});
-    assert.equal(actualSiteverifyCalls,1);
+    assert.equal(await page.evaluate(()=>window.turnstile?.getResponse()),dummyToken);
     const msg=await db.prepare('SELECT id FROM messages WHERE content=?').bind(MESSAGE).first();
     assert.ok(msg?.id);
     console.log('PASS real Chromium Turnstile test widget, submission, isolated D1 and public listing');
