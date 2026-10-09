@@ -131,7 +131,9 @@ function mockNetwork(mode='valid') {
     }
     if (target.includes('github.com/login/oauth/access_token')) {
       assert.equal(options.method,'POST');
-      assert.equal(JSON.parse(options.body).client_id,'Iv1.testClientId12345');
+      const payload=JSON.parse(options.body);
+      assert.equal(payload.client_id,'Iv1.testClientId12345');
+      assert.match(payload.code_verifier,/^[A-Za-z0-9_-]{43}$/);
       return Response.json({access_token:'oauth-fixture-token',token_type:'bearer'});
     }
     if (target.includes('api.github.com/user')) {
@@ -154,7 +156,11 @@ async function login(instance) {
   assert.equal(authorize.searchParams.get('redirect_uri'),API+'/auth/github/callback');
   const state=authorize.searchParams.get('state');
   assert.ok(state&&state.length===43);
-  const stateCookie=start.headers.get('set-cookie').split(';')[0];
+  assert.equal(authorize.searchParams.get('code_challenge_method'),'S256');
+  assert.match(authorize.searchParams.get('code_challenge'),/^[A-Za-z0-9_-]{43}$/);
+  const startCookies=start.headers.getSetCookie().map(v=>v.split(';')[0]);
+  assert.equal(startCookies.length,2);
+  const stateCookie=startCookies.join('; ');
   const cb=await worker.fetch(request(
     '/auth/github/callback?state='+encodeURIComponent(state)+'&code=fixtureCode12345678',
     'GET',null,{Origin:API,Cookie:stateCookie}
@@ -295,7 +301,7 @@ test('OAuth state mismatch, wrong origin, and non-admin GitHub ID are rejected',
   try{
     const start=await worker.fetch(request('/auth/github/start','GET',null,{Origin:API}),instance);
     const authorize=new URL(start.headers.get('location'));
-    const stateCookie=start.headers.get('set-cookie').split(';')[0];
+    const stateCookie=start.headers.getSetCookie().map(v=>v.split(';')[0]).join('; ');
     const response=await worker.fetch(request(
       '/auth/github/callback?state='+authorize.searchParams.get('state')+
       '&code=fixtureCode12345678','GET',null,{Origin:API,Cookie:stateCookie}

@@ -58,7 +58,7 @@ Worker wrangler.jsonc 的配置项：
 - GITHUB_REDIRECT_URI=https://color-matcher-guestbook-api.3518925535.workers.dev/auth/github/callback
 - D1 binding DB、database_name=color-matcher-guestbook、database_id=真实 UUID
 
-Cloudflare Worker Secrets（**切勿提交到仓库**）：
+Cloudflare Worker Secrets（**切勿提交到仓库**，Wrangler 会在部署时检查这三项已设置）：
 - GITHUB_CLIENT_SECRET：GitHub OAuth App 私钥
 - TURNSTILE_SECRET：Turnstile 私钥
 - RATE_LIMIT_SALT：自生成随机且长期稳定的限流盐，至少 16 字符
@@ -79,7 +79,7 @@ Cloudflare Worker Secrets（**切勿提交到仓库**）：
 管理员变更：PATCH/DELETE /admin/api/messages/:id、POST /admin/api/logout。
 
 GitHub OAuth access_token 只用来读取 /user 的数字 ID，不会保存。
-Session Cookie 设置 Secure、HttpOnly、SameSite=Lax；D1 只存储哈希。
+Session Cookie 设置 Secure、HttpOnly、SameSite=Lax；D1 只存储哈希。OAuth 使用 state + PKCE（S256）组合，避免授权码被截获后重用。
 状态 state Cookie 阻止 OAuth 登录 CSRF，后台更改操作需要 CSRF header。
 
 ## 下一步（尚未执行）

@@ -20,5 +20,12 @@
       "database_id": "REPLACE_WITH_D1_DATABASE_UUID",
       "migrations_dir": "migrations"
     }
-  ]
+  ],
+  "secrets": {
+    "required": [
+      "GITHUB_CLIENT_SECRET",
+      "TURNSTILE_SECRET",
+      "RATE_LIMIT_SALT"
+    ]
+  }
 }

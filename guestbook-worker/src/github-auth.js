@@ -5,6 +5,7 @@ import { HttpError } from './security.js';
 
 const SESSION_COOKIE='__Host-cmgb_session';
 const STATE_COOKIE='__Host-cmgb_oauth_state';
+const PKCE_COOKIE='__Host-cmgb_oauth_pkce';
 const SESSION_TTL=8*60*60, STATE_TTL=10*60;
 
 function configuration(env){
@@ -36,6 +37,11 @@ function randomToken(size=32){
 async function sha256(value){
   const buffer=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value));
   return Array.from(new Uint8Array(buffer),b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function codeChallenge(verifier){
+  const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(verifier));
+  return btoa(Array.from(new Uint8Array(digest),b=>String.fromCharCode(b)).join(''))
+    .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 }
 function cookie(request,name){
   const raw=request.headers.get('cookie')||'';
@@ -84,21 +90,26 @@ export function loginHtml(){
 export async function beginGitHubLogin(request,env){
   const cfg=configuration(env);database(env);checkHost(request,cfg);
   const state=randomToken(32);
+  const verifier=randomToken(32);
   const url=new URL('https://github.com/login/oauth/authorize');
   url.searchParams.set('client_id',cfg.clientId);
   url.searchParams.set('redirect_uri',cfg.redirectUri);
   url.searchParams.set('state',state);
+  url.searchParams.set('code_challenge',await codeChallenge(verifier));
+  url.searchParams.set('code_challenge_method','S256');
   // No repository or email scopes; only GitHub /user numeric ID is needed.
-  return redirect(url.toString(),setCookie(STATE_COOKIE,state,STATE_TTL));
+  const response=redirect(url.toString(),setCookie(STATE_COOKIE,state,STATE_TTL));
+  response.headers.append('set-cookie',setCookie(PKCE_COOKIE,verifier,STATE_TTL));
+  return response;
 }
-async function exchangeCode(code,cfg){
+async function exchangeCode(code,cfg,verifier){
   let payload;
   try{
     const response=await fetch('https://github.com/login/oauth/access_token',{
       method:'POST',
       headers:{'content-type':'application/json',accept:'application/json'},
       body:JSON.stringify({client_id:cfg.clientId,client_secret:cfg.clientSecret,
-        code,redirect_uri:cfg.redirectUri}),
+        code,redirect_uri:cfg.redirectUri,code_verifier:verifier}),
       signal:AbortSignal.timeout(7000)
     });
     if(!response.ok)throw new Error('oauth_http');
@@ -137,12 +148,14 @@ export async function finishGitHubLogin(request,env,url){
   const cfg=configuration(env),db=database(env);checkHost(request,cfg);
   const state=url.searchParams.get('state')||'';
   const expected=cookie(request,STATE_COOKIE);
+  const verifier=cookie(request,PKCE_COOKIE);
   const code=url.searchParams.get('code')||'';
   if(!/^[A-Za-z0-9_-]{43}$/.test(state) || !equal(state,expected) ||
+     !/^[A-Za-z0-9_-]{43}$/.test(verifier) ||
      !/^[A-Za-z0-9_-]{8,512}$/.test(code) || url.searchParams.has('error')){
     throw new HttpError(403,'github_oauth_state','授权状态无效或已过期，请重新登录');
   }
-  const token=await exchangeCode(code,cfg);
+  const token=await exchangeCode(code,cfg,verifier);
   const userId=await githubUserId(token);
   if(userId!==cfg.adminId)
     throw new HttpError(403,'github_admin_forbidden','此 GitHub 账号没有管理权限');
@@ -153,6 +166,7 @@ export async function finishGitHubLogin(request,env,url){
     .bind(await sha256(opaque),csrf,userId,now,now+SESSION_TTL).run();
   const response=redirect('/admin/',setCookie(SESSION_COOKIE,opaque,SESSION_TTL));
   response.headers.append('set-cookie',setCookie(STATE_COOKIE,'',0));
+  response.headers.append('set-cookie',setCookie(PKCE_COOKIE,'',0));
   return response;
 }
 export async function requireAdmin(request,env,unsafe=false){

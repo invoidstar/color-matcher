@@ -50,6 +50,7 @@ jobs:
           assert config['vars']['GITHUB_CLIENT_ID'] == 'Ov23ctbZCJlcKuhDQjU3'
           assert config['vars']['GITHUB_ADMIN_USER_ID'] == '63053541'
           assert config['vars']['GITHUB_REDIRECT_URI'].endswith('/auth/github/callback')
+          assert set(config['secrets']['required']) == {'GITHUB_CLIENT_SECRET','TURNSTILE_SECRET','RATE_LIMIT_SALT'}
           main = Path('index.html').read_text()
           assert 'guestbook.html' not in main
           assert 'js/guestbook.js' not in main
