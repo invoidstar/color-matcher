@@ -1,0 +1,31 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "color-matcher-guestbook-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-09",
+  "workers_dev": true,
+  "vars": {
+    "PUBLIC_ENABLED": "true",
+    "ALLOWED_ORIGIN": "https://invoidstar.github.io",
+    "TURNSTILE_HOSTNAME": "invoidstar.github.io",
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAFR_pCEvHTjb0_E1",
+    "GITHUB_CLIENT_ID": "Ov23ctbZCJlcKuhDQjU3",
+    "GITHUB_ADMIN_USER_ID": "63053541",
+    "GITHUB_REDIRECT_URI": "https://color-matcher-guestbook-api.3518925535.workers.dev/auth/github/callback"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "color-matcher-guestbook",
+      "database_id": "e136a183-92b3-437c-a823-3f548db341c1",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "secrets": {
+    "required": [
+      "GITHUB_CLIENT_SECRET",
+      "TURNSTILE_SECRET",
+      "RATE_LIMIT_SALT"
+    ]
+  }
+}

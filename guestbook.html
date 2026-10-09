@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#7865b8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Color Matcher · 毛绒娃娃配色助手留言和意见反馈">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./css/guestbook.css">
+<link rel="stylesheet" href="./css/traffic.css">
+<title>留言与反馈 · Color Matcher</title>
+</head>
+<body>
+<header class="guestbook-header">
+  <a class="brand" href="./" aria-label="返回工作台">
+    <span class="brand-mark" aria-hidden="true">✿</span>
+    <span class="brand-text"><strong>Color Matcher</strong><small>毛绒娃娃配色助手</small></span>
+  </a>
+  <nav aria-label="网站导航">
+    <a href="./">工作台</a>
+    <a href="./palette.html">色卡库</a>
+    <a href="./guide.html">使用说明</a>
+    <a href="./guestbook.html" aria-current="page">留言反馈</a>
+  </nav>
+</header>
+<main class="guestbook-container">
+  <section class="page-intro">
+    <span class="eyebrow">GUESTBOOK · FEEDBACK</span>
+    <h1>留言与反馈 <span aria-hidden="true">💌</span></h1>
+    <p>使用 Color Matcher 时遇到了问题，或者希望增加什么功能？欢迎分享使用体验、问题反馈与功能建议。无需登录，验证通过后留言会公开展示。</p>
+    <div class="notice" id="serviceNotice" role="status" aria-live="polite">正在检查留言服务状态…</div>
+  </section>
+
+  <div class="guestbook-layout">
+    <section class="panel compose-panel" aria-labelledby="composeTitle">
+      <div class="section-heading"><span class="section-icon" aria-hidden="true">✎</span>
+        <div><h2 id="composeTitle">写下你的想法</h2><p>验证通过后公开显示，站长可以回复，也可能隐藏或删除不合适的内容。</p></div>
+      </div>
+      <form id="guestbookForm">
+        <label for="nickname">昵称 <span class="required">*</span></label>
+        <input id="nickname" name="nickname" required maxlength="24"
+          autocomplete="nickname" placeholder="怎么称呼你？" disabled>
+        <label for="category">留言类型 <span class="required">*</span></label>
+        <select id="category" name="category" disabled>
+          <option value="experience">使用体验</option>
+          <option value="bug">问题反馈</option>
+          <option value="feature">功能建议</option>
+          <option value="other">其他</option>
+        </select>
+        <label for="content">留言内容 <span class="required">*</span></label>
+        <textarea id="content" name="content" required maxlength="500" rows="6"
+          placeholder="欢迎提出想法，也可以告诉我哪些地方不好用…" disabled></textarea>
+        <div class="input-help"><span>仅支持纯文本，不提供附件上传</span><span id="contentCounter">0 / 500</span></div>
+        <div id="turnstileMount" class="captcha-mount" aria-label="人机验证"></div>
+        <button id="submitBtn" class="submit-btn" type="submit" disabled>发布留言</button>
+        <p id="submitStatus" class="submit-status" role="status" aria-live="polite"></p>
+        <p class="privacy-tip">昵称和留言正文会公开展示，请勿填写手机号、住址、邮箱、账号凭据等个人敏感信息。</p>
+      </form>
+    </section>
+
+    <section class="panel browse-panel" aria-labelledby="messagesTitle">
+      <div class="section-heading browse-title">
+        <div><h2 id="messagesTitle">大家的留言</h2><p>新留言优先展示 · 站长回复显示在下方</p></div>
+        <button id="reloadBtn" type="button" class="soft-button" disabled>刷新</button>
+      </div>
+      <div id="messageList" class="message-list" aria-live="polite"></div>
+      <div id="emptyMessages" class="empty-state" hidden>还没有留言，期待你的第一条分享 ✨</div>
+      <div class="pager">
+        <button id="prevPageBtn" type="button" disabled>上一页</button>
+        <span id="pageStatus">第 1 页</span>
+        <button id="nextPageBtn" type="button" disabled>下一页</button>
+      </div>
+      <p id="listStatus" class="list-status" role="status" aria-live="polite"></p>
+    </section>
+  </div>
+</main>
+<footer>Color Matcher · 留言与反馈 · 让每一条建议都被认真看见。
+ <span class="traffic-stats" aria-label="本页访问统计">本页统计 <span class="traffic-dot">·</span> 访客 UV <span id="busuanzi_page_uv">加载中...</span> <span class="traffic-dot">·</span> 浏览量 PV <span id="busuanzi_page_pv">加载中...</span></span></footer>
+<script src="./js/guestbook-config.js"></script>
+<script src="./js/guestbook.js" defer></script>
+<script src="//cdn.busuanzi.cc/busuanzi/3.6.9/busuanzi.min.js" defer></script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-const CACHE='plush-color-matcher-v4.0';
+const CACHE='plush-color-matcher-v4.1-guestbook';
 const ASSETS=[
   './','./index.html','./palette.html','./manifest.webmanifest','./icon.svg',
   './css/base.css','./css/theme.css','./css/features.css','./css/palette.css','./css/announcement.css','./css/traffic.css',
@@ -7,4 +7,17 @@ const ASSETS=[
 ];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));self.skipWaiting();});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim();});
-self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{const copy=res.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return res;}).catch(()=>e.request.mode==='navigate'?caches.match('./index.html'):undefined)));});
+// Leave network APIs and guestbook resources uncached: messages, challenges and
+// sign-in responses must never be served from the offline PWA asset cache.
+self.addEventListener('fetch',e=>{
+  if(e.request.method!=='GET'||e.request.cache==='no-store')return;
+  const url=new URL(e.request.url);
+  if(url.origin!==self.location.origin||url.pathname.includes('guestbook'))return;
+  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
+    if(res.ok&&res.type==='basic'){
+      const copy=res.clone();
+      e.waitUntil(caches.open(CACHE).then(c=>c.put(e.request,copy)));
+    }
+    return res;
+  }).catch(()=>e.request.mode==='navigate'?caches.match('./index.html'):undefined)));
+});

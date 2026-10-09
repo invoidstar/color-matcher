@@ -1,0 +1,198 @@
+name: Guestbook production tests (no direct deploy)
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v6
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax checks
+        run: |
+          node --check js/guestbook.js
+          node --check js/guestbook-config.js
+          node --check guestbook-worker/src/security.js
+          node --check guestbook-worker/src/admin-ui.js
+          node --check guestbook-worker/src/github-auth.js
+          node --check guestbook-worker/src/login-ui.js
+          node --check guestbook-worker/src/index.js
+      - name: One-time D1 registry script dry-run (no remote access)
+        run: |
+          node --check guestbook-worker/scripts/register-d1-baseline.mjs
+          node guestbook-worker/scripts/register-d1-baseline.mjs --self-test
+      - name: Backend and security tests
+        run: node --test guestbook-worker/tests/*.test.mjs
+      - name: Isolated visitor acceptance (real local D1; simulated Turnstile, no production writes)
+        run: |
+          cd guestbook-worker
+          npm install --no-save --no-package-lock --no-audit --no-fund miniflare@4
+          node --test tests/visitor-d1.integration.mjs
+      - name: Official Turnstile Siteverify dummy-key checks (no production secrets)
+        run: node --test guestbook-worker/tests/turnstile-siteverify.smoke.mjs
+      - name: Real Chromium visitor acceptance (only on explicit request)
+        if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[browser-e2e]') }}
+        run: |
+          cd guestbook-worker
+          npm install --no-save --no-package-lock --no-audit --no-fund miniflare@4 playwright@1.56.1
+          npx playwright install --with-deps chromium
+          node --test tests/visitor-browser.e2e.mjs
+      - name: Save browser acceptance screenshots
+        if: ${{ always() && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[browser-e2e]')) }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: guestbook-visitor-browser
+          path: guestbook-worker/test-results/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Database migration and branch-only safety
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, sqlite3
+          sql = Path('guestbook-worker/migrations/0001_init.sql').read_text()
+          db = sqlite3.connect(':memory:')
+          db.executescript(sql)
+          db.executescript(Path('guestbook-worker/migrations/0002_github_sessions.sql').read_text())
+          cols = {r[1] for r in db.execute("PRAGMA table_info(messages)")}
+          assert {'id','nickname','category','content','status','admin_reply','fingerprint','created_at'} <= cols
+          admin_cols = {r[1] for r in db.execute("PRAGMA table_info(admin_sessions)")}
+          assert {'session_hash','csrf_token','github_user_id','expires_at'} <= admin_cols
+          # Simulate re-applying idempotent baseline migrations after manual
+          # schema creation. Existing messages and sessions must be preserved.
+          db.execute("INSERT INTO messages(id,nickname,category,content,fingerprint) VALUES(?,?,?,?,?)",
+                     ('manual-baseline-check','验收','other','需保留的历史消息','isolated-fingerprint'))
+          db.execute("INSERT INTO admin_sessions(session_hash,csrf_token,github_user_id,expires_at) VALUES(?,?,?,?)",
+                     ('hash-for-local-test','csrf-for-local-test','63053541',2099999999))
+          db.executescript(sql)
+          db.executescript(Path('guestbook-worker/migrations/0002_github_sessions.sql').read_text())
+          assert db.execute("SELECT COUNT(*) FROM messages WHERE id='manual-baseline-check'").fetchone()[0] == 1
+          assert db.execute("SELECT COUNT(*) FROM admin_sessions WHERE session_hash='hash-for-local-test'").fetchone()[0] == 1
+          print('Idempotent baseline migrations preserved existing local rows; remote migration metadata still unverified.')
+          config = json.loads(Path('guestbook-worker/wrangler.jsonc').read_text())
+          assert config['vars']['PUBLIC_ENABLED'] == 'true'
+          assert config['d1_databases'][0]['binding'] == 'DB'
+          assert config['d1_databases'][0]['database_name'] == 'color-matcher-guestbook'
+          assert config['d1_databases'][0]['database_id'] == 'e136a183-92b3-437c-a823-3f548db341c1'
+          assert config['vars']['TURNSTILE_SITE_KEY'] == '0x4AAAAAAFR_pCEvHTjb0_E1'
+          assert config['vars']['TURNSTILE_HOSTNAME'] == 'invoidstar.github.io'
+          assert config['vars']['GITHUB_CLIENT_ID'] == 'Ov23ctbZCJlcKuhDQjU3'
+          assert config['vars']['GITHUB_ADMIN_USER_ID'] == '63053541'
+          assert config['vars']['GITHUB_REDIRECT_URI'].endswith('/auth/github/callback')
+          assert set(config['secrets']['required']) == {'GITHUB_CLIENT_SECRET','TURNSTILE_SECRET','RATE_LIMIT_SALT'}
+          main = Path('index.html').read_text()
+          assert 'href="./guestbook.html"' in main
+          assert 'js/guestbook.js' not in main
+          assert 'guestbook.html' not in Path('sw.js').read_text()
+          assert 'TURNSTILE_SECRET' not in Path('js/guestbook-config.js').read_text()
+          assert 'PUBLIC_ENABLED' not in Path('index.html').read_text()
+          guestbook = Path('guestbook.html').read_text(encoding='utf-8')
+          assert '预备版本' not in guestbook
+          assert '留言板暂未正式开放' not in guestbook
+          assert '昵称和留言正文会公开展示' in guestbook
+          print('Guestbook public link absent, launch copy reviewed, Worker excluded from Pages')
+          PY
+      - name: Live Worker public endpoints and anonymous safety (no secrets, no writes)
+        env:
+          GUESTBOOK_URL: https://color-matcher-guestbook-api.3518925535.workers.dev
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          const origin=process.env.GUESTBOOK_URL;
+          assert.match(origin,/^https:\/\//);
+          const base=new URL(origin);
+          async function request(path,options={}) {
+            const response=await fetch(new URL(path,base),{
+              redirect:'manual',signal:AbortSignal.timeout(12000),...options,
+              headers:{'accept':'application/json',...options.headers}
+            });
+            const contentType=response.headers.get('content-type')||'';
+            const body=contentType.includes('application/json')?
+              await response.json():await response.text();
+            return {status:response.status,headers:response.headers,body};
+          }
+          function check(name,response,status) {
+            assert.equal(response.status,status,name+': expected HTTP '+status+' got '+response.status);
+            console.log('PASS',name,'HTTP',status);
+          }
+          let r=await request('/health');
+          // Builds and Actions run concurrently after push. Wait for the newly
+          // enabled Worker version, but never manufacture a successful result.
+          for(let i=0;i<18 && !(r.status===200 && r.body.publicEnabled===true);i++){
+            await new Promise(resolve=>setTimeout(resolve,5000));
+            r=await request('/health');
+          }
+          check('health endpoint',r,200);
+          assert.equal(r.body.service,'color-matcher-guestbook');
+          assert.equal(r.body.publicEnabled,true,'Public posting MUST be enabled');
+          assert.equal(r.headers.get('x-content-type-options'),'nosniff');
+          r=await request('/api/config');
+          check('public config endpoint',r,200);
+          assert.equal(r.body.enabled,true);
+          assert.ok(typeof r.body.siteKey==='string' && r.body.siteKey.length>10);
+          assert.equal(r.body.maxContentLength,500);
+          r=await request('/api/messages');
+          check('anonymous public listing',r,200);
+          assert.ok(Array.isArray(r.body.items));
+          r=await request('/api/messages',{method:'POST',headers:{
+            origin:'https://invoidstar.github.io','content-type':'application/json'
+          },body:'{}'});
+          check('invalid anonymous body rejected',r,422);
+          assert.equal(r.body.error,'invalid_fields');
+          r=await request('/admin/login');
+          check('admin login page',r,200);
+          assert.match(r.body,/\/auth\/github\/start/);
+          assert.doesNotMatch(r.body,/hello world/i);
+          r=await request('/admin',{method:'GET'});
+          check('admin page without session redirects',r,303);
+          assert.equal(r.headers.get('location'),'/admin/login');
+          r=await request('/admin/api/session');
+          check('admin session endpoint rejects anonymous',r,401);
+          assert.equal(r.body.error,'admin_login_required');
+          r=await request('/admin/api/messages');
+          check('admin messages endpoint rejects anonymous',r,401);
+          r=await request('/admin/api/messages/11111111-1111-4111-8111-111111111111',{
+            method:'DELETE',headers:{origin:base.origin}
+          });
+          check('admin deletion rejects anonymous',r,401);
+          r=await request('/admin/api/logout',{method:'POST',headers:{origin:base.origin}});
+          check('admin logout rejects anonymous',r,401);
+          r=await request('/auth/github/callback');
+          check('OAuth callback rejects missing state',r,403);
+          assert.equal(r.body.error,'github_oauth_state');
+          r=await request('/api/messages',{method:'OPTIONS',headers:{
+            origin:'https://not-allowed.invalid','access-control-request-method':'POST'
+          }});
+          check('CORS untrusted origin rejected',r,403);
+          r=await request('/api/messages',{method:'OPTIONS',headers:{
+            origin:'https://invoidstar.github.io','access-control-request-method':'POST'
+          }});
+          check('CORS legitimate origin preflight',r,204);
+          assert.equal(r.headers.get('access-control-allow-origin'),'https://invoidstar.github.io');
+          console.log('Live public Worker safety smoke: ALL 13 CHECKS PASSED');
+          JS
+      - name: Verify public Pages staging
+        run: |
+          python3 scripts/stage_pages.py
+          python3 - <<'PY'
+          from pathlib import Path
+          out = Path('_site')
+          for required in ('index.html','sw.js','palette.html','guide.html',
+                           'css/ui-v4.css','js/app.js','data/qqtq-480.js'):
+              assert (out/required).exists(),required
+          for blocked in ('guestbook.html','guestbook-worker','docs','.github',
+                          'js/guestbook.js','js/guestbook-config.js','css/guestbook.css'):
+              assert not (out/blocked).exists(), blocked
+          print('Static site assets verified, guestbook not publicly staged.')
+          print('migrations valid; real D1 UUID & Turnstile Site Key configured; public launch disabled; no production entry')
+          PY

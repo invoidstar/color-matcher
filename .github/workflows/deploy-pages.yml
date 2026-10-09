@@ -38,6 +38,10 @@ jobs:
           test -f data/alice-1680.js
           test -f guide.html
           test -f palette.html
+          test -f guestbook.html
+          test -f css/guestbook.css
+          test -f js/guestbook.js
+          test -f js/guestbook-config.js
           test -f css/guide.css
           test -f css/palette.css
           test -f css/announcement.css
@@ -66,6 +70,9 @@ jobs:
           grep -q 'cdn.busuanzi.cc/busuanzi/3.6.9/busuanzi.min.js' index.html
           grep -q 'busuanzi_page_pv' palette.html
           grep -q 'busuanzi_page_pv' guide.html
+          grep -q 'busuanzi_page_pv' guestbook.html
+          grep -q './guestbook.html' index.html
+          grep -q './guestbook.html' palette.html
           node --check js/core/color.js
           node --check data/qqtq-480.js
           node --check data/hanter-620.js
@@ -87,6 +94,8 @@ jobs:
           node --check js/ui-v4.js
           node --check js/palette-gallery.js
           node --check js/announcements.js
+          node --check js/guestbook.js
+          node --check js/guestbook-config.js
           node --check data/announcements.js
           python - <<'PY'
           from pathlib import Path
@@ -115,13 +124,40 @@ jobs:
           print('app.js bytes:', Path('js/app.js').stat().st_size)
           PY
 
+      - name: Require live guestbook before publishing links or announcements
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          const base = 'https://color-matcher-guestbook-api.3518925535.workers.dev';
+          async function get(path) {
+            const response = await fetch(base+path,{
+              cache:'no-store',signal:AbortSignal.timeout(12000),
+              headers:{origin:'https://invoidstar.github.io'}
+            });
+            assert.equal(response.status,200,path+' is unavailable');
+            return response.json();
+          }
+          const health=await get('/health');
+          assert.equal(health.service,'color-matcher-guestbook');
+          assert.equal(health.publicEnabled,true,'Release is blocked until Worker is public');
+          const config=await get('/api/config');
+          assert.equal(config.enabled,true,'Guestbook /api/config must be enabled');
+          assert.ok(typeof config.siteKey==='string'&&config.siteKey.length>10);
+          const listing=await get('/api/messages?page=1&limit=1');
+          assert.ok(Array.isArray(listing.items),'Public messages must be readable');
+          console.log('PASS: Worker enabled, public config and list operational; Pages may publish.');
+          JS
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
+
+      - name: Stage public static assets including approved guestbook
+        run: python3 scripts/stage_pages.py --include-guestbook
 
       - name: Upload static site
         uses: actions/upload-pages-artifact@v4
         with:
-          path: .
+          path: _site
 
       - name: Deploy to GitHub Pages
         id: deployment
