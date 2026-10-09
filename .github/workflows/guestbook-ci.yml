@@ -65,6 +65,7 @@ jobs:
         env:
           GUESTBOOK_URL: https://color-matcher-guestbook-api.3518925535.workers.dev
         run: |
+          node --input-type=module <<'JS'
           import assert from 'node:assert/strict';
           const origin=process.env.GUESTBOOK_URL;
           assert.match(origin,/^https:\/\//);
@@ -132,6 +133,7 @@ jobs:
           check('CORS legitimate origin preflight',r,204);
           assert.equal(r.headers.get('access-control-allow-origin'),'https://invoidstar.github.io');
           console.log('Live no-write Worker security smoke: ALL 13 CHECKS PASSED');
+          JS
       - name: Verify public Pages staging
         run: |
           python3 scripts/stage_pages.py
