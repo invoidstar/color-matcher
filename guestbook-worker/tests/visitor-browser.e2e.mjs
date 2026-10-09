@@ -102,8 +102,25 @@ test('Chromium visitor publish and isolated D1 cleanup', {timeout:150000}, async
     });
     const page=await context.newPage();
     page.on('pageerror',e=>console.log('Browser JS error:',e.message));
+    // Test the exact service-unavailable state with the real guestbook script.
+    // A page-level abort takes precedence over context route to local Workerd.
+    await page.route(API+'/api/config',route=>route.abort('failed'));
+    await page.goto(origin+'/guestbook.html',{waitUntil:'domcontentloaded'});
+    const notice=page.locator('#serviceNotice');
+    const boldHint=notice.locator('strong');
+    await boldHint.waitFor({timeout:15000});
+    assert.equal(await boldHint.textContent(),'（需要科学上网）');
+    assert.equal((await notice.textContent()).trim(),
+      '留言服务暂时不可用，请稍后再试。（需要科学上网）');
+    assert.ok(Number(await boldHint.evaluate(el=>getComputedStyle(el).fontWeight))>=700,
+      'Network hint must render as bold text');
+    await page.screenshot({path:path.join(output,'00-service-unavailable-bold-hint.png'),fullPage:true});
+    console.log('PASS: service-unavailable notice includes bold network access hint');
+    await page.unroute(API+'/api/config');
     await page.goto(origin+'/guestbook.html',{waitUntil:'domcontentloaded'});
     await page.getByText('留言板已开放',{exact:false}).waitFor({timeout:20000});
+    assert.equal(await page.locator('#serviceNotice strong').count(),0,
+      'Network hint must not appear when service is healthy');
     await page.locator('#nickname').fill('隔离测试');
     await page.locator('#content').fill(MESSAGE);
     await page.screenshot({path:path.join(output,'01-turnstile.png'),fullPage:true});

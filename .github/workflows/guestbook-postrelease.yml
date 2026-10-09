@@ -62,6 +62,10 @@ jobs:
           }
           const html=await read('/guestbook.html','id="guestbookForm"');
           assert.match(html,/js\/guestbook\.js/);
+          assert.ok(html.includes('./js/guestbook.js?v=20261009-2'),
+            'Guestbook page must force fresh JavaScript after UI error hint fix');
+          const guestbookJs=await read('/js/guestbook.js?v=20261009-2','（需要科学上网）');
+          assert.ok(guestbookJs.includes("createElement('strong')"));
           assert.match(html,/busuanzi_page_uv/);
           assert.match(html,/busuanzi_page_pv/);
           await read('/','href="./guestbook.html"');
