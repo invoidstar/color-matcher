@@ -9,8 +9,8 @@
     "ALLOWED_ORIGIN": "https://invoidstar.github.io",
     "TURNSTILE_HOSTNAME": "invoidstar.github.io",
     "TURNSTILE_SITE_KEY": "",
-    "GITHUB_CLIENT_ID": "",
-    "GITHUB_ADMIN_USER_ID": "",
+    "GITHUB_CLIENT_ID": "Ov23ctbZCJlcKuhDQjU3",
+    "GITHUB_ADMIN_USER_ID": "63053541",
     "GITHUB_REDIRECT_URI": "https://color-matcher-guestbook-api.3518925535.workers.dev/auth/github/callback"
   },
   "d1_databases": [
