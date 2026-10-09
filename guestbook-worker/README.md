@@ -82,3 +82,7 @@ Session Cookie 使用 Secure / HttpOnly / SameSite=Lax；D1 仅存哈希，默�
 5. 若上线异常，优先将 Worker 的 `PUBLIC_ENABLED` 恢复为 `false` 并重新部署；必要时撤回主站入口/公告。**不要删除 D1 或清空留言表来回滚。**
 
 文案审校与 CI 通过均不等于已获准公开上线。
+
+## 单分支发布维护
+
+正式上线后，GitHub 保留 `main` 作为唯一长期分支。Cloudflare Workers Builds 的 Production branch 应指向 `main`，Root directory 为 `guestbook-worker`，Build command 留空，Deploy command 为 `npx wrangler deploy`。部署或更新后先查看 Workers Builds 成功记录并核对 `/health`、公开 API，再清理旧开发分支。
