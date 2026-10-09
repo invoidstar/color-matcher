@@ -1,4 +1,4 @@
-// Color Matcher guestbook V1: validation and fail-closed admin authentication.
+// Color Matcher guestbook V1: validation and Turnstile protection.
 export class HttpError extends Error {
   constructor(status, code, message) {
     super(message);
@@ -117,83 +117,3 @@ export async function verifyTurnstile(token, ip, env) {
   }
 }
 
-function decodeBase64Url(value) {
-  if (typeof value !== 'string' || !/^[A-Za-z0-9_-]+$/.test(value)) {
-    throw new HttpError(401, 'invalid_access_token', '管理员身份验证无效');
-  }
-  const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
-  const padding = '='.repeat((4 - base64.length % 4) % 4);
-  try {
-    return Uint8Array.from(atob(base64 + padding), ch => ch.charCodeAt(0));
-  } catch {
-    throw new HttpError(401, 'invalid_access_token', '管理员身份验证无效');
-  }
-}
-
-function parseJwtPart(value) {
-  try { return JSON.parse(new TextDecoder().decode(decodeBase64Url(value))); }
-  catch { throw new HttpError(401, 'invalid_access_token', '管理员身份验证无效'); }
-}
-
-const jwksCache = new Map();
-
-export async function requireAdmin(request, env) {
-  const team = String(env.CF_ACCESS_TEAM_DOMAIN || '').trim().toLowerCase();
-  const aud = String(env.CF_ACCESS_AUD || '').trim();
-  const email = String(env.ADMIN_EMAIL || '').trim().toLowerCase();
-  if (!/^[a-z0-9-]+\.cloudflareaccess\.com$/.test(team) || !aud || !email) {
-    throw new HttpError(503, 'admin_not_configured', '管理员登录尚未配置');
-  }
-  const token = request.headers.get('Cf-Access-Jwt-Assertion') || '';
-  if (!token || token.length > 12000) {
-    throw new HttpError(401, 'admin_login_required', '请先通过 Cloudflare Access 登录');
-  }
-  const parts = token.split('.');
-  if (parts.length !== 3) {
-    throw new HttpError(401, 'invalid_access_token', '管理员身份验证无效');
-  }
-  const header = parseJwtPart(parts[0]);
-  if (header.alg !== 'RS256' || typeof header.kid !== 'string' || !header.kid) {
-    throw new HttpError(401, 'invalid_access_token', '管理员身份验证无效');
-  }
-  const payload = parseJwtPart(parts[1]);
-  const now = Math.floor(Date.now() / 1000);
-  const audience = Array.isArray(payload.aud) ? payload.aud : [payload.aud];
-  if (payload.iss !== 'https://' + team || !audience.includes(aud) ||
-      !Number.isFinite(payload.exp) || payload.exp <= now ||
-      (payload.nbf != null && payload.nbf > now + 30) ||
-      String(payload.email || '').toLowerCase() !== email) {
-    throw new HttpError(403, 'admin_forbidden', '当前账号没有管理员权限');
-  }
-  let cached = jwksCache.get(team);
-  if (!cached || cached.expires < Date.now()) {
-    let certs;
-    try {
-      const response = await fetch('https://' + team + '/cdn-cgi/access/certs', {
-        headers: { accept: 'application/json' },
-        signal: AbortSignal.timeout(6000)
-      });
-      if (!response.ok) throw new Error('bad_certs_response');
-      certs = await response.json();
-      if (!Array.isArray(certs.keys)) throw new Error('invalid_certs');
-    } catch {
-      throw new HttpError(503, 'admin_auth_unavailable', '暂时无法验证管理员身份');
-    }
-    cached = { keys: certs.keys, expires: Date.now() + 5 * 60 * 1000 };
-    jwksCache.set(team, cached);
-  }
-  const jwk = cached.keys.find(key => key.kid === header.kid &&
-    key.kty === 'RSA' && (!key.alg || key.alg === 'RS256'));
-  if (!jwk) throw new HttpError(401, 'unknown_access_key', '管理员身份验证无效');
-  try {
-    const publicKey = await crypto.subtle.importKey('jwk', jwk,
-      { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
-    const signature = decodeBase64Url(parts[2]);
-    const data = new TextEncoder().encode(parts[0] + '.' + parts[1]);
-    const valid = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', publicKey, signature, data);
-    if (!valid) throw new Error('invalid_signature');
-  } catch {
-    throw new HttpError(401, 'invalid_access_signature', '管理员身份验证无效');
-  }
-  return { email };
-}
