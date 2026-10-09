@@ -108,11 +108,11 @@ test('Chromium visitor publish and isolated D1 cleanup', {timeout:150000}, async
     await page.locator('#content').fill(MESSAGE);
     await page.screenshot({path:path.join(output,'01-turnstile.png'),fullPage:true});
     await page.waitForFunction(()=>document.querySelector('#submitBtn')?.disabled===false,null,{timeout:60000});
+    assert.equal(await page.evaluate(()=>window.turnstile?.getResponse()),dummyToken);
     await page.locator('#submitBtn').click();
     await page.getByText('留言发布成功',{exact:false}).waitFor({timeout:20000});
     await page.locator('.message-list').getByText(MESSAGE).waitFor({timeout:20000});
     await page.screenshot({path:path.join(output,'02-published.png'),fullPage:true});
-    assert.equal(await page.evaluate(()=>window.turnstile?.getResponse()),dummyToken);
     const msg=await db.prepare('SELECT id FROM messages WHERE content=?').bind(MESSAGE).first();
     assert.ok(msg?.id);
     console.log('PASS real Chromium Turnstile test widget, submission, isolated D1 and public listing');
