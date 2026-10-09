@@ -27,10 +27,21 @@
 - 一次完整 GitHub Actions 验收记录：
   https://github.com/invoidstar/color-matcher/actions/runs/37909924447
 
+## 真实 Chromium 浏览器受控验收（2026-10-09）
+
+- 测试：`guestbook-worker/tests/visitor-browser.e2e.mjs`，用真实 Chromium 打开原版 `guestbook.html`、加载 Cloudflare 官方 Turnstile **测试 Site Key**，等待小组件回调获得 `XXXX.DUMMY.TOKEN.XXXX` 测试令牌。
+- 该令牌通过 Cloudflare 官方 **测试 Secret** 调用真实 Siteverify，返回 `success=true`。注意：官方 dummy Siteverify 返回 `hostname=example.com`、无 `action`；因此仅在隔离测试适配层中补齐本地测试期望的 hostname/action，**生产 Worker 严格校验代码完全没有放宽**。
+- Chromium 填写昵称、正文并点击发布；实际 Worker 代码返回成功，独立 Miniflare D1 创建记录，页面立即显示该留言。测试验证记录在 SQLite 中真实存在。
+- 测试使用独立 D1 SQL 删除其测试记录，刷新浏览器后确认列表显示空状态。此处的清理是隔离数据库内的 SQL 删除，**不是在同一次脚本里使用真实 GitHub OAuth 管理员删除**；管理员真实隐藏、回复、恢复、删除之前已经由站长在浏览器单独通过。
+- 浏览器 API 使用保留测试域名 `https://guestbook-acceptance.invalid`，由 Playwright 严格拦截后交给本地 Worker 运行；不会连接生产 Worker，也没有调用真实生产 D1 或 Secret。
+- 浏览器端到端测试、既有后端测试、官方 Turnstile 测试密钥校验及生产关闭态 13 项检测均通过。
+- 最新证据：https://github.com/invoidstar/color-matcher/actions/runs/37912711360 ，测试运行附带 `guestbook-visitor-browser` 截图 Artifact（填写/提交成功/清理后）。
+- 为避免每次推送都安装 Chromium，该浏览器步骤仅在含 `[browser-e2e]` 的提交或明确的手动运行时触发。
+
 ## 尚未覆盖（正式上线前门禁）
 
-- **真实网页 + 真实 Turnstile Widget + 生产 Secret 的人工提交闭环**：在公开接口保持关闭时，不能执行成功写入的生产 E2E。因此本次通过的是*隔离端到端业务验收*与生产闭合态检查，不应误称正式生产投稿已验证。
-- 正式开放需要受控预发布环境，或明确批准的短时发布窗口。应当用真实浏览器生成单次 Token，验证即时发布、重复提交、错误 Token、分页与管理员隐藏/删除，并清理测试数据；结束后恢复开关。
+- **生产 Site Key / Secret 的真人提交闭环**：隔离 Chromium 测试已使用真实浏览器和官方测试密钥验证通路，但仍未调用生产密钥提交真实生产 D1。在正式公开前，如需要强生产验收，应在单独授权的发布窗口执行一次人工操作，并清理其测试数据。
+- 重复、限流、分页、非法 Token 与管理员操作已在隔离后端及真实管理员环境分别覆盖；正式真人投稿测试仍需单独批准。不要直接在生产 Worker 上开启匿名发布以替代隔离验收。
 - 数据库最初由站长在 D1 Console 手工初始化，两张表已经存在。Wrangler 的 `d1_migrations` 元数据是否与 `0001`/`0002` 一致仍待后续只读核对；不要直接执行可能冲突的远程 migration apply。
 - 正式开放前必须更新旧部署说明，并取得明确发布许可。禁止在未验收的情况下切换 `PUBLIC_ENABLED` 或在 `main` 添加公开入口。
 
@@ -39,6 +50,7 @@
 - `guestbook-worker/tests/guestbook.test.mjs`
 - `guestbook-worker/tests/visitor-d1.integration.mjs`
 - `guestbook-worker/tests/turnstile-siteverify.smoke.mjs`
+- `guestbook-worker/tests/visitor-browser.e2e.mjs`
 - `.github/workflows/guestbook-ci.yml`
 
 此文档不包含、也不应包含 GitHub Client Secret、Turnstile Secret、RATE_LIMIT_SALT 或管理员 Session 凭据。
