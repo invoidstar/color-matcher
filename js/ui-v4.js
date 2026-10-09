@@ -11,7 +11,7 @@
     document.querySelectorAll('.v4-mobile-nav [data-v4-pane]').forEach(btn=>
       btn.setAttribute('aria-pressed',String(btn.dataset.v4Pane===next)));
     if(scroll&&window.matchMedia('(max-width:780px)').matches){
-      const target=document.getElementById('v4Workspace');
+      const target=document.querySelector('main');
       if(target)window.scrollTo({top:Math.max(0,target.getBoundingClientRect().top+window.scrollY-67),behavior:'smooth'});
     }
   }
@@ -93,6 +93,7 @@
   function updateZoomAvailability(){
     const ready=!stage.classList.contains('hidden')&&canvas.width>1&&canvas.height>1;
     zoomButtons.forEach(btn=>{if(btn)btn.disabled=!ready;});
+    if(panBtn)panBtn.disabled=!ready;
     if(!ready&&pan)setPan(false);
   }
   new MutationObserver(()=>{
