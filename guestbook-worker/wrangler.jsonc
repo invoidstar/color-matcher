@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "color-matcher-guestbook-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-09",
+  "workers_dev": true,
+  "vars": {
+    "PUBLIC_ENABLED": "false",
+    "ALLOWED_ORIGIN": "https://invoidstar.github.io",
+    "TURNSTILE_HOSTNAME": "invoidstar.github.io",
+    "TURNSTILE_SITE_KEY": ""
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "color-matcher-guestbook",
+      "database_id": "REPLACE_WITH_D1_DATABASE_UUID",
+      "migrations_dir": "migrations"
+    }
+  ]
+}
