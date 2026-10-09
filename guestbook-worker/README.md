@@ -89,13 +89,26 @@ GitHub OAuth 的公开 Client ID 与站长数字 ID **已经配置完毕**，无
 
 1. **配置已完成：** 真实 D1 UUID、Turnstile Site Key、GitHub Client ID、GitHub 管理员数字 ID 均已写入 wrangler.jsonc，不需要重复查找。
 2. 在 Cloudflare Workers & Pages → color-matcher-guestbook-api → Settings → Variables and Secrets 中将 GITHUB_CLIENT_SECRET、TURNSTILE_SECRET、RATE_LIMIT_SALT 都保存为 **Secret**。不要提交到 GitHub，也不要在聊天中发送。
-3. 检查是否执行过旧版 messages SQL，防止已有表结构和迁移发生冲突。
-4. 从 guestbook-worker 目录受控执行：
-   npx wrangler d1 migrations apply color-matcher-guestbook --remote
-   依次创建 messages 和 admin_sessions。
-5. 配好变量后才手动部署：
-   npx wrangler deploy
-   部署阶段保持 PUBLIC_ENABLED=false，首先测试 GitHub 登录、隐藏/回复/删除、退出、越权拒绝。
+3. **先只读检查 D1 当前表结构，不要直接执行旧 SQL。** 打开 Cloudflare → D1 → color-matcher-guestbook → Console，依次执行：
+
+       SELECT name FROM sqlite_master WHERE type='table' AND name IN ('messages','admin_sessions');
+       PRAGMA table_info(messages);
+
+   如果 messages 表不存在，说明尚未初始化，可以进入下一步。若已存在，请确认有 id、nickname、category、content、status、fingerprint、created_at、updated_at、admin_reply、replied_at 等字段。**特别注意 fingerprint 与 replied_at：旧版示例 SQL 可能没有。** 一旦发现缺少字段或原表有现有数据，先暂停迁移，保留截图或非敏感列名给我分析，不要 DROP/DELETE 表。直接执行 CREATE TABLE IF NOT EXISTS 不会自动补充旧表缺失字段。
+
+4. 在确认表结构兼容或为空之后，从 guestbook-worker 目录受控执行：
+
+       npx wrangler d1 migrations list color-matcher-guestbook --remote
+       npx wrangler d1 migrations apply color-matcher-guestbook --remote
+
+   以上操作需要本机 Wrangler 登录 Cloudflare；第二条会按版本依次应用 0001 和 0002。**目前我没有直接操作你的 Cloudflare 账号，也未执行这些命令。**
+
+5. 配置好三个 Secret 后，才单独手动部署 Worker：
+
+       npx wrangler deploy
+
+   部署阶段保持 PUBLIC_ENABLED=false，首先测试 GitHub 登录、隐藏/回复/删除、退出、越权拒绝。Cloudflare 的 required secrets 校验可以防止遗漏环境变量，但不代替真实管理员权限测试。
+
 6. 管理权限实测通过并获得用户明确批准后，再开启匿名提交并把入口合并到 GitHub Pages 主站。
 
 静态部署安全门禁现已完成：`scripts/stage_pages.py` 会将 GitHub Pages 的部署内容复制到 `_site/`，**默认排除**整个 Worker 后端以及留言板页面和前端脚本。即便以后先合并代码，GitHub Pages 也不会自动开放留言入口。只有正式验收通过，单独批准后才能显式采用 `--include-guestbook` 公共打包参数，并添加主站导航。
