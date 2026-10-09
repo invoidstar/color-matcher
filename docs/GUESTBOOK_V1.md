@@ -1,18 +1,16 @@
-# Color Matcher 留言板 V1.0 — GitHub OAuth 开发记录
+# Color Matcher 留言板 V1.0 · 开发与上线状态
 
-当前状态：仅 feature/guestbook-v1，未发布。
+**状态（2026-10-09）：后端已部署、管理员真实验收通过；公众尚未开放。**
 
-已实现：匿名昵称留言、分类、Turnstile Siteverify、限流与重复检测、立即展示、分页、手机 UI；站长 GitHub OAuth 登录、数字用户 ID 白名单、D1 哈希会话、同源 CSRF 检查；隐藏、恢复、回复、永久删除和退出登录。
+- 开发分支：`feature/guestbook-v1`；GitHub Pages `main` 未合并留言板，没有公众入口。
+- Worker：`color-matcher-guestbook-api`，已通过 Cloudflare Workers Builds 自动部署；`GET /health` 返回 `publicEnabled=false`。
+- D1：`color-matcher-guestbook`，绑定 `DB`；站长通过 Console 手动创建 `messages` 与 `admin_sessions` 两张表及索引。**Wrangler 迁移元数据尚未远程核对**，详见 `GUESTBOOK_D1_AUDIT.md`。
+- 访客免 GitHub 登录，昵称 1–24 字、正文 1–500 字；Turnstile 通过后立即公开，支持分类、最新留言、分页与站长回复。
+- 站长通过 GitHub OAuth 与数字用户 ID 校验登录管理后台，Session 哈希存在 D1；支持隐藏、恢复、回复、永久删除和退出，敏感请求需 CSRF。
+- 三个运行时 Secret 已由站长配置在 Cloudflare；绝不写入仓库或对话。
+- 正式环境管理员登录、D1 会话与留言管理由站长真实验收；GitHub Actions 完成隔离 Chromium/Turnstile 测试密钥投稿、D1 清理与生产关闭态安全检查。
+- **未完成**：真实生产密钥投稿及 D1 迁移版本元数据核对。当前 `PUBLIC_ENABLED=false`，不要发布“已开放”公告。
 
-访问者无需 GitHub，只有站长登录后台。已放弃 Cloudflare Access / Zero Trust 依赖。
+详见：`../guestbook-worker/README.md`（部署）、`GUESTBOOK_V1_ACCEPTANCE.md`（验收）、`GUESTBOOK_D1_AUDIT.md`（只读 D1 审计）、`GUESTBOOK_RELEASE_COPY.md`（上线文案）。
 
-GitHub OAuth Redirect URL：
-https://color-matcher-guestbook-api.3518925535.workers.dev/auth/github/callback
-
-Worker：color-matcher-guestbook-api，D1 名称：color-matcher-guestbook，DB 绑定：DB。
-GitHub OAuth Client ID 已配置为 Ov23ctbZCJlcKuhDQjU3，管理员数字 ID 已核实为 63053541。真实 D1 UUID（e136a183-92b3-437c-a823-3f548db341c1）与 Turnstile Site Key（0x4AAAAAAFR_pCEvHTjb0_E1）均已配置；私密 Secret 仍需由用户在 Cloudflare 控制台添加。
-所有 Secret 只能放在 Cloudflare Worker，不能提供给助手或写入 GitHub。
-
-上线保护：PUBLIC_ENABLED=false、无生产主站入口、无 D1 远程迁移、没有 Cloudflare Worker 代码发布、main 未改变。管理员需要先通过真实环境登录、隐藏、删除、未授权拒绝和退出失效测试。测试环境中的 Mock 通过并不等于线上认证已经成功。
-
-部署细节请见 guestbook-worker/README.md。
+只有获得站长**明确发布许可**后，才开放访客提交、合并/发布 GitHub Pages 入口与上线公告。

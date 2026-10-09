@@ -64,6 +64,17 @@ jobs:
           assert {'id','nickname','category','content','status','admin_reply','fingerprint','created_at'} <= cols
           admin_cols = {r[1] for r in db.execute("PRAGMA table_info(admin_sessions)")}
           assert {'session_hash','csrf_token','github_user_id','expires_at'} <= admin_cols
+          # Simulate re-applying idempotent baseline migrations after manual
+          # schema creation. Existing messages and sessions must be preserved.
+          db.execute("INSERT INTO messages(id,nickname,category,content,fingerprint) VALUES(?,?,?,?,?)",
+                     ('manual-baseline-check','验收','other','需保留的历史消息','isolated-fingerprint'))
+          db.execute("INSERT INTO admin_sessions(session_hash,csrf_token,github_user_id,expires_at) VALUES(?,?,?,?)",
+                     ('hash-for-local-test','csrf-for-local-test','63053541',2099999999))
+          db.executescript(sql)
+          db.executescript(Path('guestbook-worker/migrations/0002_github_sessions.sql').read_text())
+          assert db.execute("SELECT COUNT(*) FROM messages WHERE id='manual-baseline-check'").fetchone()[0] == 1
+          assert db.execute("SELECT COUNT(*) FROM admin_sessions WHERE session_hash='hash-for-local-test'").fetchone()[0] == 1
+          print('Idempotent baseline migrations preserved existing local rows; remote migration metadata still unverified.')
           config = json.loads(Path('guestbook-worker/wrangler.jsonc').read_text())
           assert config['vars']['PUBLIC_ENABLED'] == 'false'
           assert config['d1_databases'][0]['binding'] == 'DB'
@@ -81,7 +92,11 @@ jobs:
           assert 'guestbook.html' not in Path('sw.js').read_text()
           assert 'TURNSTILE_SECRET' not in Path('js/guestbook-config.js').read_text()
           assert 'PUBLIC_ENABLED' not in Path('index.html').read_text()
-          print('Guestbook public link absent, Worker code excluded from Pages')
+          guestbook = Path('guestbook.html').read_text(encoding='utf-8')
+          assert '预备版本' not in guestbook
+          assert '留言板暂未正式开放' not in guestbook
+          assert '昵称和留言正文会公开展示' in guestbook
+          print('Guestbook public link absent, launch copy reviewed, Worker excluded from Pages')
           PY
       - name: Live Worker closed-launch / unauthorized smoke (no secrets, no writes)
         env:

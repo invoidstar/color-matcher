@@ -35,15 +35,15 @@
 - 测试使用独立 D1 SQL 删除其测试记录，刷新浏览器后确认列表显示空状态。此处的清理是隔离数据库内的 SQL 删除，**不是在同一次脚本里使用真实 GitHub OAuth 管理员删除**；管理员真实隐藏、回复、恢复、删除之前已经由站长在浏览器单独通过。
 - 浏览器 API 使用保留测试域名 `https://guestbook-acceptance.invalid`，由 Playwright 严格拦截后交给本地 Worker 运行；不会连接生产 Worker，也没有调用真实生产 D1 或 Secret。
 - 浏览器端到端测试、既有后端测试、官方 Turnstile 测试密钥校验及生产关闭态 13 项检测均通过。
-- 最新证据：https://github.com/invoidstar/color-matcher/actions/runs/37912711360 ，测试运行附带 `guestbook-visitor-browser` 截图 Artifact（填写/提交成功/清理后）。
+- 最新 Chromium 证据：https://github.com/invoidstar/color-matcher/actions/runs/37912711360 ，测试运行附带 `guestbook-visitor-browser` 截图 Artifact（填写/提交成功/清理后）。隔离 Chromium 验收成功不等于生产访客开关已启用。
 - 为避免每次推送都安装 Chromium，该浏览器步骤仅在含 `[browser-e2e]` 的提交或明确的手动运行时触发。
 
 ## 尚未覆盖（正式上线前门禁）
 
 - **生产 Site Key / Secret 的真人提交闭环**：隔离 Chromium 测试已使用真实浏览器和官方测试密钥验证通路，但仍未调用生产密钥提交真实生产 D1。在正式公开前，如需要强生产验收，应在单独授权的发布窗口执行一次人工操作，并清理其测试数据。
 - 重复、限流、分页、非法 Token 与管理员操作已在隔离后端及真实管理员环境分别覆盖；正式真人投稿测试仍需单独批准。不要直接在生产 Worker 上开启匿名发布以替代隔离验收。
-- 数据库最初由站长在 D1 Console 手工初始化，两张表已经存在。Wrangler 的 `d1_migrations` 元数据是否与 `0001`/`0002` 一致仍待后续只读核对；不要直接执行可能冲突的远程 migration apply。
-- 正式开放前必须更新旧部署说明，并取得明确发布许可。禁止在未验收的情况下切换 `PUBLIC_ENABLED` 或在 `main` 添加公开入口。
+- 数据库由站长通过 D1 Console 手工初始化，两张业务表及索引已存在，手工 SQL 与仓库基础迁移语义一致；但 **`d1_migrations` 版本记录仍待远程只读核对**。具体 SQL、情形判断与授权后的登记流程见 [`GUESTBOOK_D1_AUDIT.md`](GUESTBOOK_D1_AUDIT.md)，此时禁止盲目应用远程迁移。
+- 部署与上线文案已整理至 [`guestbook-worker/README.md`](../guestbook-worker/README.md) 和 [`GUESTBOOK_RELEASE_COPY.md`](GUESTBOOK_RELEASE_COPY.md)；仍需站长明确发布许可。禁止未经授权切换 `PUBLIC_ENABLED` 或在 `main` 添加公开入口。
 
 ## 参考测试与工作流
 
