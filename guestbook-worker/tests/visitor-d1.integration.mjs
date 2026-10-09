@@ -43,11 +43,14 @@ test('visitor acceptance: workerd + real local D1 + controlled Siteverify respon
   });
   try {
     const db = await mf.getD1Database('DB');
-    // D1's exec() rejects comment-only lines; the SQL itself stays unchanged.
-    const sql = file => readFileSync(file, 'utf8').split('\n')
-      .filter(line => !line.trimStart().startsWith('--')).join('\n');
-    await db.exec(sql(INIT_SQL));
-    await db.exec(sql(SESSION_SQL));
+    // D1.exec splits on newlines; prepare each DDL statement without comments.
+    for (const migration of [INIT_SQL, SESSION_SQL]) {
+      const sql = readFileSync(migration, 'utf8').split('\n')
+        .filter(line => !line.trimStart().startsWith('--')).join('\n');
+      for (const statement of sql.split(';').map(x => x.trim()).filter(Boolean)) {
+        await db.prepare(statement).run();
+      }
+    }
 
     async function req(path, method = 'GET', body, ip = '198.51.100.101', origin = VISITOR_ORIGIN) {
       const headers = { Origin: origin, 'CF-Connecting-IP': ip };
