@@ -24,6 +24,8 @@ jobs:
           node --check js/guestbook-config.js
           node --check guestbook-worker/src/security.js
           node --check guestbook-worker/src/admin-ui.js
+          node --check guestbook-worker/src/github-auth.js
+          node --check guestbook-worker/src/login-ui.js
           node --check guestbook-worker/src/index.js
       - name: Backend and security tests
         run: node --test guestbook-worker/tests/*.test.mjs
@@ -35,18 +37,24 @@ jobs:
           sql = Path('guestbook-worker/migrations/0001_init.sql').read_text()
           db = sqlite3.connect(':memory:')
           db.executescript(sql)
+          db.executescript(Path('guestbook-worker/migrations/0002_github_sessions.sql').read_text())
           cols = {r[1] for r in db.execute("PRAGMA table_info(messages)")}
           assert {'id','nickname','category','content','status','admin_reply','fingerprint','created_at'} <= cols
+          admin_cols = {r[1] for r in db.execute("PRAGMA table_info(admin_sessions)")}
+          assert {'session_hash','csrf_token','github_user_id','expires_at'} <= admin_cols
           config = json.loads(Path('guestbook-worker/wrangler.jsonc').read_text())
           assert config['vars']['PUBLIC_ENABLED'] == 'false'
           assert config['d1_databases'][0]['binding'] == 'DB'
           assert config['d1_databases'][0]['database_name'] == 'color-matcher-guestbook'
           assert config['d1_databases'][0]['database_id'] == 'REPLACE_WITH_D1_DATABASE_UUID'
+          assert config['vars']['GITHUB_CLIENT_ID'] == ''
+          assert config['vars']['GITHUB_ADMIN_USER_ID'] == ''
+          assert config['vars']['GITHUB_REDIRECT_URI'].endswith('/auth/github/callback')
           main = Path('index.html').read_text()
           assert 'guestbook.html' not in main
           assert 'js/guestbook.js' not in main
           assert 'guestbook.html' not in Path('sw.js').read_text()
           assert 'guestbook-worker/' not in Path('.github/workflows/deploy-pages.yml').read_text()
           assert 'TURNSTILE_SECRET' not in Path('js/guestbook-config.js').read_text()
-          print('migration valid; public launch disabled; no guestbook production entry')
+          print('migrations valid; GitHub OAuth unconfigured; public launch disabled; no production entry')
           PY
