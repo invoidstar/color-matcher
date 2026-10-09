@@ -246,13 +246,13 @@ export default {
         } });
       }
       if (path === '/api/messages' && request.method === 'GET') {
-        return getPublicMessages(request, env, url);
+        return await getPublicMessages(request, env, url);
       }
       if (path === '/api/messages' && request.method === 'POST') {
-        return postPublicMessage(request, env);
+        return await postPublicMessage(request, env);
       }
       if (path === '/admin' || path.startsWith('/admin/')) {
-        return handleAdmin(request, env, url);
+        return await handleAdmin(request, env, url);
       }
       throw new HttpError(404, 'not_found', '页面不存在');
     } catch (error) {
