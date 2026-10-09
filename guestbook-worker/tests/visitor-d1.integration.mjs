@@ -24,7 +24,8 @@ test('visitor acceptance: workerd + real local D1 + controlled Siteverify respon
     modules: true,
     scriptPath: ENTRY,
     modulesRules: [{ type: 'ESModule', include: ['**/*.js'], fallthrough: true }],
-    compatibilityDate: '2026-10-09',
+    // Compatible with the workerd version bundled in the CI Miniflare runtime.
+    compatibilityDate: '2026-08-06',
     d1Databases: { DB: '00000000-0000-4000-8000-000000000001' },
     bindings: {
       PUBLIC_ENABLED: 'true',
