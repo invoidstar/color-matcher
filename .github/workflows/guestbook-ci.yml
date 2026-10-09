@@ -61,6 +61,77 @@ jobs:
           assert 'PUBLIC_ENABLED' not in Path('index.html').read_text()
           print('Guestbook public link absent, Worker code excluded from Pages')
           PY
+      - name: Live Worker closed-launch / unauthorized smoke (no secrets, no writes)
+        env:
+          GUESTBOOK_URL: https://color-matcher-guestbook-api.3518925535.workers.dev
+        run: |
+          import assert from 'node:assert/strict';
+          const origin=process.env.GUESTBOOK_URL;
+          assert.match(origin,/^https:\/\//);
+          const base=new URL(origin);
+          async function request(path,options={}) {
+            const response=await fetch(new URL(path,base),{
+              redirect:'manual',signal:AbortSignal.timeout(12000),...options,
+              headers:{'accept':'application/json',...options.headers}
+            });
+            const contentType=response.headers.get('content-type')||'';
+            const body=contentType.includes('application/json')?
+              await response.json():await response.text();
+            return {status:response.status,headers:response.headers,body};
+          }
+          function check(name,response,status) {
+            assert.equal(response.status,status,name+': expected HTTP '+status+' got '+response.status);
+            console.log('PASS',name,'HTTP',status);
+          }
+          let r=await request('/health');
+          check('health endpoint',r,200);
+          assert.equal(r.body.service,'color-matcher-guestbook');
+          assert.equal(r.body.publicEnabled,false,'Public posting MUST remain disabled');
+          assert.equal(r.headers.get('x-content-type-options'),'nosniff');
+          r=await request('/api/config');
+          check('public config endpoint',r,200);
+          assert.equal(r.body.enabled,false);
+          assert.equal(r.body.siteKey,null);
+          assert.equal(r.body.maxContentLength,500);
+          r=await request('/api/messages');
+          check('anonymous listing gated',r,503);
+          assert.equal(r.body.error,'guestbook_not_live');
+          r=await request('/api/messages',{method:'POST',headers:{
+            origin:'https://invoidstar.github.io','content-type':'application/json'
+          },body:'{}'});
+          check('anonymous posting gated (invalid empty body)',r,503);
+          assert.equal(r.body.error,'guestbook_not_live');
+          r=await request('/admin/login');
+          check('admin login page',r,200);
+          assert.match(r.body,/\/auth\/github\/start/);
+          assert.doesNotMatch(r.body,/hello world/i);
+          r=await request('/admin',{method:'GET'});
+          check('admin page without session redirects',r,303);
+          assert.equal(r.headers.get('location'),'/admin/login');
+          r=await request('/admin/api/session');
+          check('admin session endpoint rejects anonymous',r,401);
+          assert.equal(r.body.error,'admin_login_required');
+          r=await request('/admin/api/messages');
+          check('admin messages endpoint rejects anonymous',r,401);
+          r=await request('/admin/api/messages/11111111-1111-4111-8111-111111111111',{
+            method:'DELETE',headers:{origin:base.origin}
+          });
+          check('admin deletion rejects anonymous',r,401);
+          r=await request('/admin/api/logout',{method:'POST',headers:{origin:base.origin}});
+          check('admin logout rejects anonymous',r,401);
+          r=await request('/auth/github/callback');
+          check('OAuth callback rejects missing state',r,403);
+          assert.equal(r.body.error,'github_oauth_state');
+          r=await request('/api/messages',{method:'OPTIONS',headers:{
+            origin:'https://not-allowed.invalid','access-control-request-method':'POST'
+          }});
+          check('CORS untrusted origin rejected',r,403);
+          r=await request('/api/messages',{method:'OPTIONS',headers:{
+            origin:'https://invoidstar.github.io','access-control-request-method':'POST'
+          }});
+          check('CORS legitimate origin preflight',r,204);
+          assert.equal(r.headers.get('access-control-allow-origin'),'https://invoidstar.github.io');
+          console.log('Live no-write Worker security smoke: ALL 13 CHECKS PASSED');
       - name: Verify public Pages staging
         run: |
           python3 scripts/stage_pages.py
