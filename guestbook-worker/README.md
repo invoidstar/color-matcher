@@ -1,93 +1,99 @@
-# Color Matcher 专用留言板 V1.0 — 尚未上线
+# Color Matcher Guestbook V1.0 — GitHub 登录版（尚未上线）
 
-仅服务 Color Matcher，不支持多网站共用。**当前只有 feature/guestbook-v1 开发分支中的代码；没有修改 main，也没有部署 Worker / 迁移正式 D1 数据库。**
+当前开发分支：feature/guestbook-v1。仅为 Color Matcher 一个网站提供匿名留言。
+生产 main 尚未修改，Cloudflare Worker/D1 也尚未由本分支部署。
 
-## 已确认资源与待补充信息
+## 核心功能
 
-| 配置 | 现有信息 | 当前状态 |
-| --- | --- | --- |
-| Worker 地址 | https://color-matcher-guestbook-api.3518925535.workers.dev | 用户已创建原始 Worker；未部署留言代码 |
-| D1 数据库名称 | color-matcher-guestbook | 用户已创建 |
-| D1 Binding | DB | 用户已绑定 |
-| D1 Database UUID | 未提供 | wrangler.jsonc 有占位符 |
-| Turnstile Widget 名称 | color-matcher-guestbook | 用户已创建 |
-| **真正的 Turnstile Site Key** | 未提供 | 需要 Cloudflare 中生成的公开 Key |
-| TURNSTILE_SECRET | 私密，不发送到聊天或 GitHub | 后续在 Cloudflare Secret 中设置 |
-| Cloudflare Access | 尚未完成 | **正式上线阻塞项** |
+- 访客免登录：昵称 1–24 字符、类别、正文 1–500 字符，通过 Turnstile 验证后立即公开。
+- 公开分页、最新留言、站长回复。
+- 管理员通过 GitHub OAuth 登录；验证固定的 GitHub 数字用户 ID。
+- 管理员一键隐藏、恢复、回复、永久删除，手机端可操作。
+- 管理员 Session 使用随机 Cookie + D1 保存哈希，8 小时到期，可退出撤销。
+- 任何隐藏/回复/删除操作必须使用同源请求和 CSRF Token。
+- PUBLIC_ENABLED 默认为 false，未明确启用时访客不可提交。
+- 不再依赖 Cloudflare Zero Trust / Access。
 
-用户曾提供的“D1 Database ID”与数据库名称一致，而“Turnstile Site Key”与 Widget 名称一致。这两项**不能视为真实 UUID / Site Key**。因此代码保留了安全占位，不能直接作为生产配置部署。
+## GitHub OAuth App 注册
 
-## 已开发内容
+GitHub Developer Settings → OAuth Apps → New OAuth App
 
-- guestbook.html + css/guestbook.css + js/guestbook.js：与 v4.0 风格一致的匿名留言页，当前主站没有导航入口。
-- js/guestbook-config.js：仅公开 Worker URL，不包含密钥。
-- guestbook-worker/src/index.js：留言 API、隐藏、恢复、删除、回复、分页。
-- guestbook-worker/src/security.js：提交校验、Turnstile Siteverify、HMAC 限流和 JWT 校验。
-- guestbook-worker/src/admin-ui.js：仅管理员可访问的手机友好型后台。
-- guestbook-worker/migrations/0001_init.sql：版本化 D1 初始表结构。
-- guestbook-worker/tests/guestbook.test.mjs：安全与 CRUD 集成测试。
-- .github/workflows/guestbook-ci.yml：仅开发分支运行，**不部署**。
+| 配置 | 内容 |
+| --- | --- |
+| Application name | Color Matcher Guestbook Admin |
+| Homepage URL | https://invoidstar.github.io/color-matcher/ |
+| Redirect URL | https://color-matcher-guestbook-api.3518925535.workers.dev/auth/github/callback |
+| Allow wildcard matching | 不勾选 |
+| Enable Device Flow | 不勾选 |
+| Expire user access tokens | 保留勾选即可 |
 
-## API
+GitHub 页面显示的 Redirect URL 就是旧称 Authorization callback URL。
+本项目只要求读取当前登录用户的 GitHub 数字 ID，不要求仓库访问权限。
 
-| Method | Path | 权限 |
-| --- | --- | --- |
-| GET | /health | 公开，只返回状态 |
-| GET | /api/config | 公开，返回是否开放、公开 Site Key |
-| GET | /api/messages?page=1&limit=10 | 开放后显示公开留言 |
-| POST | /api/messages | 通过 Turnstile 后立即发布 |
-| GET | /admin/ | 验证通过的管理员 |
-| GET | /admin/api/messages?status=all&page=1&limit=20 | 验证通过的管理员 |
-| PATCH | /admin/api/messages/:id | 隐藏、恢复、保存/清空回复 |
-| DELETE | /admin/api/messages/:id | 永久删除当前 D1 记录 |
+注册成功后：
+- 公开 Client ID → Worker 变量 GITHUB_CLIENT_ID。
+- 私密 Client Secret → Worker Secret GITHUB_CLIENT_SECRET；**不要发送到聊天或 GitHub**。
+- 管理员数字 ID → Worker 变量 GITHUB_ADMIN_USER_ID（不是用户名或邮箱）。
+- Worker 变量 GITHUB_REDIRECT_URI 已预置正确地址，必须与上面 Redirect URL 完全一致。
 
-PATCH JSON 操作示例：{"action":"hide"}、{"action":"restore"} 或 {"action":"reply","reply":"感谢反馈"}。
+## Cloudflare 环境配置（暂时不要部署）
 
-## 关键安全机制
+用户已建立 Worker URL：
+https://color-matcher-guestbook-api.3518925535.workers.dev
 
-1. **PUBLIC_ENABLED 默认为 false**。必须显式改为 true 且 D1、Turnstile Site Key、Turnstile Secret、IP 限流盐全部配置，匿名 API 才能开放。
-2. Turnstile 必须经过 Worker 服务端 Siteverify，并检查 hostname=invoidstar.github.io 和 action=guestbook_post。
-3. Worker 拒绝非 https://invoidstar.github.io 来源的浏览器提交；CORS 不是安全鉴权，另外还有 Turnstile 防刷。
-4. 内容用 textContent 渲染，不允许不可信 HTML。
-5. 留言频率限制为每来源每分钟 2 次、每天 12 次；仅保存用长随机盐加密散列的 IP 指纹，不保存原始 IP。
-6. 管理员每次请求校验 **Cloudflare Access JWT 的 RSA 签名、issuer、aud、exp、email**，Access 未配置时默认拒绝。
-7. 删除后的公开读取禁用缓存。永久删除不等于云平台历史备份/Time Travel 立即清除。
+已建立 D1 数据库名称：color-matcher-guestbook，绑定名 DB。
+尚需从 Cloudflare 控制台找到 **真正的 D1 Database ID UUID**。
+当前用户提供的是数据库名称，不能代替 UUID。
 
-## 上线前：你需要操作的部分（此处只是文档，不代表已经执行）
+已建立 Turnstile Widget 名称：color-matcher-guestbook。
+尚需真正的 Turnstile Site Key（公钥），及仅保存在 Cloudflare 中的私密 Secret。
 
-1. 从 Cloudflare D1 数据库页面获取实际 Database ID **UUID**，替换 guestbook-worker/wrangler.jsonc 中的 REPLACE_WITH_D1_DATABASE_UUID。
-2. 从 Turnstile Widget 页面复制真正的 **Site Key**，写入 wrangler.jsonc 中的 TURNSTILE_SITE_KEY。它是公开值，不是 Secret。
-3. 在 Worker 的私密 Variables / Secrets 中配置：
-   - TURNSTILE_SECRET：真实 Secret Key。
-   - RATE_LIMIT_SALT：至少 16 位、随机且长期稳定的私密字符串。
-   - CF_ACCESS_TEAM_DOMAIN：例如 myteam.cloudflareaccess.com。
-   - CF_ACCESS_AUD：管理员 Access 应用的 Audience Tag。
-   - ADMIN_EMAIL：唯一允许访问后台的站长邮箱。
-4. 创建仅保护 Worker 上 /admin 与 /admin/* 的 Cloudflare Access Self-hosted 应用，只允许管理员邮箱登录。**不要保护整个 Worker**，否则将来普通访客无法匿名留言。后台本身也会验证 JWT，不能只靠隐藏 UI。
-5. 如之前曾在 D1 手动执行旧版 messages 表结构，不要直接执行迁移；先检查是否已有不兼容字段。没有表时，从 guestbook-worker 目录运行：
-   
-       npx wrangler d1 migrations apply color-matcher-guestbook --remote
+Worker wrangler.jsonc 的配置项：
+- PUBLIC_ENABLED=false（联调期间不要开启）
+- ALLOWED_ORIGIN=https://invoidstar.github.io
+- TURNSTILE_HOSTNAME=invoidstar.github.io
+- TURNSTILE_SITE_KEY=真正的公开 Site Key，当前为空
+- GITHUB_CLIENT_ID=真正的公开 Client ID，当前为空
+- GITHUB_ADMIN_USER_ID=站长的 GitHub 数字用户 ID，当前为空
+- GITHUB_REDIRECT_URI=https://color-matcher-guestbook-api.3518925535.workers.dev/auth/github/callback
+- D1 binding DB、database_name=color-matcher-guestbook、database_id=真实 UUID
 
-6. 用户确认后，才手动将代码部署到 Worker：
+Cloudflare Worker Secrets（**切勿提交到仓库**）：
+- GITHUB_CLIENT_SECRET：GitHub OAuth App 私钥
+- TURNSTILE_SECRET：Turnstile 私钥
+- RATE_LIMIT_SALT：自生成随机且长期稳定的限流盐，至少 16 字符
 
-       npx wrangler deploy
+## 目录与 API
 
-   先保持 PUBLIC_ENABLED=false，完成管理员登录、隐藏、恢复、删除和未授权访问测试后，最后才允许改为 true。
-7. 真实联调完成、用户明确批准上线后，才在 Color Matcher 主站加入口并合并开发分支。GitHub Pages 生产部署必须排除 guestbook-worker/ 源码和私有文件。
+- src/index.js：公共留言 API / 管理 API
+- src/security.js：字段校验、Turnstile Siteverify、匿名限流
+- src/github-auth.js：OAuth 流程、管理员 Session、CSRF
+- src/admin-ui.js、src/login-ui.js：管理页面和登录样式
+- migrations/0001_init.sql：messages 表
+- migrations/0002_github_sessions.sql：admin_sessions 表
+- tests/guestbook.test.mjs：自动化集成及安全测试
 
-## 本地/CI 测试
+公开接口：GET/POST /api/messages（仅 PUBLIC_ENABLED=true 时开放）。
+管理员认证：GET /admin/login、GET /auth/github/start、GET /auth/github/callback。
+管理后台：GET /admin/、GET /admin/api/session、GET /admin/api/messages。
+管理员变更：PATCH/DELETE /admin/api/messages/:id、POST /admin/api/logout。
 
-在仓库根目录执行：
+GitHub OAuth access_token 只用来读取 /user 的数字 ID，不会保存。
+Session Cookie 设置 Secure、HttpOnly、SameSite=Lax；D1 只存储哈希。
+状态 state Cookie 阻止 OAuth 登录 CSRF，后台更改操作需要 CSRF header。
 
-    node --test guestbook-worker/tests/*.test.mjs
+## 下一步（尚未执行）
 
-检查语法：
+1. 确认 OAuth App 创建完成，获取 Client ID；Client Secret 仅在 Cloudflare 中配置。
+2. 核对真正 D1 UUID、Turnstile Site Key、站长 GitHub 数字 ID。
+3. 检查是否执行过旧版 messages SQL，防止已有表结构和迁移发生冲突。
+4. 从 guestbook-worker 目录受控执行：
+   npx wrangler d1 migrations apply color-matcher-guestbook --remote
+   依次创建 messages 和 admin_sessions。
+5. 配好变量后才手动部署：
+   npx wrangler deploy
+   部署阶段保持 PUBLIC_ENABLED=false，首先测试 GitHub 登录、隐藏/回复/删除、退出、越权拒绝。
+6. 管理权限实测通过并获得用户明确批准后，再开启匿名提交并把入口合并到 GitHub Pages 主站。
 
-    node --check guestbook-worker/src/index.js
-    node --check guestbook-worker/src/security.js
-    node --check guestbook-worker/src/admin-ui.js
-    node --check js/guestbook.js
-
-开发分支 CI 还会在内存 SQLite 中运行初始 D1 schema，并检查公开开关关闭、未给主站加留言入口。
-
-**现在不要填写真实 Secrets 到 wrangler.jsonc、.dev.vars 或 GitHub 提交，也不要发送给聊天助手。**
+若今后把开发分支合并 main，GitHub Pages 工作流需要排除 guestbook-worker 源码。
+本分支 GitHub Actions 只运行 Node 测试、SQL 迁移验证和安全锁检查，**不会部署**。
