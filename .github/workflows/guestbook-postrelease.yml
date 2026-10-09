@@ -1,0 +1,84 @@
+name: Guestbook production smoke and branch retirement
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-live:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check public site and Worker (no D1 writes)
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          const site='https://invoidstar.github.io/color-matcher';
+          const api='https://color-matcher-guestbook-api.3518925535.workers.dev';
+          const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+          async function read(path,contains,base=site) {
+            let error;
+            for(let attempt=0;attempt<18;attempt++){
+              try {
+                const response=await fetch(base+path,{
+                  cache:'no-store',redirect:'follow',signal:AbortSignal.timeout(13000),
+                  headers:{'cache-control':'no-cache','user-agent':'ColorMatcherGuestbookReleaseCheck/1.0'}
+                });
+                if(response.status!==200)throw Error('HTTP '+response.status);
+                const body=await response.text();
+                if(contains&&!body.includes(contains))throw Error('Content marker not present yet: '+contains);
+                console.log('PASS',base+path,response.status);
+                return body;
+              }catch(e){
+                error=e;
+                if(attempt<17)await delay(5000);
+              }
+            }
+            throw Error('Public site check failed for '+base+path+': '+error?.message);
+          }
+          const html=await read('/guestbook.html','id="guestbookForm"');
+          assert.match(html,/js\/guestbook\.js/);
+          assert.match(html,/busuanzi_page_uv/);
+          assert.match(html,/busuanzi_page_pv/);
+          await read('/','href="./guestbook.html"');
+          await read('/palette.html','href="./guestbook.html"');
+          await read('/guide.html','href="./guestbook.html"');
+          await read('/data/announcements.js',"id:'guestbook-v1-launch'");
+          await read('/sw.js',"plush-color-matcher-v4.1-guestbook");
+          const health=JSON.parse(await read('/health','"publicEnabled":true',api));
+          assert.equal(health.publicEnabled,true);
+          const config=JSON.parse(await read('/api/config','"enabled":true',api));
+          assert.equal(config.enabled,true);
+          assert.equal(typeof config.siteKey,'string');
+          const listing=JSON.parse(await read('/api/messages?page=1&limit=2','"items":',api));
+          assert.ok(Array.isArray(listing.items));
+          console.log('PASS: live Pages/Worker public read flow, announcements and traffic tags.');
+          JS
+
+  prune-guestbook-branches:
+    # Must ONLY run after the operator confirms Cloudflare production builds follow main.
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[prune-guestbook-branches]') }}
+    needs: verify-live
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Remove obsolete guestbook branches after main production verification
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = 'refs/heads/main'
+          for branch in 'feature/guestbook-v1' 'release/guestbook-v1'; do
+            echo "Deleting obsolete GitHub ref: $branch"
+            gh api --method DELETE "repos/${GH_REPO}/git/refs/heads/${branch}"
+          done
+          echo 'Remote branches remaining:'
+          gh api "repos/${GH_REPO}/branches?per_page=100" --jq '.[].name'
+          remaining="$(gh api "repos/${GH_REPO}/branches?per_page=100" --jq '.[].name')"
+          test "$remaining" = 'main'
+          echo 'PASS: only main branch remains.'
