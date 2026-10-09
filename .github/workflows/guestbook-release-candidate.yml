@@ -75,7 +75,7 @@ jobs:
           assert "link:'./guestbook.html'" in announcements
           assert '留言板仍暂不开放' not in announcements
           worker=Path('guestbook-worker/wrangler.jsonc').read_text(encoding='utf8')
-          assert '"PUBLIC_ENABLED": "false"' in worker, 'RC should not activate production'
+          assert '"PUBLIC_ENABLED": "true"' in worker, 'Release artifact must use the same public Worker source of truth'
           assert 'GITHUB_CLIENT_SECRET' not in (site/'js/guestbook-config.js').read_text()
           sw=(site/'sw.js').read_text(encoding='utf8')
           assert 'url.origin!==self.location.origin' in sw

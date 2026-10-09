@@ -1,8 +1,8 @@
-name: Guestbook branch tests (no deploy)
+name: Guestbook production tests (no direct deploy)
 on:
   push:
     branches:
-      - feature/guestbook-v1
+      - main
   workflow_dispatch:
 
 permissions:
@@ -80,7 +80,7 @@ jobs:
           assert db.execute("SELECT COUNT(*) FROM admin_sessions WHERE session_hash='hash-for-local-test'").fetchone()[0] == 1
           print('Idempotent baseline migrations preserved existing local rows; remote migration metadata still unverified.')
           config = json.loads(Path('guestbook-worker/wrangler.jsonc').read_text())
-          assert config['vars']['PUBLIC_ENABLED'] == 'false'
+          assert config['vars']['PUBLIC_ENABLED'] == 'true'
           assert config['d1_databases'][0]['binding'] == 'DB'
           assert config['d1_databases'][0]['database_name'] == 'color-matcher-guestbook'
           assert config['d1_databases'][0]['database_id'] == 'e136a183-92b3-437c-a823-3f548db341c1'
@@ -91,7 +91,7 @@ jobs:
           assert config['vars']['GITHUB_REDIRECT_URI'].endswith('/auth/github/callback')
           assert set(config['secrets']['required']) == {'GITHUB_CLIENT_SECRET','TURNSTILE_SECRET','RATE_LIMIT_SALT'}
           main = Path('index.html').read_text()
-          assert 'guestbook.html' not in main
+          assert 'href="./guestbook.html"' in main
           assert 'js/guestbook.js' not in main
           assert 'guestbook.html' not in Path('sw.js').read_text()
           assert 'TURNSTILE_SECRET' not in Path('js/guestbook-config.js').read_text()
@@ -102,7 +102,7 @@ jobs:
           assert '昵称和留言正文会公开展示' in guestbook
           print('Guestbook public link absent, launch copy reviewed, Worker excluded from Pages')
           PY
-      - name: Live Worker closed-launch / unauthorized smoke (no secrets, no writes)
+      - name: Live Worker public endpoints and anonymous safety (no secrets, no writes)
         env:
           GUESTBOOK_URL: https://color-matcher-guestbook-api.3518925535.workers.dev
         run: |
@@ -126,23 +126,29 @@ jobs:
             console.log('PASS',name,'HTTP',status);
           }
           let r=await request('/health');
+          // Builds and Actions run concurrently after push. Wait for the newly
+          // enabled Worker version, but never manufacture a successful result.
+          for(let i=0;i<18 && !(r.status===200 && r.body.publicEnabled===true);i++){
+            await new Promise(resolve=>setTimeout(resolve,5000));
+            r=await request('/health');
+          }
           check('health endpoint',r,200);
           assert.equal(r.body.service,'color-matcher-guestbook');
-          assert.equal(r.body.publicEnabled,false,'Public posting MUST remain disabled');
+          assert.equal(r.body.publicEnabled,true,'Public posting MUST be enabled');
           assert.equal(r.headers.get('x-content-type-options'),'nosniff');
           r=await request('/api/config');
           check('public config endpoint',r,200);
-          assert.equal(r.body.enabled,false);
-          assert.equal(r.body.siteKey,null);
+          assert.equal(r.body.enabled,true);
+          assert.ok(typeof r.body.siteKey==='string' && r.body.siteKey.length>10);
           assert.equal(r.body.maxContentLength,500);
           r=await request('/api/messages');
-          check('anonymous listing gated',r,503);
-          assert.equal(r.body.error,'guestbook_not_live');
+          check('anonymous public listing',r,200);
+          assert.ok(Array.isArray(r.body.items));
           r=await request('/api/messages',{method:'POST',headers:{
             origin:'https://invoidstar.github.io','content-type':'application/json'
           },body:'{}'});
-          check('anonymous posting gated (invalid empty body)',r,503);
-          assert.equal(r.body.error,'guestbook_not_live');
+          check('invalid anonymous body rejected',r,422);
+          assert.equal(r.body.error,'invalid_fields');
           r=await request('/admin/login');
           check('admin login page',r,200);
           assert.match(r.body,/\/auth\/github\/start/);
@@ -173,7 +179,7 @@ jobs:
           }});
           check('CORS legitimate origin preflight',r,204);
           assert.equal(r.headers.get('access-control-allow-origin'),'https://invoidstar.github.io');
-          console.log('Live no-write Worker security smoke: ALL 13 CHECKS PASSED');
+          console.log('Live public Worker safety smoke: ALL 13 CHECKS PASSED');
           JS
       - name: Verify public Pages staging
         run: |

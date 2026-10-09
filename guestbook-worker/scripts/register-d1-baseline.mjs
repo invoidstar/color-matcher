@@ -65,11 +65,11 @@ function verifyCatalog(rows){
     stop('Migration registry is not a table');
   return actual.has('d1_migrations');
 }
-function verifyConfig(){
+function verifyConfig(requireClosed=true){
   const c=JSON.parse(readFileSync(path.join(ROOT,'wrangler.jsonc'),'utf8'));
   const db=c.d1_databases;
   if(c.name!=='color-matcher-guestbook-api'||
-      c.vars?.PUBLIC_ENABLED!=='false'||
+      (requireClosed && c.vars?.PUBLIC_ENABLED!=='false')||
       !Array.isArray(db)||db.length!==1||
       db[0].binding!=='DB'||db[0].database_name!==DB_NAME||
       db[0].database_id!==DB_ID||db[0].migrations_dir!=='migrations')
@@ -147,7 +147,7 @@ function bookmark(){
 async function main(){
   if(args.length!==1||!['--self-test','--register-existing-baseline'].includes(args[0]))
     stop('Need exactly one of --self-test or --register-existing-baseline');
-  verifyConfig();
+  verifyConfig(args[0]!=='--self-test');
   if(args[0]==='--self-test'){
     const examples=[];
     for(const file of MIGRATIONS)for(const sql of migrationStatements(file)){
