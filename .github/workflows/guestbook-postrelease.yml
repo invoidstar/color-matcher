@@ -69,8 +69,17 @@ jobs:
           await read('/guide.html','href="./guestbook.html"');
           await read('/data/announcements.js',"id:'guestbook-v1-launch'");
           await read('/sw.js',"plush-color-matcher-v4.1-guestbook");
-          const health=JSON.parse(await read('/health','"publicEnabled":true',api));
+          // Verify production Worker actually follows main before retiring the old
+          // source branch, rather than trusting GitHub Pages deployment alone.
+          let health;
+          for(let i=0;i<12;i++){
+            health=JSON.parse(await read('/health','"publicEnabled":true',api));
+            if(health.version==='1.0.1-main-cutover')break;
+            if(i<11)await delay(5000);
+          }
           assert.equal(health.publicEnabled,true);
+          assert.equal(health.version,'1.0.1-main-cutover',
+            'Cloudflare Worker is not serving latest main code; do not delete feature branch');
           const config=JSON.parse(await read('/api/config','"enabled":true',api));
           assert.equal(config.enabled,true);
           assert.equal(typeof config.siteKey,'string');
